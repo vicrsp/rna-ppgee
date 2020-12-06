@@ -1,1 +1,1 @@
-# rna-ppgee
+# Redes Neurais Artificias - 2020/2 
