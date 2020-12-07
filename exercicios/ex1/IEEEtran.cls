@@ -3327,8 +3327,8 @@ which is provided to fool Hyperref.}}
 
 \def\@biblabel#1{[#1]}
 
-\def\thebibliography#1{\section*{Referências}%
-    \addcontentsline{toc}{section}{Referências}%
+\def\thebibliography#1{\section*{Referencias}%
+    \addcontentsline{toc}{section}{Referencias}%
     % V1.6 add some rubber space here and provide a command trigger
     \footnotesize \vskip 0.3\baselineskip plus 0.1\baselineskip minus 0.1\baselineskip%
     \list{\@biblabel{\@arabic\c@enumiv}}%
