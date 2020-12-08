@@ -1,4 +1,4 @@
-\documentclass[conference]{IEEEtran}
+\documentclass[peerreview]{IEEEtran}
 % If the IEEEtran.cls has not been installed into the LaTeX system files, 
 % manually specify the path to it:
 % \documentclass[conference]{../sty/IEEEtran} 
@@ -10,6 +10,7 @@
 
 % correct bad hyphenation here
 \hyphenation{op-tical net-works semi-conduc-tor IEEEtran}
+
 
 
 \begin{document}
@@ -38,14 +39,58 @@
 	
 	\begin{abstract}
 			
-		Neste exercício é feita um resumo e análise crítica do artigo ``Improving generalization of MLPs with multi-objective optimization''.
+		Neste exercício é feito um resumo e análise crítica do artigo ``Improving generalization of MLPs with multi-objective optimization'' \cite{mobj}. Embora bastante curto, o trabalho foi um dos primeiros a abordar o problema de generalização no treinamento de redes neurais de forma multi-objetiva e consegue apresentar de forma simples e direta os principais conceitos envolvidos.
 		
 	\end{abstract}
+	
+	
 
+	\section{Resumo e Análise do Artigo}
+	 Em geral, algoritmos de aprendizado supervisionado de redes neurais artificiais (RNA) possuem como objetivo minimizar o erro quadrático dos valores previstos pelo modelo em relação às saídas em estudo:
+	\begin{equation}
+		\sum_{i=1}^{N} [y_i - f(\mathbf{x}_i)]^2
+		\label{eq:sqrd}
+	\end{equation}
+	onde $y_i$ é uma resposta desejada para uma entrada $\mathbf{x}_i$, e $f$ é o função que aproxima a resposta desejada. Ou seja, estamos interessados em encontrar o conjunto de pesos $\mathbf{w}$ da rede a partir dos pares de dados de entrada-saída $\mathcal{D} = \left\lbrace (\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\right\rbrace $ que melhor aproxima a função desconhecida $f$.
+
+	Entretanto, se os dados a serem modelados são ruidosos o uso deste único objetivo pode levar a um overfitting sobre o conjunto de dados de treinamento, de forma que este não consiga generalizar bem para novos valores observados. Estatisticamente, podemos definir a efetividade de $f$ como um estimador de $y$ como \cite{biasvardil}:
+	
+	\begin{equation}
+		\begin{aligned}
+			E[(y - f(\mathbf{x}; \mathcal{D}))^2 | \mathbf{x}, \mathcal{D}] \quad = & \quad E\left[ (y - E \left[ y | \mathbf{x}\right] )^2 | \mathbf{x}, \mathcal{D}\right]   \\
+			 & \quad + (f(\mathbf{x};\mathcal{D}) - E[y|\mathbf{x}])^2
+		\end{aligned}
+	\end{equation}
+	
+	É importante notar neste indicador que o primeiro termo representa a variância de $y$ dado $\mathbf{x}$, não dependendo dos dados. Já o segundo termo mede a distância entre o estimador e a regressão. Logo, podemos definir o error quadrático médio de $f$ como um estimador da regressão $E[y|\mathbf{x}]$ para um conjunto de dados $\mathcal{D}$ como:
+	
+	\begin{equation}
+		\begin{aligned}
+			& E_{\mathcal{D}}[(f(\mathbf{x};\mathcal{D}) - E[y|\mathbf{x}])^2] = \\ 
+			& \qquad \quad (E_{\mathcal{D}}[f(\mathbf{x}; \mathcal{D})] - E[y|\mathbf{x}])^2 \quad \text{``viés''} \\
+			& \qquad \quad  + E_{\mathcal{D}}\left[ f(\mathbf{x};\mathcal{D}) - E_{\mathcal{D}}[f(\mathbf{x};\mathcal{D})]\right]   \quad \text{``variância''}
+		\end{aligned}
+	\end{equation}
+	A derivação completa da relação acima pode ser encontrada em \cite{biasvardil}. Logo é fácil notar que o aprendizado de RNAs é um problema multi-objetivo, no qual precisamos encontrar uma solução de compromisso entre o viés e a variância do modelo. Portanto, em um dos extremos teremos um conjunto de pesos que resultam em um viés máximo (\textit{overfitting}) e no outro variância máxima (\textit{underfitting}).
+	
+	Para lidar com essa situação, o artigo escolhido para este exercício propõe uma nova técnica para melhorar a generalização de perceptrons de múltiplas camadas (MLP) através de uma abordagem por otimização multi-objetivo. Os autores iniciam com uma breve introdução e motivação do trabalho, descrevendo algumas abordagens da literatura já utilizadas: (i) algoritmos de poda de pesos da rede com o intuito de obter um melhor balanço entre flexibilidade e rigidez; (ii) o algoritmo SVM, que realiza uma regularização do problema de minimização de (\ref{eq:sqrd}) através da inclusão da norma dos pesos da rede na função objetivo. A técnica proposta pelos autores consiste em buscar uma solução com boa generalização dentro do plano formado pelos dois objetivos. 
+	
+	Para a solução de um problema multi-objetivo, o primeiro passo consiste na obtenção do conjunto pareto ótimo, o qual conterá todas as soluções eficientes. Em seguida, é necessária uma estratégia de decisão para escolher a solução mais apropriada deste conjunto pareto ótimo. Para a estimativa deste conjunto, foi escolhida uma variação da abordagem $\epsilon$-restrito proposta por um dos autores em outro trabalho, a qual é mais eficiente pelo fato de evitar a geração de solução infactíveis. Neste ponto, vale a pena citar que o nome do artigo indicado nas referências não condiz com o presente na literatura, o que dificultou um pouco encontrá-lo para a leitura. Além disso, o leitor que deseja se aprofundar mais nesta abordagem pode se sentir um pouco confuso, já que a técnica desenvolvida é aplicada sobre um problema bem específico da área de controle. 
+	
+	A técnica utilizada aparenta ser bem eficiente, intuitiva e simples de entender, então sua escolha foi adequada para o problema em questão. De forma geral, ela contrói vetores dentro do cone de soluções viáveis a partir da combinação convexa dos ótimos de cada objetivo em relação à solução utópica. Em seguida, o problema multi-objetivo é transformado em um mono-objetivo, para o qual minimizamos uma variável auxiliar que irá levar a uma solução bem balanceada na fronteira pareto ótima. Entretanto, algo que não ficou claro foi a estratégia de decisão para a escolha desta solução. Durante a descrição da técnica, os autores citam que o fator $\gamma$ é variado no intervalo $[0,1]$, porém após a definição do problema de otimização (Equações 7 e 8 de \cite{mobj}) não fica muito explícito qual das soluções do conjunto pareto foi selecionada.
+	
+	Em seguida, os autores apresentam uma comparação do algoritmo proposto em relação ao MPL treinado com \textit{backpropagation} e o SVM, considerando tanto um problema de classificação quanto um de regressão. Os resultados mostraram que a técnica proposta é capaz de obter soluções suaves para ambos os problemas em relação ao \textit{backpropagation}. Além disso, soluções com erros de predição similares foram obtidas se comparada ao SVM. Vale a pena notar que não foram feitos testes estatísticos para as comparações realizadas, de forma que, embora graficamente os resultados sugerem a eficiência da técnica, não pode-se afirmar que um método é melhor em relação ao entre sem o desenho de um experimento com posterior realização de testes de hipótese. 
+	
+	Embora tenha se mostrado eficiente, a técnica proposta tem um grande custo computacional associado, uma vez que é necessário estimar muitos pontos do conjunto pareto ótimo. Apesar do problema de otimização mono-objetivo ter sido resolvido com o algoritmo elipsoidal, que é um método bem poderoso, se estivermos lidando com um volume de dados de treinamento muito grande, estimar este conjunto pareto pode ser tornar proibitivo computacionalmente. Infelizmente, o número de pontos amostrados e o esforço computacional dos estudos de caso não foram informados pelos autores. Isto constitui um fator importante ao se realizar uma comparação com demais métodos da literatura.
+	
+	Conforme observado pelos autores, os resultados obtidos pelo SVM e a nova abordagem são bem similiares, justamente devido ao uso da regularização na função objetivo. Se formos um pouco mais além, o SVM atribui um peso ajustável à norma dos pesos, o que no fundo consiste em uma técnica clássica de escalarização chamada $\lambda$-restrito. Logo, o ajuste deste hiper-parâmetro nada mais é que uma amostragem do conjunto pareto ótimo para deste algoritmo. Ou seja, é algo válido pensar em estender a técnica multi-objetivo proposta para o ajuste deste hiper-parâmetro do SVM, por exemplo.
+		
+	
 
     \begin{thebibliography}{99}
         \bibitem{mobj} de Albuquerque Teixeira, R., Braga, A. P., Takahashi, R. H., \& Saldanha, R. R. (2000). Improving generalization of MLPs with multi-objective optimization. Neurocomputing, 35(1-4), 189-194.
+        \bibitem{biasvardil} Geman, S., Bienenstock, E., \& Doursat, R. (1992). Neural networks and the bias/variance dilemma. Neural computation, 4(1), 1-58.
     \end{thebibliography}
     
 	
-\end{document}
+\end{document} 
