@@ -1,0 +1,103 @@
+\documentclass[conference]{IEEEtran}
+% If the IEEEtran.cls has not been installed into the LaTeX system files, 
+% manually specify the path to it:
+% \documentclass[conference]{../sty/IEEEtran} 
+\usepackage[brazil]{babel}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor IEEEtran}
+
+\begin{document}
+	
+	% paper title
+	\title{Fundamentos de Redes Neurais Artificiais}
+	
+	
+	% author names and affiliations
+	% use a multiple column layout for up to three different
+	% affiliations
+	\author{\authorblockN{Victor São Paulo Ruela \\}
+		\authorblockA{Programa de Pós-Graduação em Engenharia Elétrica\\
+			Universidade Federal de Minas Gerais\\
+			Belo Horizonte, Brasil\\
+            Email: victorspruela@ufmg.br}}
+	
+	% avoiding spaces at the end of the author lines is not a problem with
+	% conference papers because we don't use \thanks or \IEEEmembership
+	
+	% use only for invited papers
+	%\specialpapernotice{(Invited Paper)}
+	
+	% make the title area
+	\maketitle
+	
+	\begin{abstract}
+		Este trabalho tem como objetivo apresentar uma revisão da literatura de redes neurais aritificiais, com enfoque na evoluções das principais técnicas clássicas. 
+	\end{abstract}
+
+	\section{Introdução}
+	Redes neurais artificiais (RNA) é uma classe de modelos muito popular em problemas de classificação, reconhecimento de padrões, regressão e predição, sendo aplicado em diversas disciplinas.
+	
+	\subsection{Problemas de classificação}
+	A tarefa de classificação consiste em associar um conjunto de padrões de entrada, representado por um vetor de características, para uma de varias classes previamente definidas.
+
+	\subsection{Problemas de regressão}
+	Dado um conjunto de $N$ pares de dados de entrada-saída $\left\lbrace (\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\right\rbrace$, o objetivo da regressão é encontrar uma função aproximada $\hat{f}(\mathbf{x})$ que melhor descreve a função desconhecida $f(\mathbf{x})$ utilizada para gerar estes dados.
+
+	\subsection{Problemas de predição}
+	Considerando um conjunto de $N$ $\left\lbrace y(t_1),\dots, y(t_N) \right\rbrace $ amostras ordenadas em função do instande de tempo em que foram amostradas $t_1, \dots, t_N$, o objetivo da predição é estimar qual será o valor da amostra $y_{N+1}$ em um tempo futuro $t_{N+1}$.
+
+	\subsection{Problemas de reconhecimento de padrões}
+	
+	\section{Aprendizado supervisionado}
+	\subsection{Perceptron simples}
+	\subsection{Máquinas de aprendizado extremo}
+	\subsection{Redes RBF}
+	\subsection{Perceptron de múltiplas camadas}
+	\section{Aprendizado não-supervisionado}
+	\subsection{Aprendizado Hebbiano}
+	\subsection{SOM}
+
+%	\section{Aprendizado semi-supervisionado}
+
+	\section{Generalização}
+	 Uma das suas principais características do modelo RNA é sua capacidade de generalização.  Em geral, algoritmos de aprendizado supervisionado possuem como objetivo minimizar o erro quadrático dos valores previstos pelo modelo em relação às saídas em estudo:
+	 \begin{equation}
+	 	\sum_{i=1}^{N} [y_i - f(\mathbf{x}_i)]^2
+	 	\label{eq:sqrd}
+	 \end{equation}
+	 onde $y_i$ é uma resposta desejada para uma entrada $\mathbf{x}_i$, e $f$ é o função que aproxima a resposta desejada. Ou seja, estamos interessados em encontrar o conjunto de pesos $\mathbf{w}$ da rede a partir dos pares de dados de entrada-saída $\mathcal{D} = \left\lbrace (\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\right\rbrace $ que melhor aproxima a função desconhecida $f$.
+	 
+	 Entretanto, se os dados a serem modelados são ruidosos o uso deste único objetivo pode levar a um overfitting sobre o conjunto de dados de treinamento, de forma que este não consiga generalizar bem para novos valores observados. Estatisticamente, podemos definir a efetividade de $f$ como um estimador de $y$ como \cite{geman1992neural}:
+	 
+	 \begin{equation}
+	 	\begin{aligned}
+	 		E[(y - f(\mathbf{x}; \mathcal{D}))^2 | \mathbf{x}, \mathcal{D}] \quad = & \quad E\left[ (y - E \left[ y | \mathbf{x}\right] )^2 | \mathbf{x}, \mathcal{D}\right]   \\
+	 		& \quad + (f(\mathbf{x};\mathcal{D}) - E[y|\mathbf{x}])^2
+	 	\end{aligned}
+	 \end{equation}
+	 
+	 É importante notar neste indicador que o primeiro termo representa a variância de $y$ dado $\mathbf{x}$, não dependendo dos dados. Já o segundo termo mede a distância entre o estimador e a regressão. Logo, podemos definir o error quadrático médio de $f$ como um estimador da regressão $E[y|\mathbf{x}]$ para um conjunto de dados $\mathcal{D}$ como:
+	 
+	 \begin{equation}
+	 	\begin{aligned}
+	 		& E_{\mathcal{D}}[(f(\mathbf{x};\mathcal{D}) - E[y|\mathbf{x}])^2] = \\ 
+	 		& \qquad \qquad \qquad (E_{\mathcal{D}}[f(\mathbf{x}; \mathcal{D})] - E[y|\mathbf{x}])^2 \quad \text{``viés''} \\
+	 		& \qquad \quad  + E_{\mathcal{D}}\left[ f(\mathbf{x};\mathcal{D}) - E_{\mathcal{D}}[f(\mathbf{x};\mathcal{D})]\right]   \quad \text{``variância''}
+	 	\end{aligned}
+	 \end{equation}
+	 A derivação completa da relação acima pode ser encontrada em \cite{geman1992neural}. Logo é fácil notar que o aprendizado de RNAs é um problema multi-objetivo, no qual precisamos encontrar uma solução de compromisso entre o viés e a variância do modelo. Portanto, em um dos extremos teremos um conjunto de pesos que resultam em um viés máximo (\textit{underfitting}) e no outro variância máxima (\textit{overfitting}).
+	 
+	\subsection{Máquinas de Vetores Suporte}
+	\subsection{Aprendizado Multiobjetivo}
+
+
+	
+    \bibliographystyle{unsrt}
+	\bibliography{survey}
+	
+\end{document} 
