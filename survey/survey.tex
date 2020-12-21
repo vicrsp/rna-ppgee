@@ -42,22 +42,35 @@
 	\section{Introdução}
 	Redes neurais artificiais (RNA) é uma classe de modelos muito popular em problemas de classificação, reconhecimento de padrões, regressão e predição, sendo aplicado em diversas disciplinas.
 	
-	\subsection{Problemas de classificação}
-	A tarefa de classificação consiste em associar um conjunto de padrões de entrada, representado por um vetor de características, para uma de varias classes previamente definidas.
+%	\subsection{Problemas de classificação}
+%	A tarefa de classificação consiste em associar um conjunto de padrões de entrada, representado por um vetor de características, para uma de varias classes previamente definidas.
 
-	\subsection{Problemas de regressão}
-	Dado um conjunto de $N$ pares de dados de entrada-saída $\left\lbrace (\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\right\rbrace$, o objetivo da regressão é encontrar uma função aproximada $\hat{f}(\mathbf{x})$ que melhor descreve a função desconhecida $f(\mathbf{x})$ utilizada para gerar estes dados.
-
-	\subsection{Problemas de predição}
-	Considerando um conjunto de $N$ $\left\lbrace y(t_1),\dots, y(t_N) \right\rbrace $ amostras ordenadas em função do instande de tempo em que foram amostradas $t_1, \dots, t_N$, o objetivo da predição é estimar qual será o valor da amostra $y_{N+1}$ em um tempo futuro $t_{N+1}$.
-
-	\subsection{Problemas de reconhecimento de padrões}
+%	\subsection{Problemas de regressão}
+%	Dado um conjunto de $N$ pares de dados de entrada-saída $\left\lbrace (\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\right\rbrace$, o objetivo da regressão é encontrar uma função aproximada $\hat{f}(\mathbf{x})$ que melhor descreve a função desconhecida $f(\mathbf{x})$ utilizada para gerar estes dados.
+%
+%	\subsection{Problemas de predição}
+%	Considerando um conjunto de $N$ $\left\lbrace y(t_1),\dots, y(t_N) \right\rbrace $ amostras ordenadas em função do instande de tempo em que foram amostradas $t_1, \dots, t_N$, o objetivo da predição é estimar qual será o valor da amostra $y_{N+1}$ em um tempo futuro $t_{N+1}$.
+%
+%	\subsection{Problemas de reconhecimento de padrões}
 	
 	\section{Aprendizado supervisionado}
+	RNAs de aprendizado supervisionado são responsáveis pela inferência de uma função desconhecida $f$ que realiza o mapeamento de entre uma saída e um conjunto de entradas medidas, a partir de $N$ pares de dados $\mathcal{D} = \left\lbrace (\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\right\rbrace $. Problemas de classificação, regressão e predição são comumente solucionados com estas técnicas, para os quais as primeiras estruturas de rede neural em camadas e algoritmos de treinamento descritos na literatura são o \textit{Adaline}, em 1960, e o Perceptron simples, em 1957. 
+
+	\subsection{Adaline}	
+
+
 	\subsection{Perceptron simples}
+	Proposto inicialmente por Rosenblatt \cite{rosenblatt1957perceptron}, este é um modelo capaz de aprender  superfícies de decisão lineares para problemas de classificação. No seu trabalho original, Rosenblatt descreve formas de adaptação dos parâmetros da rede com o objetivo de reduzir a discrepância entre as saídas esperadas e estimadas e aprender associações entre os neurônios, o que é a base da indução para diversos algoritmos atuais.
+	
+	Embora descrito como uma rede de duas camadas, originalmente seu treinamento só considerava uma destas. Por esse motivo, o Perceptron simples é comumente descrito na forma de somente um neurônio MCP \cite{mcculloch1943logical}.  
+	
+	
+
 	\subsection{Máquinas de aprendizado extremo}
 	\subsection{Redes RBF}
 	\subsection{Perceptron de múltiplas camadas}
+	\subsection{Máquinas de vetores suporte}
+	\subsection{Aprendizado multiobjetivo}
 	\section{Aprendizado não-supervisionado}
 	\subsection{Aprendizado Hebbiano}
 	\subsection{SOM}
