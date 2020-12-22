@@ -48,7 +48,7 @@
 	
 	O aprendizado surgiu de forma mais concreta com o postulado de Hebb \cite{hebb2005organization}, originalmente publicado em 1949. De acordo com o autor, a eficiência de uma determinada sinapse que conecta dois neurônios é proporcional à co-ocorrência de ativação entre eles. Portanto, o princípio de aprendizado Hebbiano visa reforçar as conexões relevantes para as diferentes saída da rede, guiado pela correlação entre os neurônios. 
 	
-	A partir destes princípios elementares, a área de RNAs evoluiu bastante nas últimas décadas. Após a introdução das primeiras regras de aprendizado, este tipo de modelo ganhou maior visibilidade e aplicabilidade para problemas reais, sendo possível encontrar uma enorme quantidade de aplicações publicadas \cite{abiodun2018state}. Além disso, o aumento dos recursos computacionais disponíveis fomentou o desenvolvimento de novas técnicas para aprendizado e o aprimoramento das existentes, além de propostas de novas estruturas redes complexas e capazes de lidar com problemas de grande dificuldade.
+	A partir destes princípios elementares, a área de RNAs evoluiu bastante nas últimas décadas. Após a introdução das primeiras regras de aprendizado, este tipo de modelo ganhou maior visibilidade e aplicabilidade para problemas reais, sendo possível encontrar uma enorme quantidade de aplicações publicadas \cite{abiodun2018state}. Além disso, o aumento dos recursos computacionais disponíveis fomentou o desenvolvimento de novas técnicas para aprendizado e o aprimoramento das existentes, além de propostas de novas estruturas redes complexas capazes de lidar com problemas de grande dificuldade.
 	
 	Portanto, o objetivo deste trabalho é apresentar a uma revisão da literatura contendo os principais trabalhos que levarama à evolução dos diferentes modelos de redes neurais presentes no dia de hoje. Partindo das referências clássicas, diferentes abordagens propostas serão analisadas de forma cronológica como forma de se entender a evolução desta área de pesquisa até o tempo presente. 
 		
@@ -70,19 +70,19 @@
 	\subsection{Adaline}	
 
 	\subsection{Perceptron}
-	Proposto inicialmente por Rosenblatt \cite{rosenblatt1957perceptron}, este é um modelo capaz de aprender  superfícies de separação lineares para problemas de classificação. No seu trabalho original, o autor descreve formas de adaptação dos parâmetros, ou pesos, da rede com o objetivo de reduzir a discrepância entre as saídas esperadas e estimadas e aprender associações entre os neurônios, o que é a base da indução para diversos algoritmos atuais.
+	Proposto inicialmente por Rosenblatt \cite{rosenblatt1957perceptron}, este é um modelo geralmente utilizado para a solução de problemas de classificação. No seu trabalho original, o autor descreve formas de adaptação dos parâmetros, ou pesos, da rede com o objetivo de reduzir a discrepância entre as saídas esperadas e estimadas e aprender associações entre os neurônios, o que é a base da indução para diversos algoritmos atuais. Este trabalho é considerado um marco na literatura por diversos autores.
 	
 	Embora descrito como uma rede de duas camadas, originalmente seu treinamento só considerava uma camada. Por esse motivo, o Perceptron simples é comumente descrito na forma de somente um neurônio MCP. Sua regra de aprendizado é bem direta e consiste em alterar iterativamente os pesos da rede de acordo com a seguinte regra:
 	\begin{equation}
 		\mathbf{w}(k+1) = \mathbf{w}(k) + \eta e(k) \mathbf{x}(k)
 	\end{equation}
-	onde $\mathbf{x}(k)$, $e(k)$ e $\mathbf{x}(k)$ são o vetor de pesos, o erro e o vetor de entradas na $k$-ésima iteração do treinamento, respectivamente. A constante $\eta$ é um escalar utilizado para controlar o tamanho do passo em cada iteração. Rosenblatt provou que a convergência, porém a mesma só é garantida para problemas linearmente separáveis \cite{minsky1969introduction}, o que constitui a principal limitação deste modelo. Após este trabalho, Rosenblatt avaliou diferentes arquiteturas de rede para superar esta limitação, porém não chegou ao desenvolvimento de uma regra para aprendizado dos pesos. Por conta disso, o Perceptron foi pouco estudado pelos próximos de 20 anos \cite{hertz1991introduction}.
+	onde $\mathbf{x}(k)$, $e(k)$ e $\mathbf{x}(k)$ são o vetor de pesos, o erro e o vetor de entradas na $k$-ésima iteração do treinamento, respectivamente. A constante $\eta$ é um escalar utilizado para controlar o tamanho do passo em cada iteração. 
 	
-	Se considerarmos uma função de ativação contínua e diferenciável, os pesos da rede poderão ser inferidos de forma explícita, através do cálculo da pseudo-inversa, ou pelo algoritmo do gradiente descendente \cite{hertz1991introduction}. Exemplos de funções de ativação com esta característica frequentemente empregadas na literatura são a sigmoidal, tangente hiperbólica e linear. Vale a pena ressaltar que a covergência destas abordagens está condicionada aos dados utilizados para treinamento serem linearmente independentes \cite{hertz1991introduction}.
+	Se considerarmos uma função de ativação contínua e diferenciável, os pesos da rede poderão ser inferidos de forma explícita, através do cálculo da pseudo-inversa, ou pelo algoritmo do gradiente descendente \cite{hertz1991introduction}, similar à regra delta introduzida pelo Adaline. Exemplos de funções de ativação com esta característica frequentemente empregadas na literatura são a sigmoidal, tangente hiperbólica e linear. Vale a pena ressaltar que a covergência destas abordagens está condicionada aos dados utilizados para treinamento serem linearmente independentes \cite{hertz1991introduction}.
+		
+	Rosenblatt provou a convergência da regra de aprendizado original, porém a mesma só é garantida para problemas linearmente separáveis \cite{minsky1969introduction}, o que constitui a principal limitação deste modelo. Após este trabalho, Rosenblatt avaliou diferentes arquiteturas de rede tentando superar esta limitação, porém não chegou ao desenvolvimento de uma regra para aprendizado dos pesos. Por conta disso, o Perceptron foi pouco estudado pelos próximos de 20 anos \cite{hertz1991introduction}.
 	
-	  
-	
-	
+	O interesse pelo Perceptron retornou na década de 80 com a descrição do método de aprendizado conhecido como \textit{back-propagation}, o qual é capaz de aprender os pesos de redes de múltiplas de forma eficiente \cite{rumelhart1985learning}. Aliado a isso, o Perceptron de múltiplas camadas é capaz de descrever superfícies de separação não-lineares, superando a pricipal limitação do trabalho de Rosenblatt. Uma descrição mais completa desta técnica é feita na próxima seção.
 	
 	
 %	\begin{enumerate}
