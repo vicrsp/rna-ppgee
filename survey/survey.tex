@@ -40,7 +40,18 @@
 	\end{abstract}
 
 	\section{Introdução}
-	Redes neurais artificiais (RNA) é uma classe de modelos muito popular em problemas de classificação, reconhecimento de padrões, regressão e predição, sendo aplicado em diversas disciplinas.
+	As Redes Neural Artificiais (RNA) é uma classe de modelos muito popular em problemas de classificação, reconhecimento de padrões, regressão e predição. Inspirado pelas características do cérebro humano, elas possuem como elementos básicos neurônios artificiais capazes de executar operações matemáticas, representando desta forma modelos de neurônios biológicos. Através de sua organização em diferentes estruturas de rede, tais modelos são capazes de se adaptar e representar funções matemáticas bastante complexas. 
+	
+	Diferentes representações estão presentes na literatura, as quais são classificadas de acordo com o seu nível de complexidade e requisitos coputacionais de implementação. Hipóteses básicas para regras de aprendizado de associações entre neurônios podem ser encontradas em trabalhos bastante antigos, como abordado no livro de William James em 1982 \cite{james1984psychology}. Entretanto, um grande marco desta área de pesquisa ocorreu na década de 40 após a introdução do modelo de McCullocs and Pitts (MCP) \cite{mcculloch1943logical}, o qual é a adotado atualmente nos principais modelos de RNAs.
+	
+	O modelo MCP tem como saída a soma das ativações dos neurônios anteriores ponderados pelos pesos das conexões entre eles. Uma função de ativação do tipo degrau é aplicada sobre esta saída, configurando modelo de soma-e-limiar originalmente descrito pelos autores. Este trabalho apresentou a configuração de diversas redes de neurônios MCP, com enfoque na implementação de funções lógicas. Vale a pena notar que os primeiros computadores digitais estavam surgindo nesta época, motivando esta aplicação. Entretanto, as estruturas apresentadas eram estáticas e não houve a sugestão de algum método de aprendizado para adaptá-las,
+	
+	O aprendizado surgiu de forma mais concreta com o postulado de Hebb \cite{hebb2005organization}, originalmente publicado em 1949. De acordo com o autor, a eficiência de uma determinada sinapse que conecta dois neurônios é proporcional à co-ocorrência de ativação entre eles. Portanto, o princípio de aprendizado Hebbiano visa reforçar as conexões relevantes para as diferentes saída da rede, guiado pela correlação entre os neurônios. As memórias associativas baseadas na regra de Hebb possuem capacidade de armazenamento de um número limitado de padrões, o que levou ao surgimento de diversas novas regras de aprendizado.
+	
+	A partir destes princípios elementares, a área de RNAs evoluiu bastante nas últimas décadas. Após a introdução das primeiras regras de aprendizado, este tipo de modelo ganhou maior visibilidade e aplicabilidade para problemas reais, sendo possível encontrar uma enorme quantidade de aplicações publicadas \cite{abiodun2018state}. Além disso, o aumento dos recursos computacionais disponíveis fomentou o desenvolvimento de novas técnicas para aprendizado e o aprimoramento das existentes, além de propostas de novas estruturas redes complexas e capazes de lidar com problemas de grande porte e impacto.
+	
+	Portanto, o objetivo deste trabalho é apresentar a uma revisão da literatura contendo os principais trabalhos que levarama à evolução dos diferentes modelos de redes neurais presentes no dia de hoje. Partindo das referências clássicas, diferentes abordagens propostas serão analisadas de forma cronológica como forma de se entender a evolução desta área de pesquisa até o tempo presente. 
+		
 	
 %	\subsection{Problemas de classificação}
 %	A tarefa de classificação consiste em associar um conjunto de padrões de entrada, representado por um vetor de características, para uma de varias classes previamente definidas.
@@ -77,33 +88,33 @@
 
 %	\section{Aprendizado semi-supervisionado}
 
-	\section{Generalização}
-	 Uma das suas principais características do modelo RNA é sua capacidade de generalização.  Em geral, algoritmos de aprendizado supervisionado possuem como objetivo minimizar o erro quadrático dos valores previstos pelo modelo em relação às saídas em estudo:
-	 \begin{equation}
-	 	\sum_{i=1}^{N} [y_i - f(\mathbf{x}_i)]^2
-	 	\label{eq:sqrd}
-	 \end{equation}
-	 onde $y_i$ é uma resposta desejada para uma entrada $\mathbf{x}_i$, e $f$ é o função que aproxima a resposta desejada. Ou seja, estamos interessados em encontrar o conjunto de pesos $\mathbf{w}$ da rede a partir dos pares de dados de entrada-saída $\mathcal{D} = \left\lbrace (\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\right\rbrace $ que melhor aproxima a função desconhecida $f$.
-	 
-	 Entretanto, se os dados a serem modelados são ruidosos o uso deste único objetivo pode levar a um overfitting sobre o conjunto de dados de treinamento, de forma que este não consiga generalizar bem para novos valores observados. Estatisticamente, podemos definir a efetividade de $f$ como um estimador de $y$ como \cite{geman1992neural}:
-	 
-	 \begin{equation}
-	 	\begin{aligned}
-	 		E[(y - f(\mathbf{x}; \mathcal{D}))^2 | \mathbf{x}, \mathcal{D}] \quad = & \quad E\left[ (y - E \left[ y | \mathbf{x}\right] )^2 | \mathbf{x}, \mathcal{D}\right]   \\
-	 		& \quad + (f(\mathbf{x};\mathcal{D}) - E[y|\mathbf{x}])^2
-	 	\end{aligned}
-	 \end{equation}
-	 
-	 É importante notar neste indicador que o primeiro termo representa a variância de $y$ dado $\mathbf{x}$, não dependendo dos dados. Já o segundo termo mede a distância entre o estimador e a regressão. Logo, podemos definir o error quadrático médio de $f$ como um estimador da regressão $E[y|\mathbf{x}]$ para um conjunto de dados $\mathcal{D}$ como:
-	 
-	 \begin{equation}
-	 	\begin{aligned}
-	 		& E_{\mathcal{D}}[(f(\mathbf{x};\mathcal{D}) - E[y|\mathbf{x}])^2] = \\ 
-	 		& \qquad \qquad \qquad (E_{\mathcal{D}}[f(\mathbf{x}; \mathcal{D})] - E[y|\mathbf{x}])^2 \quad \text{``viés''} \\
-	 		& \qquad \quad  + E_{\mathcal{D}}\left[ f(\mathbf{x};\mathcal{D}) - E_{\mathcal{D}}[f(\mathbf{x};\mathcal{D})]\right]   \quad \text{``variância''}
-	 	\end{aligned}
-	 \end{equation}
-	 A derivação completa da relação acima pode ser encontrada em \cite{geman1992neural}. Logo é fácil notar que o aprendizado de RNAs é um problema multi-objetivo, no qual precisamos encontrar uma solução de compromisso entre o viés e a variância do modelo. Portanto, em um dos extremos teremos um conjunto de pesos que resultam em um viés máximo (\textit{underfitting}) e no outro variância máxima (\textit{overfitting}).
+%	\section{Generalização}
+%	 Uma das suas principais características do modelo RNA é sua capacidade de generalização.  Em geral, algoritmos de aprendizado supervisionado possuem como objetivo minimizar o erro quadrático dos valores previstos pelo modelo em relação às saídas em estudo:
+%	 \begin{equation}
+%	 	\sum_{i=1}^{N} [y_i - f(\mathbf{x}_i)]^2
+%	 	\label{eq:sqrd}
+%	 \end{equation}
+%	 onde $y_i$ é uma resposta desejada para uma entrada $\mathbf{x}_i$, e $f$ é o função que aproxima a resposta desejada. Ou seja, estamos interessados em encontrar o conjunto de pesos $\mathbf{w}$ da rede a partir dos pares de dados de entrada-saída $\mathcal{D} = \left\lbrace (\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\right\rbrace $ que melhor aproxima a função desconhecida $f$.
+%	 
+%	 Entretanto, se os dados a serem modelados são ruidosos o uso deste único objetivo pode levar a um overfitting sobre o conjunto de dados de treinamento, de forma que este não consiga generalizar bem para novos valores observados. Estatisticamente, podemos definir a efetividade de $f$ como um estimador de $y$ como \cite{geman1992neural}:
+%	 
+%	 \begin{equation}
+%	 	\begin{aligned}
+%	 		E[(y - f(\mathbf{x}; \mathcal{D}))^2 | \mathbf{x}, \mathcal{D}] \quad = & \quad E\left[ (y - E \left[ y | \mathbf{x}\right] )^2 | \mathbf{x}, \mathcal{D}\right]   \\
+%	 		& \quad + (f(\mathbf{x};\mathcal{D}) - E[y|\mathbf{x}])^2
+%	 	\end{aligned}
+%	 \end{equation}
+%	 
+%	 É importante notar neste indicador que o primeiro termo representa a variância de $y$ dado $\mathbf{x}$, não dependendo dos dados. Já o segundo termo mede a distância entre o estimador e a regressão. Logo, podemos definir o error quadrático médio de $f$ como um estimador da regressão $E[y|\mathbf{x}]$ para um conjunto de dados $\mathcal{D}$ como:
+%	 
+%	 \begin{equation}
+%	 	\begin{aligned}
+%	 		& E_{\mathcal{D}}[(f(\mathbf{x};\mathcal{D}) - E[y|\mathbf{x}])^2] = \\ 
+%	 		& \qquad \qquad \qquad (E_{\mathcal{D}}[f(\mathbf{x}; \mathcal{D})] - E[y|\mathbf{x}])^2 \quad \text{``viés''} \\
+%	 		& \qquad \quad  + E_{\mathcal{D}}\left[ f(\mathbf{x};\mathcal{D}) - E_{\mathcal{D}}[f(\mathbf{x};\mathcal{D})]\right]   \quad \text{``variância''}
+%	 	\end{aligned}
+%	 \end{equation}
+%	 A derivação completa da relação acima pode ser encontrada em \cite{geman1992neural}. Logo é fácil notar que o aprendizado de RNAs é um problema multi-objetivo, no qual precisamos encontrar uma solução de compromisso entre o viés e a variância do modelo. Portanto, em um dos extremos teremos um conjunto de pesos que resultam em um viés máximo (\textit{underfitting}) e no outro variância máxima (\textit{overfitting}).
 	 
 	\subsection{Máquinas de Vetores Suporte}
 	\subsection{Aprendizado Multiobjetivo}
