@@ -36,21 +36,23 @@
 	\maketitle
 	
 	\begin{abstract}
-		Este trabalho tem como objetivo apresentar uma revisão da literatura de redes neurais aritificiais, com enfoque na evoluções das principais técnicas clássicas. 
+		Este trabalho tem como objetivo apresentar uma revisão da literatura de redes neurais aritificiais, com enfoque nas evoluções desenvolvidas a partir dos principais trabalhos clássicos, os que estabeleceram os fundamentos desta grande área de pesquisa. 
 	\end{abstract}
 
 	\section{Introdução}
-	A Redes Neural Artificial (RNA) é uma classe de modelos muito popular em problemas de classificação, reconhecimento de padrões, regressão e predição \cite{jain1996artificial}. Inspirado pelas características do cérebro humano, elas possuem como elementos básicos neurônios artificiais capazes de executar operações matemáticas, representando desta forma modelos de neurônios biológicos. Através de sua organização em diferentes estruturas de rede, tais modelos são capazes de se adaptar e representar funções matemáticas bastante complexas. 
+	A Rede Neural Artificial (RNA) é uma classe de modelos muito popular em problemas de classificação, reconhecimento de padrões, regressão e predição \cite{jain1996artificial}. Inspirado pelas características do cérebro humano, elas possuem como elementos básicos neurônios artificiais capazes de executar operações matemáticas, representando desta forma modelos de neurônios biológicos. Através de sua organização em diferentes estruturas de rede, tais modelos são capazes de se adaptar e representar funções matemáticas bastante complexas. 
 	
 	Diferentes representações estão presentes na literatura, as quais são classificadas de acordo com o seu nível de complexidade e requisitos coputacionais de implementação. Hipóteses básicas para regras de aprendizado de associações entre neurônios podem ser encontradas em trabalhos bastante antigos, como abordado no livro de William James em 1982 \cite{james1984psychology}. Entretanto, um grande marco desta área de pesquisa ocorreu na década de 40 após a introdução do modelo de McCulloch and Pitts (MCP) \cite{mcculloch1943logical}, o qual é a adotado atualmente nos principais modelos de RNAs.
 	
-	O modelo MCP tem como saída a soma das ativações dos neurônios anteriores ponderados pelos pesos das conexões entre eles. Uma função de ativação do tipo degrau é aplicada sobre esta saída, configurando modelo de soma-e-limiar originalmente descrito pelos autores. Este trabalho apresentou a configuração de diversas redes de neurônios MCP, com enfoque na implementação de funções lógicas. Vale a pena notar que os primeiros computadores digitais estavam surgindo nesta época, motivando esta aplicação. Entretanto, as estruturas apresentadas eram estáticas e não houve a sugestão de algum método de aprendizado para adaptá-las,
+	O modelo MCP tem como saída a soma das ativações dos neurônios anteriores ponderados pelos pesos das conexões entre eles. Originalmente, uma função de ativação do tipo degrau é aplicada sobre sua saída, configurando modelo de soma-e-limiar originalmente descrito pelos autores. Este trabalho apresentou a configuração de diversas redes de neurônios MCP, com enfoque na implementação de funções lógicas. Vale a pena notar que os primeiros computadores digitais estavam surgindo nesta época, motivando esta aplicação. Entretanto, as estruturas apresentadas eram estáticas e não houve a sugestão de algum método de aprendizado para adaptá-las.
 	
-	O aprendizado surgiu de forma mais concreta com o postulado de Hebb \cite{hebb2005organization}, originalmente publicado em 1949. De acordo com o autor, a eficiência de uma determinada sinapse que conecta dois neurônios é proporcional à co-ocorrência de ativação entre eles. Portanto, o princípio de aprendizado Hebbiano visa reforçar as conexões relevantes para as diferentes saída da rede, guiado pela correlação entre os neurônios. 
+	O aprendizado surgiu de forma mais concreta com o postulado de Hebb \cite{hebb2005organization}, originalmente publicado em 1949. De acordo com o autor, a eficiência de uma determinada sinapse que conecta dois neurônios é proporcional à co-ocorrência de ativação entre eles. Portanto, o princípio de aprendizado Hebbiano visa reforçar as conexões relevantes para as diferentes saída da rede, guiado pela correlação entre os neurônios. Considerando o neurônimo MPC, suas primeiras estruturas de rede e algoritmos de treinamento descritos na literatura são o \textit{Adaline} \cite{widrow1960adaptive}, em 1960, e o Perceptron simples, em 1957 \cite{rosenblatt1957perceptron}.
+	
+	Após um período de euforia com a introdução destes últimos dois modelos, a área de pesquisa de RNAs sofreu um descrédito e frustação até o início dos anos 80. Isso decorreu  do trabalho de Minsky e Papert \cite{minsky1969introduction}, o qual generalizou as limitações destes modelos para problemas considerados fundamentais, como o do OU-exclusivo (XOR). O interesse só foi reativado após o re-descobrimento do algoritmo \textit{back-propagation} para treinamento de redes de múltiplas camadas \cite{rumelhart1985learning}, as quais são capazes de superar as limitações até então existentes das redes de camada única. Destacam-se também a introdução dos made Kohonen \cite{kohonen1982self}, redes recorrentes de Hopfield \cite{hopfield1982neural} e o modelo ART para aprendizado não-supervisionado \cite{carpenter1987massively}. Além disso, nesta época surgiram as primeiras conferências e periódicos dedicados à area de RNAs \cite{macukow2016neural}.
 	
 	A partir destes princípios elementares, a área de RNAs evoluiu bastante nas últimas décadas. Após a introdução das primeiras regras de aprendizado, este tipo de modelo ganhou maior visibilidade e aplicabilidade para problemas reais, sendo possível encontrar uma enorme quantidade de aplicações publicadas \cite{abiodun2018state}. Além disso, o aumento dos recursos computacionais disponíveis fomentou o desenvolvimento de novas técnicas para aprendizado e o aprimoramento das existentes, além de propostas de novas estruturas redes complexas capazes de lidar com problemas de grande dificuldade.
 	
-	Portanto, o objetivo deste trabalho é apresentar a uma revisão da literatura contendo os principais trabalhos que levarama à evolução dos diferentes modelos de redes neurais presentes no dia de hoje. Partindo das referências clássicas, diferentes abordagens propostas serão analisadas de forma cronológica como forma de se entender a evolução desta área de pesquisa até o tempo presente. 
+	Portanto, o objetivo deste trabalho é apresentar a uma revisão da literatura contendo os principais trabalhos e entender a evolução dos diferentes modelos de redes neurais utilizadas atualmente. Partindo das referências clássicas, diferentes abordagens propostas serão analisadas de forma cronológica com o intuito de se entender a evolução desta área de pesquisa até o tempo presente. Este trabalho será divido da seguinte forma: a Seção II apresenta uma revisão da literatura com uma análise crítica dos principais trabalhos, os quais serão organizados usando como referência o livro de Simon Haykin \cite{haykin2007neural} e as notas de aula. Na seção III serão apresentadas algumas das principais aplicações de RNAs publicadas. Finalmente, é feita uma conclusão deste trabalho.
 		
 	
 %	\subsection{Problemas de classificação}
@@ -64,8 +66,11 @@
 %
 %	\subsection{Problemas de reconhecimento de padrões}
 	
-	\section{Aprendizado supervisionado}
-	RNAs de aprendizado supervisionado são responsáveis pela inferência de uma função desconhecida $f(.)$ que realiza o mapeamento entre uma saída e um conjunto de entradas medidas, representada pelo conjunto de $N$ pares de dados $\mathcal{D} = \left\lbrace (\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\right\rbrace $. Problemas de classificação e regressão são comumente solucionados com estas técnicas, para os quais as primeiras estruturas de rede e algoritmos de treinamento descritos na literatura são o \textit{Adaline}, em 1960, e o Perceptron simples, em 1957. 
+	\section{Revisão da Literatura}
+	%RNAs de aprendizado supervisionado são responsáveis pela inferência de uma função desconhecida $f(.)$ que realiza o mapeamento entre uma saída e um conjunto de entradas medidas, representada pelo conjunto de $N$ pares de dados $\mathcal{D} = \left\lbrace (\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\right\rbrace $. Problemas de classificação e regressão são comumente solucionados com estas técnicas, para os quais as primeiras estruturas de rede e algoritmos de treinamento descritos na literatura são o \textit{Adaline}, em 1960, e o Perceptron simples, em 1957. 
+	
+	\subsection{Aprendizado Hebbiano}
+	
 
 	\subsection{Adaline}	
 
@@ -91,16 +96,31 @@
 %	\end{enumerate}
 	
 	\subsection{Perceptron de múltiplas camadas}
+	online vc batch learning
+	gradiente descentedente ->	multiplas inicializaçoes -> minimos locais
+	batch -> regression
+	online->	backpropagation
+	sigmoidal (logistic)
+	tangente hiperbolica
+	momentum
+	heuristicas para melhorias: Lecun 1993, limitar valor dos targets, normalizar entradas, remover variaveis correlacionadas, inicialização
+	adapative learning rate, optimal annealing
+	generalization
+	universal approximation theorem
+	
+	\subsection{Redes RBF}
+	discutir teorema de Clover
 	
 
 	\subsection{Máquinas de aprendizado extremo}
-	\subsection{Redes RBF}
-
+	
+	
 	\subsection{Máquinas de vetores suporte}
 	\subsection{Aprendizado multiobjetivo}
-	\section{Aprendizado não-supervisionado}
-	\subsection{Aprendizado Hebbiano}
+	%\section{Aprendizado não-supervisionado}
 	\subsection{SOM}
+	
+	\section{Aplicações}
 
 %	\section{Aprendizado semi-supervisionado}
 
