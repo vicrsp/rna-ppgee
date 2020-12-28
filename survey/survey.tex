@@ -72,30 +72,35 @@
 	\subsection{Aprendizado Hebbiano}
 	
 
-	\subsection{Adaline}	
-
 	\subsection{Perceptron}
-	Proposto inicialmente por Rosenblatt \cite{rosenblatt1957perceptron}, este é um modelo geralmente utilizado para a solução de problemas de classificação. No seu trabalho original, o autor descreve formas de adaptação dos parâmetros, ou pesos, da rede com o objetivo de reduzir a discrepância entre as saídas esperadas e estimadas e aprender associações entre os neurônios, o que é a base da indução para diversos algoritmos atuais. Este trabalho é considerado um marco na literatura por diversos autores.
+	Proposto inicialmente por Rosenblatt \cite{rosenblatt1957perceptron}, este é um modelo geralmente utilizado para a solução de problemas de classificação. No seu trabalho original, o autor descreve formas de adaptação dos parâmetros, ou pesos, da rede com o objetivo de reduzir a discrepância entre as saídas esperadas e estimadas e aprender associações entre os neurônios, o que é a base da indução para diversos algoritmos atuais. Este trabalho é considerado um marco na literatura por diversos autores. Embora descrito como uma rede de duas camadas, originalmente seu treinamento só considerava uma camada. Por esse motivo, o Perceptron simples é comumente descrito na forma de somente um neurônio MCP. Sua regra de aprendizado é bem direta e consiste em alterar iterativamente os pesos da rede adicionado o erro total entre as saídas medidas estimadas ponderada pelo vetor de entradas \cite{haykin2007neural}. 
 	
-	Embora descrito como uma rede de duas camadas, originalmente seu treinamento só considerava uma camada. Por esse motivo, o Perceptron simples é comumente descrito na forma de somente um neurônio MCP. Sua regra de aprendizado é bem direta e consiste em alterar iterativamente os pesos da rede de acordo com a seguinte regra:
-	\begin{equation}
-		\mathbf{w}(k+1) = \mathbf{w}(k) + \eta e(k) \mathbf{x}(k)
-	\end{equation}
-	onde $\mathbf{x}(k)$, $e(k)$ e $\mathbf{x}(k)$ são o vetor de pesos, o erro e o vetor de entradas na $k$-ésima iteração do treinamento, respectivamente. A constante $\eta$ é um escalar utilizado para controlar o tamanho do passo em cada iteração. 
+	Se considerarmos uma função de ativação contínua e diferenciável, os pesos da rede poderão ser inferidos de forma explícita, através do cálculo da pseudo-inversa, ou pelo algoritmo do gradiente descendente \cite{hertz1991introduction}. Exemplos de funções de ativação com esta característica frequentemente empregadas na literatura são a função logística, tangente hiperbólica e linear \cite{jain1996artificial}. Vale a pena ressaltar que a covergência destas abordagens está condicionada aos dados utilizados para treinamento serem linearmente independentes \cite{hertz1991introduction}.
 	
-	Se considerarmos uma função de ativação contínua e diferenciável, os pesos da rede poderão ser inferidos de forma explícita, através do cálculo da pseudo-inversa, ou pelo algoritmo do gradiente descendente \cite{hertz1991introduction}, similar à regra delta introduzida pelo Adaline. Exemplos de funções de ativação com esta característica frequentemente empregadas na literatura são a sigmoidal, tangente hiperbólica e linear. Vale a pena ressaltar que a covergência destas abordagens está condicionada aos dados utilizados para treinamento serem linearmente independentes \cite{hertz1991introduction}.
+	Rosenblatt provou a convergência da regra de aprendizado original, porém a mesma só é garantida para problemas linearmente separáveis, o que constitui a principal limitação deste modelo. O trabalho de Minsky e Papert \cite{minsky1969introduction} evidenciou bastante esta limitação e através da aplicação do Perceptron a diversos problemas considerados fundamentais, levou ao descrédito deste modelo pela comunidade científica. Após este trabalho, Rosenblatt avaliou diferentes arquiteturas de rede tentando superar esta limitação, mas não conseguiu chegar ao desenvolvimento do aprendizado para múltiplas camadas. Por conta disso, o Perceptron foi pouco estudado pelos próximos de 20 anos \cite{hertz1991introduction}.
+	
+	O interesse pelo Perceptron retornou na década de 80 com a descrição do método de aprendizado conhecido como \textit{back-propagation}, o qual é capaz de aprender os pesos de redes de múltiplas camadas de forma eficiente \cite{rumelhart1985learning}. Aliado a isso, o Perceptron de múltiplas camadas é capaz de descrever superfícies de separação não-lineares, superando a pricipal limitação do trabalho de Rosenblatt. Uma descrição mais completa desta família de modelos é feita na próxima seção.
+
+	\subsection{Adaline}
+	O Adaline foi inicialmente desenvolvido por Widrow em 1960 \cite{widrow1960adaptive}, sendo principamente aplicado em problemas de regressão lineares. Assim como o Perceptron, originalmente este modelo considera somente um neurônio MCP em sua formulação, entretando sua função de ativação é a identidade. Seu treinamento é formulado como um problema de otimização com custo quadrático, onde originalmente foi utilizado o algoritmo do gradiente descendente para sua solução. 
+	
+	Para este agoritmo, em cada iteração é dado um passo na direção oposta ao gradiente da função objetivo, resultanto em uma convergência gradual para o mínimo do problema. Este gradiente pode ser calculado de forma análitica para a estrutura de rede do Adaline, o qual é no fim proporcional à diferença entre os valores estimados e reais \cite{widrow1960adaptive}, bastante similar ao Perceptron simples. É fácil notar que o treinamento também pode ser realizado de forma direta através do cálculo da  pseudo-inversa dos dados de entrada, já que este é um problema de mínimos quadrados \cite{haykin2007neural}.
+	
+	Uma extensão proposta deste modelo é conhecida como Madaline, o qual é caracterizada por uma rede composta por vários Adalines. Existem duas principais regras para seu treinamento, conhecidas por MRI \cite{widrow1962generalization} and MRII \cite{winter1988madaline}. É interessante notar que a MRI surgiu bem antes do algoritmo \textit{back-propagation}, podendo ser considerada uma estrutura primitiva de uma rede de múltiplas camadas. Os leitores são referidos à \cite{widrow199030} para uma descrição mais completa destas regras e suas aplicações.
+	
+	   
+	
+	 
+	
+%	, possuindo uma estrutura neural similar usualmente referida ao um filtro adaptivo. Essa característica vêm do fato do processo de aprendizagem ser separado em duas fases: (1) Geração de dois sinais intermediários, correspondendo ao sinal de saída estimada e outro de erro; (2) adaptação dos pesos do neurônio de acordo com o sinal de erro \cite{haykin2007neural}.
+	
+	
+
 		
-	Rosenblatt provou a convergência da regra de aprendizado original, porém a mesma só é garantida para problemas linearmente separáveis \cite{minsky1969introduction}, o que constitui a principal limitação deste modelo. Após este trabalho, Rosenblatt avaliou diferentes arquiteturas de rede tentando superar esta limitação, porém não chegou ao desenvolvimento de uma regra para aprendizado dos pesos. Por conta disso, o Perceptron foi pouco estudado pelos próximos de 20 anos \cite{hertz1991introduction}.
-	
-	O interesse pelo Perceptron retornou na década de 80 com a descrição do método de aprendizado conhecido como \textit{back-propagation}, o qual é capaz de aprender os pesos de redes de múltiplas de forma eficiente \cite{rumelhart1985learning}. Aliado a isso, o Perceptron de múltiplas camadas é capaz de descrever superfícies de separação não-lineares, superando a pricipal limitação do trabalho de Rosenblatt. Uma descrição mais completa desta técnica é feita na próxima seção.
-	
-	
-%	\begin{enumerate}
-%		\item Inicializar os parâmetros da rede com valores aletórios
-%		\item 
-%	\end{enumerate}
-	
 	\subsection{Perceptron de múltiplas camadas}
+	
+	
+	
 	online vc batch learning
 	gradiente descentedente ->	multiplas inicializaçoes -> minimos locais
 	batch -> regression
@@ -114,13 +119,16 @@
 
 	\subsection{Máquinas de aprendizado extremo}
 	
-	
+	\subsection{Generalização}
+		
 	\subsection{Máquinas de vetores suporte}
 	\subsection{Aprendizado multiobjetivo}
-	%\section{Aprendizado não-supervisionado}
+
 	\subsection{SOM}
 	
 	\section{Aplicações}
+	
+	\section{Conclusões}
 
 %	\section{Aprendizado semi-supervisionado}
 
