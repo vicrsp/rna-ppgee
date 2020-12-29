@@ -48,7 +48,7 @@
 	
 	O aprendizado surgiu de forma mais concreta com o postulado de Hebb \cite{hebb2005organization}, originalmente publicado em 1949. De acordo com o autor, a eficiência de uma determinada sinapse que conecta dois neurônios é proporcional à co-ocorrência de ativação entre eles. Portanto, o princípio de aprendizado Hebbiano visa reforçar as conexões relevantes para as diferentes saída da rede, guiado pela correlação entre os neurônios. Considerando o neurônimo MPC, suas primeiras estruturas de rede e algoritmos de treinamento descritos na literatura são o \textit{Adaline} \cite{widrow1960adaptive}, em 1960, e o Perceptron simples, em 1957 \cite{rosenblatt1957perceptron}.
 	
-	Após um período de euforia com a introdução destes últimos dois modelos, a área de pesquisa de RNAs sofreu um descrédito e frustação até o início dos anos 80. Isso decorreu  do trabalho de Minsky e Papert \cite{minsky1969introduction}, o qual generalizou as limitações destes modelos para problemas considerados fundamentais, como o do OU-exclusivo (XOR). O interesse só foi reativado após o re-descobrimento do algoritmo \textit{back-propagation} para treinamento de redes de múltiplas camadas \cite{rumelhart1985learning}, as quais são capazes de superar as limitações até então existentes das redes de camada única. Destacam-se também a introdução dos made Kohonen \cite{kohonen1982self}, redes recorrentes de Hopfield \cite{hopfield1982neural} e o modelo ART para aprendizado não-supervisionado \cite{carpenter1987massively}. Além disso, nesta época surgiram as primeiras conferências e periódicos dedicados à area de RNAs \cite{macukow2016neural}.
+	Após um período de euforia com a introdução destes últimos dois modelos, a área de pesquisa de RNAs sofreu um descrédito e frustação até o início dos anos 80. Isso decorreu  do trabalho de Minsky e Papert \cite{minsky1969introduction}, o qual generalizou as limitações destes modelos para problemas considerados fundamentais, como o do OU-exclusivo (XOR). O interesse só foi reativado após o re-descobrimento do algoritmo \textit{back-propagation} para treinamento de redes de múltiplas camadas \cite{rumelhart1985learning}, as quais são capazes de superar as limitações até então existentes das redes de camada única. Destacam-se também a introdução dos mapas de Kohonen \cite{kohonen1982self}, redes recorrentes de Hopfield \cite{hopfield1982neural} e o modelo ART para aprendizado não-supervisionado \cite{carpenter1987massively}. Além disso, nesta época surgiram as primeiras conferências e periódicos dedicados à area de RNAs \cite{macukow2016neural}.
 	
 	A partir destes princípios elementares, a área de RNAs evoluiu bastante nas últimas décadas. Após a introdução das primeiras regras de aprendizado, este tipo de modelo ganhou maior visibilidade e aplicabilidade para problemas reais, sendo possível encontrar uma enorme quantidade de aplicações publicadas \cite{abiodun2018state}. Além disso, o aumento dos recursos computacionais disponíveis fomentou o desenvolvimento de novas técnicas para aprendizado e o aprimoramento das existentes, além de propostas de novas estruturas redes complexas capazes de lidar com problemas de grande dificuldade.
 	
@@ -94,30 +94,47 @@
 	
 %	, possuindo uma estrutura neural similar usualmente referida ao um filtro adaptivo. Essa característica vêm do fato do processo de aprendizagem ser separado em duas fases: (1) Geração de dois sinais intermediários, correspondendo ao sinal de saída estimada e outro de erro; (2) adaptação dos pesos do neurônio de acordo com o sinal de erro \cite{haykin2007neural}.
 	
+	\subsection{Redes RBF}
+	discutir teorema de Clover
 	
+	
+	\subsection{Máquinas de aprendizado extremo}
+	
+		
 
 		
 	\subsection{Perceptron de múltiplas camadas}
 	
+	O Perceptron de múltiplas camadas (MLP) é uma rede neural com uma ou mais camadas escondidas, ou seja, localizadas entre as entradas e saídas do modelo. Além disso, são caracterizadas por um alto grau de conectividade e por aplicar funções de ativação não-lineares e diferenciáveis ao modelo dos neurônios \cite{haykin2007neural}. Estas camadas adicionais funcionam como detectores de características, aplicando transformações não-lineares sequenciais aos dados de forma que estes sejam mais facilmente separados nesse novo espaço. Portanto, a introdução das camadas escondidas permite modelar superfícies de decisão não-lineares, superando a limitação do Perceptron simples e Adaline.
+	
+	O treinamento de redes de camada única vistas nas seções anteriores é bem direto pois podemos facilmente derivá-las analiticamente. Entretando, ao incluir camadas escondidas e alta conectividade, analisar teoricamente o comportamento do Perceptron torna-se mais difícil. Aliado a isso, o seu treinamento se torna mais complexo justamente por haver uma maior quantidade de estruturas de rede possíveis para representar os dados de entrada. O primeiro algoitmo eficiente de treinamento de tais foi formalizada por Rumelhart em 1985 \cite{rumelhart1985learning}, conhecido como \textit{back-propagation}.    
+	
+	O \textit{back-propagation} é uma técnica de aprendizado online (ou estocástica), na qual os pesos da rede são ajustados amostra-a-amostra. Ou seja, em cada época de treinamento, os dados de entrada são apresentados individualmente para a rede objetivando a minimização do erro das saídas estimadas e desejadas. O algoritmo pode ser dividido em duas etapas: na primeira os dados são apresentados à rede mantendo os pesos fixos, e calculada a sua respectiva saída; na segunda, o sinal de erro em relação à saída esperada é calculado e propagado no sentido inverso da rede, onde ajustes sucessivos são realizados. A atualização dos pesos da rede é feita com base na técnica do gradiente descendente, cuja derivação completa será omitida deste trabalho por brevidade. O leitor pode encontrá-la em \cite{rumelhart1985learning, haykin2007neural}. 
+	
+	Embora bastante eficiente, sua convergência pode ser lenta se o algoritmo não for usado corretamente \cite{lecun1993efficient}. É recomendado realizar a normalização das entradas para equalizar a taxa de atualização dos pesos entre as camadas, além de remover variávies altamente correlacionadas \cite{lecun2012efficient}. Ainda de acordo com \cite{lecun2012efficient}, é sugerido o uso de sigmoides simétricas, como a tangente hiperbólica, as quais geralmente possuem maior velocidade de convergência. Além disso, é importante que os valores desejados estejam dentro dos limites da sigmoide escolhida. Outro fator importante é a taxa de treinamento: \cite{magoulas1999improving} apresenta o estudo de algumas técnicas para adaptação da taxa de treinamento presentes na literatura, mostrando que o seu uso é bastante benéfico. 
+	
+	É interessante notar que os problemas descritos anteriormente são similiares aos encontrados para a otimização de funções não-lineares e não-convexas. Ou seja, é possível analisar o treinamento do MLP como um problema de otimização e aplicar diferentes algoritmos e heurísticas disponíveis da literatura. De fato, isso é explorado por diversos autores, os quais aplicam o método de Newton \cite{becker1988improving}, gradiente conjugado \cite{johansson1991backpropagation}, Gauss-Newton \cite{battiti1992first}, Levenberg-Marquardt \cite{hagan1994training} e Quasi-Newton \cite{robitaille1996modified}.  
+	
+	Métodos de segunda ordem possuem o atrativo da convergência acelarada, mas em contra-partida é necessária a estimativa da Hessiana, o que exige mais recursos computacionais e está sujeito a problemas numéricos adicionais, sendo limitado a redes pequenas e a usar usando aprendizado por batelada. Portanto, este são fatores que devem ser levados em conta na hora de escolher o otimizador para realizar o treinamento de uma rede. Conforme argumentado por \cite{lecun2012efficient}, o uso de informações de segunda ordem nem sempre é necessário em alguns problemas, para os quais a técnica do gradiente estocástico bem ajustada é dificilmente superado para problemas de larga escala.
+	
+	Mais recentementes, alguns autores começaram a propor o uso de algoritmos evolucionários (EAs) para o treinamento do MLP. Eles são atrativos pelo fato de convergirem para o ótimo global se um tempo de treinamento suficiente estiver disponível. Entretanto, o custo computacional será bastate alto, além do ajuste dos hiper-parâmetros ser bastante trabalhoso. Em \cite{ilonen2003differential}, os autores propõe o uso do algotimo Differential Evolution, o qual concluem que ele não apresenta desempenho superior ao \textit{back-propagation}. Já \cite{ding2011optimizing} propôs uma técnica híbrida de algoritmos genéticos e backpropagation, a qual se mostrou menos suscetível a ficar presa em mínimos locais durante o treinamento. O leitor pode ser referir a \cite{mirjalili2019evolutionary} para um estudo mais completo de EAs e RNAs. Outro área interessante são as redes neurais evolutivas \cite{yao1999evolving}, para as quais além do treinamento dos pesos evolui-se também outras características da rede.
 	
 	
-	online vc batch learning
-	gradiente descentedente ->	multiplas inicializaçoes -> minimos locais
-	batch -> regression
-	online->	backpropagation
-	sigmoidal (logistic)
-	tangente hiperbolica
-	momentum
-	heuristicas para melhorias: Lecun 1993, limitar valor dos targets, normalizar entradas, remover variaveis correlacionadas, inicialização
-	adapative learning rate, optimal annealing
-	generalization
-	universal approximation theorem
 	
-	\subsection{Redes RBF}
-	discutir teorema de Clover
 	
-
-	\subsection{Máquinas de aprendizado extremo}
+	
+	
+%	online vc batch learning
+%	gradiente descentedente ->	multiplas inicializaçoes -> minimos locais
+%	batch -> regression
+%	online->	backpropagation
+%	sigmoidal (logistic)
+%	tangente hiperbolica
+%	momentum
+%	heuristicas para melhorias: Lecun 1993, limitar valor dos targets, normalizar entradas, remover variaveis correlacionadas, inicialização
+%	adapative learning rate, optimal annealing
+%	generalization
+%	universal approximation theorem
 	
 	\subsection{Generalização}
 		
