@@ -7,6 +7,7 @@
 \usepackage{multirow}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{graphicx}
 
 % correct bad hyphenation here
 \hyphenation{op-tical net-works semi-conduc-tor IEEEtran}
@@ -96,8 +97,8 @@
 		
 	\subsection{Perceptron de múltiplas camadas}
 	
-	O Perceptron de múltiplas camadas (MLP) é uma rede neural com uma ou mais camadas escondidas, ou seja, localizadas entre as entradas e saídas do modelo. Além disso, são caracterizadas por um alto grau de conectividade e por aplicar funções de ativação não-lineares e diferenciáveis ao modelo dos neurônios \cite{haykin2007neural}. Estas camadas adicionais funcionam como detectores de características, aplicando transformações não-lineares sequenciais aos dados de forma que estes sejam mais facilmente separados nesse novo espaço. Portanto, a introdução das camadas escondidas permite modelar superfícies de decisão não-lineares, superando a limitação do Perceptron simples e Adaline.
-	
+	O Perceptron de múltiplas camadas (MLP) é uma rede neural com uma ou mais camadas escondidas, ou seja, localizadas entre as entradas e saídas do modelo. Além disso, são caracterizadas por um alto grau de conectividade e por aplicar funções de ativação não-lineares e diferenciáveis ao modelo dos neurônios \cite{haykin2007neural}. Estas camadas adicionais funcionam como detectores de características, aplicando transformações não-lineares sequenciais aos dados de forma que estes sejam mais facilmente separados nesse novo espaço. Portanto, a introdução das camadas escondidas permite modelar superfícies de decisão não-lineares, sendo consideradas aproximadores universais de funções se a função de ativação é contínua, limitada e não-constante  \cite{hornik1989multilayer}.
+		
 	O treinamento de redes de camada única vistas nas seções anteriores é bem direto pois podemos facilmente derivá-las analiticamente. Entretando, ao incluir camadas escondidas e alta conectividade, analisar teoricamente o comportamento do Perceptron torna-se mais difícil. Aliado a isso, o seu treinamento se torna mais complexo justamente por haver uma maior quantidade de estruturas de rede possíveis para representar os dados de entrada. O primeiro algoitmo eficiente de treinamento de tais foi formalizada por Rumelhart em 1985 \cite{rumelhart1985learning}, conhecido como \textit{back-propagation}.    
 	
 	O \textit{back-propagation} é uma técnica de aprendizado online (ou estocástica), na qual os pesos da rede são ajustados amostra-a-amostra. Ou seja, em cada época de treinamento, os dados de entrada são apresentados individualmente para a rede objetivando a minimização do erro das saídas estimadas e desejadas. O algoritmo pode ser dividido em duas etapas: na primeira os dados são apresentados à rede mantendo os pesos fixos, e calculada a sua respectiva saída; na segunda, o sinal de erro em relação à saída esperada é calculado e propagado no sentido inverso da rede, onde ajustes sucessivos são realizados. A atualização dos pesos da rede é feita com base na técnica do gradiente descendente, cuja derivação completa será omitida deste trabalho por brevidade. O leitor pode encontrá-la em \cite{rumelhart1985learning, haykin2007neural}. 
@@ -123,31 +124,37 @@
 	
 	No caso dos mínimos quadrados, problemas complexos que requerem um número elevado de RBFs na camada escondida estão sujeitos a problemas numéricos na estimativa da pseudo-inversa. Para lidar com isso, uma abordagem comum é o uso de técnicas de ortogonalização, como as decomposições SVD e QR \cite{golub1980analysis}. Em algumas condições, é possível também resolver esse problema usando a transformada de Fourier da rede RBF, a qual requer menos esforço computacional necessário \cite{abe2003fast}. Outra alternativa eficiente é aplicar a ortogonalização de Gram-Schimidt (GSO) à RBF \cite{kaminski1997kernel}, a qual possui menor requisito de armazenamento e pode sem implementado de forma paralela.
 	
-	Outra forma eficiente para aprendizado da rede consiste no uso da técnica de mínimos quadrados ortogonal (OLS) \cite{chen1991orthogonal, chen1992orthogonal, chen1995fast, hong1997givens}. Nesta abordagem, não só os pesos podem ser determinados, mas também a quantidade e centros das RBFs. o GSO é inicialmente aplicado para contruir um conjunto de vetores ortogonais no espaço criado pela unidade escondida, e na sequência um novo centro RBF é selecionado de acordo com a sua minimização do erro quadrático médio de treinamento. Esse algotimo pode ser executado de forma sequencial ou reversa, ou seja, podemos iniciar com uma rede vazia ou com o máximo de unidades escondidas, por exemplo. Existem também versões recursivas deste algoritmo na literatura, conhecidas por ROLS \cite{yu1997recursive} e são aplicas a problemas envolvendo sistemas de múltiplas entradas e saídas, por exemplo.
-	
+	Outra forma eficiente para aprendizado da rede consiste no uso da técnica de mínimos quadrados ortogonal (OLS) \cite{chen1991orthogonal, chen1992orthogonal, chen1995fast, hong1997givens}. Nesta abordagem, não só os pesos podem ser determinados, mas também a quantidade e centros das RBFs. o GSO é inicialmente aplicado para contruir um conjunto de vetores ortogonais no espaço criado pela unidade escondida, e na sequência um novo centro RBF é selecionado de acordo com a sua minimização do erro quadrático médio de treinamento. Esse algotimo pode ser executado de forma sequencial ou reversa, ou seja, podemos iniciar com uma rede vazia ou com o máximo de unidades escondidas, por exemplo. Existem também versões recursivas deste algoritmo na literatura, conhecidas por ROLS \cite{yu1997recursive}, as quais são aplicadas a problemas envolvendo sistemas de múltiplas entradas e saídas, por exemplo.
 	
 	
 	\subsection{Máquinas de aprendizado extremo}
+	Inicialmente proposto por \cite{huang2004extreme}, as máquinas de aprendizado extremo (ELM) são redes neurais \textit{feed-forward} com uma única camada escondida, as quais possuem o atrativo de poucos parâmetros a serem ajustados, generalização maior ou similar e redução do tempo de treinamento das redes em relação aos métodos convencionais. Seu treinamento é baseado na teoria de minimização de risco empírico, necessitando de somente uma iteração para este processo, evitando múltiplas iterações e algoritmos de otimização local \cite{ding2015extreme}. 
 	
+	ELMs são capazes de definir adaptivamente o número neurônios da rede e aleatoriamente escolher os pesos das entradas e viéses da camada escondida \cite{huang2006extreme}. Isso faz com o que a rede possa ser considerada como um sistema linear, o qual pode ser calculado de forma analítica através de uma operação de inversão da matriz de pesos da camada de saídas \cite{huang2006extreme}. Essa característica permite uma drástica redução do esforço computacional do treinamento, geralmente de 10 vezes ou mais \cite{deng2010research}. 
 	
+	Apesar do apelo no ganho de tempo de treinamento, essa abordagem permite menor adaptabilidade ao conjunto de dados, além de problemas numéricos para o cálculo da inversão por mínimos quadrados e problemas de robustez se os dados forem ruidosos \cite{ding2015extreme}. Além disso, a aleatoriedade na  escolha de pesos e viéses pode levar a uma quantidade maior de neurônios na camada escondida, bem como tornar o sistema linear não solucionável e reduzir sua acurácia \cite{wang2011study}.
 	
-	
-	
-	
-%	online vc batch learning
-%	gradiente descentedente ->	multiplas inicializaçoes -> minimos locais
-%	batch -> regression
-%	online->	backpropagation
-%	sigmoidal (logistic)
-%	tangente hiperbolica
-%	momentum
-%	heuristicas para melhorias: Lecun 1993, limitar valor dos targets, normalizar entradas, remover variaveis correlacionadas, inicialização
-%	adapative learning rate, optimal annealing
-%	generalization
-%	universal approximation theorem
+	Embora tenha sido proposto bem recentemente (2004), têm recebido uma atenção considerável na literatura a nível téorico e de aplicações \cite{huang2011survey}. Do ponto de vista da teoria, o foco dos autores é divido entre duas frentes: (1) aprimorar sua capacidade universal de aproximação com camadas escondidas aleatórios e (2) propor novas técnicas de aprendizado mais rápidas e robustas. De acordo com uma revisão feita em 2011 por Huang et. al  \cite{huang2011survey}, destacam-se o ELM baseado em kernel \cite{huang2011extreme},  ELM com aprendizado online \cite{liang2006fast, zhang2018survey}, ELM incremental \cite{huang2008enhanced}, \textit{ensemble} de ELM \cite{sun2008sales, van2009adaptive, lan2009ensemble} e ELM com poda \cite{rong2008fast}.
 	
 	\subsection{Generalização}
-		
+    Uma das suas principais características do modelo RNA é sua habilidade de generalização, que é sua capacidade em estimar corretamente dados ainda não vistos. Em outras palavras, algoritmos de aprendizado de RNA possuem como objetivo encontrar um modelo que consigar caputar as principais características do conjunto de dados de treinamento, mas que também seja capaz de prever com precisão um conjunto de teste ainda não visto.
+        
+    Este conceito é introduzido pela primeira vez por Geman et. al em 1992 \cite{geman1992neural}, o qual é o bastante conhecido dilema viés-variância. Através deste trabalho, os autores introduzem o conceito de que existe uma competição entre duas fontes de erro que impede o modelo de generalizar além dos dados de treinamento, o viés e a variância. Além disso, eles mostra que existe um compromisso entre estas grandezas, de forma que quando um modelo com viés máximo possuirá mínima variância, e vice-versa.
+    
+    O erro de viés está relacionado a suposições incorretas sobre o modelo, podendo ser defindo como a diferença entre o valor previsto médio e o esperado. Um alto viés leva ao fenômeno de \textit{under-fitting}, onde o modelo possuem uma estrtura simples e não é capaz de representar os principais padrões presentes nos dados. Já o erro de variância indica a sensibilidade do modelo a flutuações no conjunto de treinamento. Uma variância elevada leva ao fenômeno de \textit{over-fitting}, onde o modelo é bastante complexo que se ajusta perfeitamente aos dados de treinamento. Um exemplo deste comportamente pode ser visto na Figura \ref{fig:bias-var}. É importante notar que estes dois erros podem contribuir para um desempnho ruim, ou seja, mesmo um modelo não-enviésado com variância alta pode resultar em um erro de treinamento maior que o esperado \cite{geman1992neural}.
+    
+    \begin{figure}[thpbh]
+    	\centering
+    	\includegraphics[width=0.5\textwidth]{bias-var-example.png}
+	    \caption{Exemplo de \textit{under-fitting} ($p=1$) e \textit{over-fitting} ($p > 3$) para problema de regressão polinomial sobre dados uma função quadrática.}
+	    \label{fig:bias-var}
+    \end{figure}
+    
+	Existem algumas formas de se balancear o viés e variância, as são divididas no caso da conjuntos amostras finitas e asintóticamente infinitas. Por serem mais comuns em aplicações práticas, as últimas serão omitidas deste trabalho e o autor pode se referir a \cite{geman1992neural} para mais detalhes. Para conjuntos de dados finitos, destacam-se a validação cruzada \cite{arlot2010survey} e o uso de regularização pela inclusão de penalidades à função objetivo do treinamento \cite{girosi1995regularization}.  
+	
+	O conceito de generalização deu origem a técnicas de aprendizado que incluem em sua formulação formas de se balancear o viés e a variância automaticamente. Entre eles, destacam-se as máquinas de vetores suporte (SVM) e o aprendizado multiobjetivo.
+	   
+    
 	\subsection{Máquinas de vetores suporte}
 	\subsection{Aprendizado multiobjetivo}
 
@@ -186,10 +193,6 @@
 %	 	\end{aligned}
 %	 \end{equation}
 %	 A derivação completa da relação acima pode ser encontrada em \cite{geman1992neural}. Logo é fácil notar que o aprendizado de RNAs é um problema multi-objetivo, no qual precisamos encontrar uma solução de compromisso entre o viés e a variância do modelo. Portanto, em um dos extremos teremos um conjunto de pesos que resultam em um viés máximo (\textit{underfitting}) e no outro variância máxima (\textit{overfitting}).
-	 
-	\subsection{Máquinas de Vetores Suporte}
-	\subsection{Aprendizado Multiobjetivo}
-
 
 	
     \bibliographystyle{unsrt}
