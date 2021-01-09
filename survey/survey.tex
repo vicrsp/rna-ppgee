@@ -14,7 +14,7 @@
 \begin{document}
 	
 	% paper title
-	\title{Fundamentos de Redes Neurais Artificiais}
+	\title{Redes Neurais Artificiais: Revisão da Literatura}
 	
 	
 	% author names and affiliations
@@ -93,15 +93,6 @@
 	 
 	
 %	, possuindo uma estrutura neural similar usualmente referida ao um filtro adaptivo. Essa característica vêm do fato do processo de aprendizagem ser separado em duas fases: (1) Geração de dois sinais intermediários, correspondendo ao sinal de saída estimada e outro de erro; (2) adaptação dos pesos do neurônio de acordo com o sinal de erro \cite{haykin2007neural}.
-	
-	\subsection{Redes RBF}
-	discutir teorema de Clover
-	
-	
-	\subsection{Máquinas de aprendizado extremo}
-	
-		
-
 		
 	\subsection{Perceptron de múltiplas camadas}
 	
@@ -117,7 +108,26 @@
 	
 	Métodos de segunda ordem possuem o atrativo da convergência acelarada, mas em contra-partida é necessária a estimativa da Hessiana, o que exige mais recursos computacionais e está sujeito a problemas numéricos adicionais, sendo limitado a redes pequenas e a usar usando aprendizado por batelada. Portanto, este são fatores que devem ser levados em conta na hora de escolher o otimizador para realizar o treinamento de uma rede. Conforme argumentado por \cite{lecun2012efficient}, o uso de informações de segunda ordem nem sempre é necessário em alguns problemas, para os quais a técnica do gradiente estocástico bem ajustada é dificilmente superado para problemas de larga escala.
 	
-	Mais recentementes, alguns autores começaram a propor o uso de algoritmos evolucionários (EAs) para o treinamento do MLP. Eles são atrativos pelo fato de convergirem para o ótimo global se um tempo de treinamento suficiente estiver disponível. Entretanto, o custo computacional será bastate alto, além do ajuste dos hiper-parâmetros ser bastante trabalhoso. Em \cite{ilonen2003differential}, os autores propõe o uso do algotimo Differential Evolution, o qual concluem que ele não apresenta desempenho superior ao \textit{back-propagation}. Já \cite{ding2011optimizing} propôs uma técnica híbrida de algoritmos genéticos e backpropagation, a qual se mostrou menos suscetível a ficar presa em mínimos locais durante o treinamento. O leitor pode ser referir a \cite{mirjalili2019evolutionary} para um estudo mais completo de EAs e RNAs. Outro área interessante são as redes neurais evolutivas \cite{yao1999evolving}, para as quais além do treinamento dos pesos evolui-se também outras características da rede.
+	Mais recentementes, alguns autores começaram a propor o uso de algoritmos evolucionários (EAs) para o treinamento do MLP. Eles são atrativos pelo fato de convergirem para o ótimo global se um tempo de treinamento suficiente estiver disponível. Entretanto, o custo computacional poderá ser bastante alto, além do ajuste dos hiper-parâmetros ser trabalhoso. Em \cite{ilonen2003differential}, os autores propõe o uso do algotimo Differential Evolution, o qual concluem que ele não apresenta desempenho superior ao \textit{back-propagation}. Já \cite{ding2011optimizing} propôs uma técnica híbrida de algoritmos genéticos e backpropagation, a qual se mostrou menos suscetível a ficar presa em mínimos locais durante o treinamento. O leitor pode ser referir a \cite{mirjalili2019evolutionary} para um estudo mais completo de EAs e RNAs. Outro área interessante são as redes neurais evolutivas \cite{yao1999evolving}, para as quais além do treinamento dos pesos evolui-se também outras características da rede.
+	
+	\subsection{Redes de funções de base radial (RBF)}
+	As redes RBF foram inicialmente introduzidas por \cite{broomhead1988multivariablefi} e são caracterizadas por um aprendizado que envolve duas etapas: (i) aplicar uma transformação aos padrões para um espaço onde a expecativa de serem linearmente separáveis é alta (ii) encontrar os pesos usando o estimador mínimos quadrados usado no Perceptron simples. Essa estrutura pode ser representada por um rede de três camadas, onde sua camada escondida é reponsável pela transformação não-linear das estradas para o novo espaço, geralmente para uma dimensão muito alta. 
+	
+	Essa transformação é justificada pelo teorema de Cover sobre a separabilidade de padrões \cite{cover1965geometrical}, o qual diz que um problema de classificação complexo projetado não-linearmente para um espaço de alta dimensão é mais provável de ser separável do que em um espaço de baixa dimensão, desde que o espaço não seja densamente povoado. Boa parte da teoria, que é relacionada ao campo de interpolação multivariável, considera um kernel baseado na função Gaussiana, que é uma classe importante de RBFs. Teoricamente, as redes RBF podem ser consideradas um aproximador universal de funções contínuas se a RBF é selecionada apropriadamente \cite{poggio1990networks, park1991universal, liao2003relaxed}. Uma condição apropriada é dada pelo teorema da interpolação de Miccchelli \cite{micchelli1986interpolation}, ou quando uma determinada classe de RBFs é contínua e diferenciável \cite{park1991universal}, por exemplo.
+	 
+	No seu treinamento, além de tratamentos especiais na presença de ruídos nos dados \cite{broomhead1988radial}, uma etapa importante é a estimativa dos parâmetros das unidades Gaussianas além dos pesos da rede. Isso pode ser feito distribuindo os centros uniformemente, por exemplo. De forma mais geral, pode-se selecionar aleatoriamente subconjutos dos padrões de entrada se este são representativos e grandes o suficiente para o apredizado \cite{wu2012using}. Para aproximação de funções, uma heurística possível é colocar os centros nos extremos da derivada de segundo grau da função e também mais densamente em áreas cujo valor absoluto e maior \cite{sanchez1995second}, o que possui resultados melhores em relação à distribuição uniforme.
+	
+	Outra abordagem bastante utilizada para a definição dos centros é o uso de técnicas de agrupamento (\textit{clustering}) dos dados presentes na literatura \cite{du2006neural, du2010clustering}.  Uma escolha popular são o algoritmo não-supervisionado \textit{k-means} \cite{moody1989fast} e redes neurais baseadas em memórias associativas \cite{kohonen2012self}. Também podem ser utilizadas técnicas de clustering supervisionadas \cite{chen1993hybrid}, as quais podem ser mais eficientes para redes RBF \cite{wu2012using}. Após determinados os centros, define-se as matrizes de convariância das RBFs como a convariância dos dados de cada \textit{cluster} \cite{wu2012using}. 
+	
+	Com os centros e covariâncias definidos, o aprendizado dos pesos é feito pela minimização do erro quadrático médio. Para problemas simples, pode-se utilizar o algoritmo de mínimos quadrados ou gradiente descendente, similar ao aprendizado do Perceptron simples. O treinamento via gradiente descendente é equivalente ao do MLP \cite{wettschereck1992improving}, onde pode-se também utilizar as mesmas abordagens por otimização irrestrita \cite{du2006neural}.	Uma descrição de diferentes abordagens para treinamento de RBFs por otimizaçao podem ser encontradas em \cite{wu2012using}, como o uso de \textit{back-propagation} seletivo \cite{vakil2004training} e programação linear \cite{roy1995algorithm}.
+	
+	No caso dos mínimos quadrados, problemas complexos que requerem um número elevado de RBFs na camada escondida estão sujeitos a problemas numéricos na estimativa da pseudo-inversa. Para lidar com isso, uma abordagem comum é o uso de técnicas de ortogonalização, como as decomposições SVD e QR \cite{golub1980analysis}. Em algumas condições, é possível também resolver esse problema usando a transformada de Fourier da rede RBF, a qual requer menos esforço computacional necessário \cite{abe2003fast}. Outra alternativa eficiente é aplicar a ortogonalização de Gram-Schimidt (GSO) à RBF \cite{kaminski1997kernel}, a qual possui menor requisito de armazenamento e pode sem implementado de forma paralela.
+	
+	Outra forma eficiente para aprendizado da rede consiste no uso da técnica de mínimos quadrados ortogonal (OLS) \cite{chen1991orthogonal, chen1992orthogonal, chen1995fast, hong1997givens}. Nesta abordagem, não só os pesos podem ser determinados, mas também a quantidade e centros das RBFs. o GSO é inicialmente aplicado para contruir um conjunto de vetores ortogonais no espaço criado pela unidade escondida, e na sequência um novo centro RBF é selecionado de acordo com a sua minimização do erro quadrático médio de treinamento. Esse algotimo pode ser executado de forma sequencial ou reversa, ou seja, podemos iniciar com uma rede vazia ou com o máximo de unidades escondidas, por exemplo. Existem também versões recursivas deste algoritmo na literatura, conhecidas por ROLS \cite{yu1997recursive} e são aplicas a problemas envolvendo sistemas de múltiplas entradas e saídas, por exemplo.
+	
+	
+	
+	\subsection{Máquinas de aprendizado extremo}
 	
 	
 	
