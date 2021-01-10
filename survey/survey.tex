@@ -109,6 +109,9 @@
 	
 	Métodos de segunda ordem possuem o atrativo da convergência acelarada, mas em contra-partida é necessária a estimativa da Hessiana, o que exige mais recursos computacionais e está sujeito a problemas numéricos adicionais, sendo limitado a redes pequenas e a usar usando aprendizado por batelada. Portanto, este são fatores que devem ser levados em conta na hora de escolher o otimizador para realizar o treinamento de uma rede. Conforme argumentado por \cite{lecun2012efficient}, o uso de informações de segunda ordem nem sempre é necessário em alguns problemas, para os quais a técnica do gradiente estocástico bem ajustada é dificilmente superado para problemas de larga escala.
 	
+	O estado da arte para treinamento de RNAs são o algoritmo Adadelta \cite{zeiler2012adadelta} e o Adam \cite{kingma2014adam}, impulsionado pelo crescimento da popularidade das redes de aprendizado profundo. 
+	
+	
 	Mais recentementes, alguns autores começaram a propor o uso de algoritmos evolucionários (EAs) para o treinamento do MLP. Eles são atrativos pelo fato de convergirem para o ótimo global se um tempo de treinamento suficiente estiver disponível. Entretanto, o custo computacional poderá ser bastante alto, além do ajuste dos hiper-parâmetros ser trabalhoso. Em \cite{ilonen2003differential}, os autores propõe o uso do algotimo Differential Evolution, o qual concluem que ele não apresenta desempenho superior ao \textit{back-propagation}. Já \cite{ding2011optimizing} propôs uma técnica híbrida de algoritmos genéticos e backpropagation, a qual se mostrou menos suscetível a ficar presa em mínimos locais durante o treinamento. O leitor pode ser referir a \cite{mirjalili2019evolutionary} para um estudo mais completo de EAs e RNAs. Outro área interessante são as redes neurais evolutivas \cite{yao1999evolving}, para as quais além do treinamento dos pesos evolui-se também outras características da rede.
 	
 	\subsection{Redes de funções de base radial (RBF)}
@@ -126,16 +129,7 @@
 	
 	Outra forma eficiente para aprendizado da rede consiste no uso da técnica de mínimos quadrados ortogonal (OLS) \cite{chen1991orthogonal, chen1992orthogonal, chen1995fast, hong1997givens}. Nesta abordagem, não só os pesos podem ser determinados, mas também a quantidade e centros das RBFs. o GSO é inicialmente aplicado para contruir um conjunto de vetores ortogonais no espaço criado pela unidade escondida, e na sequência um novo centro RBF é selecionado de acordo com a sua minimização do erro quadrático médio de treinamento. Esse algotimo pode ser executado de forma sequencial ou reversa, ou seja, podemos iniciar com uma rede vazia ou com o máximo de unidades escondidas, por exemplo. Existem também versões recursivas deste algoritmo na literatura, conhecidas por ROLS \cite{yu1997recursive}, as quais são aplicadas a problemas envolvendo sistemas de múltiplas entradas e saídas, por exemplo.
 	
-	
-	\subsection{Máquinas de aprendizado extremo}
-	Inicialmente proposto por \cite{huang2004extreme}, as máquinas de aprendizado extremo (ELM) são redes neurais \textit{feed-forward} com uma única camada escondida, as quais possuem o atrativo de poucos parâmetros a serem ajustados, generalização maior ou similar e redução do tempo de treinamento das redes em relação aos métodos convencionais. Seu treinamento é baseado na teoria de minimização de risco empírico, necessitando de somente uma iteração para este processo, evitando múltiplas iterações e algoritmos de otimização local \cite{ding2015extreme}. 
-	
-	ELMs são capazes de definir adaptivamente o número neurônios da rede e aleatoriamente escolher os pesos das entradas e viéses da camada escondida \cite{huang2006extreme}. Isso faz com o que a rede possa ser considerada como um sistema linear, o qual pode ser calculado de forma analítica através de uma operação de inversão da matriz de pesos da camada de saídas \cite{huang2006extreme}. Essa característica permite uma drástica redução do esforço computacional do treinamento, geralmente de 10 vezes ou mais \cite{deng2010research}. 
-	
-	Apesar do apelo no ganho de tempo de treinamento, essa abordagem permite menor adaptabilidade ao conjunto de dados, além de problemas numéricos para o cálculo da inversão por mínimos quadrados e problemas de robustez se os dados forem ruidosos \cite{ding2015extreme}. Além disso, a aleatoriedade na  escolha de pesos e viéses pode levar a uma quantidade maior de neurônios na camada escondida, bem como tornar o sistema linear não solucionável e reduzir sua acurácia \cite{wang2011study}.
-	
-	Embora tenha sido proposto bem recentemente (2004), têm recebido uma atenção considerável na literatura a nível téorico e de aplicações \cite{huang2011survey}. Do ponto de vista da teoria, o foco dos autores é divido entre duas frentes: (1) aprimorar sua capacidade universal de aproximação com camadas escondidas aleatórios e (2) propor novas técnicas de aprendizado mais rápidas e robustas. De acordo com uma revisão feita em 2011 por Huang et. al  \cite{huang2011survey}, destacam-se o ELM baseado em kernel \cite{huang2011extreme},  ELM com aprendizado online \cite{liang2006fast, zhang2018survey}, ELM incremental \cite{huang2008enhanced}, \textit{ensemble} de ELM \cite{sun2008sales, van2009adaptive, lan2009ensemble} e ELM com poda \cite{rong2008fast}.
-	
+
 	\subsection{Generalização}
     Uma das suas principais características do modelo RNA é sua habilidade de generalização, que é sua capacidade em estimar corretamente dados ainda não vistos. Em outras palavras, algoritmos de aprendizado de RNA possuem como objetivo encontrar um modelo que consigar caputar as principais características do conjunto de dados de treinamento, mas que também seja capaz de prever com precisão um conjunto de teste ainda não visto.
         
@@ -152,10 +146,51 @@
     
 	Existem algumas formas de se balancear o viés e variância, as são divididas no caso da conjuntos amostras finitas e asintóticamente infinitas. Por serem mais comuns em aplicações práticas, as últimas serão omitidas deste trabalho e o autor pode se referir a \cite{geman1992neural} para mais detalhes. Para conjuntos de dados finitos, destacam-se a validação cruzada \cite{arlot2010survey} e o uso de regularização pela inclusão de penalidades à função objetivo do treinamento \cite{girosi1995regularization}.  
 	
-	O conceito de generalização deu origem a técnicas de aprendizado que incluem em sua formulação formas de se balancear o viés e a variância automaticamente. Entre eles, destacam-se as máquinas de vetores suporte (SVM) e o aprendizado multiobjetivo.
+	O conceito de generalização deu origem a técnicas de aprendizado que incluem em sua formulação formas de se balancear o viés e a variância automaticamente. Entre eles, destacam-se as máquinas de vetores suporte (SVM), máquinas de aprendizado extrem (ELM)  e o aprendizado multiobjetivo.
+	
+	\subsection{Máquinas de aprendizado extremo}
+	Inicialmente proposto por \cite{huang2004extreme}, as máquinas de aprendizado extremo (ELM) são redes neurais \textit{feed-forward} com uma única camada escondida, as quais possuem o atrativo de poucos parâmetros a serem ajustados, generalização maior ou similar e redução do tempo de treinamento das redes em relação aos métodos convencionais. Seu treinamento é baseado na teoria de minimização de risco empírico, necessitando de somente uma iteração para este processo, evitando múltiplas iterações e algoritmos de otimização local \cite{ding2015extreme}. 
+	
+	ELMs são capazes de definir adaptivamente o número neurônios da rede e aleatoriamente escolher os pesos das entradas e viéses da camada escondida \cite{huang2006extreme}. Isso faz com o que a rede possa ser considerada como um sistema linear, o qual pode ser calculado de forma analítica através de uma operação de inversão da matriz de pesos da camada de saídas \cite{huang2006extreme}. Essa característica permite uma drástica redução do esforço computacional do treinamento, geralmente de 10 vezes ou mais \cite{deng2010research}. 
+	
+	Apesar do apelo no ganho de tempo de treinamento, essa abordagem permite menor adaptabilidade ao conjunto de dados, além de problemas numéricos para o cálculo da inversão por mínimos quadrados e problemas de robustez se os dados forem ruidosos \cite{ding2015extreme}. Além disso, a aleatoriedade na  escolha de pesos e viéses pode levar a uma quantidade maior de neurônios na camada escondida, bem como tornar o sistema linear não solucionável e reduzir sua acurácia \cite{wang2011study}.
+	
+	Embora tenha sido proposto bem recentemente (2004), têm recebido uma atenção considerável na literatura a nível téorico e de aplicações \cite{huang2011survey}. Do ponto de vista da teoria, o foco dos autores é divido entre duas frentes: (1) aprimorar sua capacidade universal de aproximação com camadas escondidas aleatórios e (2) propor novas técnicas de aprendizado mais rápidas e robustas. De acordo com uma revisão feita em 2011 por Huang et. al  \cite{huang2011survey}, destacam-se o ELM baseado em kernel \cite{huang2011extreme},  ELM com aprendizado online \cite{liang2006fast, zhang2018survey}, ELM incremental \cite{huang2008enhanced}, \textit{ensemble} de ELM \cite{sun2008sales, van2009adaptive, lan2009ensemble} e ELM com poda \cite{rong2008fast}.
+	
 	   
     
 	\subsection{Máquinas de vetores suporte}
+	Introduzido por Vapnik em 1992 \cite{boser1992training} ás máquinas de vetores suporte (SVM) são considerados um dos algoritmos mais robustos e poderosos para aprendizado supervisionado até os dias atuais. No trabalho de Vapnik, o autor apresenta de forma bem completa os fundamentos teóricos deste modelo, apresentando justificativas para sua ótima capacidade de generalização, bem como os limites para a sua validade. Seu princípio de treinamento está na maximização da margem entre os padrões de treino e a superfície de decisão, que é uma representação convexa do compromisso entre viés e variância.
+	
+	Estas propriedades são uma consequência do uso dos chamados vetores de suporte no seu treinamento, que são os sub-conjuntos de dados mais próximos da superfície de decisão, ou seja, os mais difícies de classificar e relevantes para sua otimalidade. O problema então consiste em encontrar o hiperplano que maximiza a margem de separação entre os padrões, que é equivalente a minimizar a norma Euclidiana do seu vetor de pesos \cite{haykin2007neural}. Isso pode ser visto graficamente na Figura \ref{fig:svm}.
+	
+	\begin{figure}[thpbh]
+		\centering
+		\includegraphics[width=0.3\textwidth]{svm-hp.png}
+		\caption{Elementos principais da otimização pela maximização da margem. Para um problema de classificação binário, é encontrado o hiper-plano separador (linha sólida) que maximiza a distância dos vetores de suporte (pontos marcados em laranja). As linhas pretas pontilhadas representam os hiper-planos de suporte.}
+		\label{fig:svm}
+	\end{figure}
+	
+	O problema de encontrar o vetor de pesos que define o hiper-plano foi convenientemente formulado com base na teoria de otimização convexa. Isso é muito importante pois esta classe de problemas tem sua otimalidade garantida e bem definida, não estando sujeita aos problemas observados no algoritmo \textit{back-propagation}, por exemplo. A função objetivo é descrita como a norma Euclideana dos pesos somada acrescida um segundo termo que limita a quantidade de erros de treinamento, já que os dados podem não ser perfeitamente serparáveis por um hiper-plano. Este problema é então transformado utilizando a técnica de multiplicadores de Lagrange, a qual faz com que seja descrito em função somente dos dados de treinamento.
+	
+	O segundo termo pode ser ajustado pelo usuário por meio de uma constante, a qual irá controlar o nível de regularização aplicada ao problema, o que resulta em sua característica de generalização. Um valor alto poderá resultar em \textit{over-fitting} se os dados forem ruidosos, o que sugere cuidado na sua escolha.	Sua definição pode ser feita experimentalmente usando técnicas de validação cruzada \cite{arlot2010survey}, por exemplo.
+	
+	Através da discussão anterior, é fácil notar que o SVM é aplicável somente a problemas linearmente separáveis se são for realizada nenhuma transformação não-linear aos dados. Portanto, um conceito importante utilizado por este algoritmo são os \textit{kernels} \cite{shawetaylor2004kernel}. A partir da escolha de um kernel apropriado \cite{mercer1909xvi,courant89}, o problema poderá ser resolvido por um modelo linear. Note que isto é bem similiar ao princípio de funcionamento das redes RBF. Em relação ao MLP, ele possui a vantagem de controlar a complexidade independente de sua dimensionalidade, ou seja, é possível ter uma quantidade muito grade de neurônios na camada escondida, conforme o teorema de Cover \cite{cover1965geometrical}, e ainda assim obter uma boa generalização \cite{scholkopf2018learning}. 	Um diagrama mostrando o algotimo SVM completo pode ser visto na Figura \ref{fig:svm-completo}.
+	
+	\begin{figure}[thpbh]
+		\centering
+		\includegraphics[width=0.5\textwidth]{svm-completo.png}
+		\caption{Diagrama do algoritmo SVM}
+		\label{fig:svm-completo}
+	\end{figure}
+	
+ 	Embora muito poderoso, esse algoritmo é caracterizado por um elevado custo computacional de sua implementação \cite{bottou2007support}. Como sua complexidade pode ser proporcional ao quadrado da quantidade de amostras de treinamento, sua aplicação em problemas de grande porte pode se tornar proibitiva. Outra limitação está relacionada à solução do problema de otimização, uma vez que solvers disponíveis possuem suas próprias limitação em relação ao número de variáveis de decisão suportadas. O problema de otimização é ainda mais dificultado pela esparsidade da solução do SVM, pois o vetor de pesos a ser encontrado possuirá poucos elementos não-nulos \cite{haykin2007neural}, resultando em problemas númericos que impedirão sua correta solução. Diversas melhorias foram propostas para melhorar esta situação, as quais são classificadas entre seleção de dados \cite{wang2005training}, decomposição \cite{dong2005fast}, geometria \cite{zeng2008geometric}, implementação paralela \cite{graf2004parallel} e heurísticas \cite{decoste2000alpha}.
+ 	
+ 	Outra limitação deste algoritmo está relacionada a dados não-balanceados. Técnicas propostas para lidar com essa situação realizam o balanceamento dos dados antes do treinamento, ou modificam a estrutura do modelo para torná-los menos sensitivos. As técnicas mais comuns são o \textit{under} e \textit{over-sampling}, e o SMOTE \cite{chawla2002smote}. Esta última é mais indicada para SVMs \cite{chawla2003smoteboost}. É importante ressaltar também que o SVM foi originalmente formulado problemas de classificação binária, de forma que este precisou de ser posteriormente extendido para ser aplicação à essa classe de problemas \cite{weston1998multi, liu2005one}.
+ 	
+	
+	Em \cite{cervantes2020comprehensive}, os autores apresentam um revisão bem completa da literatura de SVMs para classificação. Embora utilizado com sucesso em diversas aplicaçõos reais, o SVM ainda possui pouca adoção para problemas com grandes volumes de dados, bem como baixo desempenho para dados não-balanceados. Como tendências de trabalhos futuros, os autores citam além de melhorias nestes problemas clássicos, avanções em treinamento on-line, seleção automática de kernel e parâmetros com menor custo, além de aplicações para aprendizado semi-supervisionado.
+	
 	\subsection{Aprendizado multiobjetivo}
 
 	\subsection{SOM}
