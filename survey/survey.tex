@@ -69,14 +69,6 @@
 	
 	\section{Revisão da Literatura}
 	%RNAs de aprendizado supervisionado são responsáveis pela inferência de uma função desconhecida $f(.)$ que realiza o mapeamento entre uma saída e um conjunto de entradas medidas, representada pelo conjunto de $N$ pares de dados $\mathcal{D} = \left\lbrace (\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\right\rbrace $. Problemas de classificação e regressão são comumente solucionados com estas técnicas, para os quais as primeiras estruturas de rede e algoritmos de treinamento descritos na literatura são o \textit{Adaline}, em 1960, e o Perceptron simples, em 1957. 
-	
-	\subsection{Aprendizado Hebbiano}
-	
-	correspondencia hebbiano e PCA
-	oja1982 ->	generalized sanger1989
-	kernel hebbian
-	
-	
 
 	\subsection{Perceptron}
 	Proposto inicialmente por Rosenblatt~\cite{rosenblatt1957perceptron}, este é um modelo geralmente utilizado para a solução de problemas de classificação. No seu trabalho original, o autor descreve formas de adaptação dos parâmetros, ou pesos, da rede com o objetivo de reduzir a discrepância entre as saídas esperadas e estimadas e aprender associações entre os neurônios, o que é a base da indução para diversos algoritmos atuais. Este trabalho é considerado um marco na literatura por diversos autores. Embora descrito como uma rede de duas camadas, originalmente seu treinamento só considerava uma camada. Por esse motivo, o Perceptron simples é comumente descrito na forma de somente um neurônio MCP. Sua regra de aprendizado é bem direta e consiste em alterar iterativamente os pesos da rede adicionado o erro total entre as saídas medidas estimadas ponderada pelo vetor de entradas~\cite{haykin2007neural}. 
@@ -152,8 +144,8 @@
 	Existem algumas formas de se balancear o viés e variância, as são divididas no caso da conjuntos amostras finitas e asintóticamente infinitas. Por serem menos comuns em aplicações práticas, as últimas serão omitidas deste trabalho e o autor pode se referir a~\cite{geman1992neural} para mais detalhes. Para conjuntos de dados finitos, destacam-se a validação cruzada~\cite{arlot2010survey} e o uso de regularização pela inclusão de penalidades à função objetivo do treinamento~\cite{girosi1995regularization}.  
 	
 	
-	
-	
+	Regularização evolucionária \cite{jin2004neural}
+
 	O conceito de generalização deu origem a técnicas de aprendizado que incluem em sua formulação formas de se balancear o viés e a variância automaticamente. Entre eles, destacam-se as máquinas de vetores suporte (SVM), máquinas de aprendizado extrem (ELM)  e o aprendizado multiobjetivo.
 	
 	\subsection{Máquinas de aprendizado extremo}
@@ -199,7 +191,7 @@
 	
 	Em~\cite{cervantes2020comprehensive}, os autores apresentam um revisão bem completa da literatura de SVMs para classificação. Embora utilizado com sucesso em diversas aplicaçõos reais, o SVM ainda possui pouca adoção para problemas com grandes volumes de dados, bem como baixo desempenho para dados não-balanceados. Como tendências de trabalhos futuros, os autores citam além de melhorias nestes problemas clássicos, avanções em treinamento on-line, seleção automática de kernel e parâmetros com menor custo, além de aplicações para aprendizado semi-supervisionado.
 	
-	\subsection{Aprendizado multiobjetivo}
+	\subsection{Aprendizado multi-objetivo}
 	
 	Na seção \ref{sec:generalization}, ficou evidente pela discussão que o treinamento de RNAs é um problema multi-objetivo, no qual precisamos encontrar uma solução de compromisso entre o viés e a variância. Portanto, em um dos extremos teremos um conjunto de pesos que resultam em um viés máximo (\textit{overfitting}) e no outro variância máxima (\textit{underfitting}). A partir desta observação, 
 	alguns autores comeaçaram a investigar a formulação do treinamento de MLPs como um problema de otimização multi-objetivo, com o intuito de melhorar a generalização. Esta abordagem foi inicialmente proposta por~\cite{de2000improving}.
@@ -211,6 +203,25 @@
 	A partir do trabalho de~\cite{de2000improving}, diferentes melhorias foram propostas para consolidar esta abordagem. Em~\cite{costa2007improving}, foi proposta uma variação do algoritmo de \textit{Levenberg–Marquardt} restrito pela complexidade da RNA. O autor de~\cite{teixeira2007usage} propôs o uso do algoritmo da seção áurea como forma de reduzir o custo computacional da estimativa da fronteira pareto. Já em~\cite{kokshenev2010efficient, moreira2010lmi}, são propostas abordagens eficientes para treinamento de redes RBF. Recentemente,~\cite{rocha2015training} propôs representar a rede neural de forma esférica, a qual foi capaz de obter desempenho superior em relação às técnicas clássicas.
 	
 	Os trabalhos anteriores possuem maior enfoque na estimativa da fronteira pareto. Do ponto de vista da etapa tomada de decisão, destacam-se o trabalho recente de~\cite{de2017multi}, onde é proposta uma nova técnica para a tomada de decisão em problemas de classificação binária. Os autores propõe o uso do conhecimento prévio sobre o problema representado pela medida de imprecisão do processo de obtenção dos dados, ao invés de se basear em um conjunto de validação. O método se mostra eficiente por deixar o processo de decisão independente de uma amostra dos dados, além de poder considerar todo o conjunto de dados para o treinamento. Isso evita problemas de generalização do modelo por uma escolha indevida do conjunto de treino e teste, bem como é importante para problemas com poucos dados disponíveis.
+	
+	\subsection{Aprendizado Hebbiano}
+	
+	O aprendizado Hebbiano é considerada uma das primeiras propostas para aprendizado não-supervisionado de RNAs, sendo originada a partir do postulado de Hebb~\cite{hebb1949organization}. Nesta abordagem, a eficência da conexão entre dois neurônios é proporcional à co-ocorrência de ativação, conhecido também por plasticidade sináptica. Esta teoria é traduzida em linguagem matemática para o aprendizado de RNAs através da regra de Hebb, que diz que o ajuste dos pesos é proporcional ao produto entre entradas e saídas. Existe também a regra de Hebb diferencial \cite{kosko1986differential}, a qual leva em consideração relações temporais entre eventos neurais passados, através de derivadas. Entretanto, o aprendizado por esta abordagem é pouco estudada na literatura. 
+	
+	
+	O ajuste do pesos pela regra de Hebb clássica pode ser matematicamente resolvido pela pseudoinversa desse produto, a qual terá solução ótima (erro de treinamento zero) se os dados de entrada forem ortogonais. Como em aplicações práticas não temos garantia desta ortogonalidade, isso introduz na solução um termo conhecido como interferência cruzada (\textit{crosstalk}), que causa o deslocamento das estimativas da rede em relação ao esperado. O \textit{crosstalk} é inerente ao aprendizado Hebbiando, e irá depender de como os padrões estão espacialmente relacionados entre si, sendo possível de ser controlada, por exemplo, através de uma projeção para um espaço onde a ortogonalidade dos dados seja atingida.
+	
+	 	
+	
+%	 Este tipo de comportamento é uma característica de memórias associativas, a qual é um dos princípios da teoria de auto-organização.
+	
+	Se considerarmos uma rede com somente um neurônio MCP, uma regra simples de aprendizado Hebbiano foi proposta por~\cite{oja1982simplified}. Se utilizada diretamente, a regra de Hebb original apresenta problemas de estabilidade, levando a um crescimento ilimitado dos pesos sinápticos. Para lidar com este problema, o autor desenvolveu um algoritmo para o treinamento cujo resultado é a primeira componente pricipal dos dados de entrada da rede. Este foi um resultado muito interessante, uma vez que mostra correspondência direta com o método estatístico de análise de componentes principais (PCA). Este reultado resultado foi posteriomente generalizado por Sanger~\cite{sanger1989optimal}, onde o autor evolui a regra de Oja para múltiplos neurônios, onde cada um irá prover como saída uma das componentes principais das entradas.
+	
+	
+
+		
+	% kernel hebbian
+	
 	
 	
 	\subsection{SOM}
