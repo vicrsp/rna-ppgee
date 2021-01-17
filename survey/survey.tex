@@ -53,7 +53,7 @@
 	
 	A partir destes princípios elementares, a área de RNAs evoluiu bastante nas últimas décadas. Após a introdução das primeiras regras de aprendizado, este tipo de modelo ganhou maior visibilidade e aplicabilidade para problemas reais, sendo possível encontrar uma enorme quantidade de aplicações publicadas~\cite{abiodun2018state}. Além disso, o aumento dos recursos computacionais disponíveis fomentou o desenvolvimento de novas técnicas para aprendizado e o aprimoramento das existentes, além de propostas de novas estruturas redes complexas capazes de lidar com problemas de grande dificuldade.
 	
-	Portanto, o objetivo deste trabalho é apresentar a uma revisão da literatura contendo os principais trabalhos e entender a evolução dos diferentes modelos de redes neurais utilizadas atualmente. Partindo das referências clássicas, diferentes abordagens propostas serão analisadas de forma cronológica com o intuito de se entender a evolução desta área de pesquisa até o tempo presente. Este trabalho será divido da seguinte forma: a Seção II apresenta uma revisão da literatura com uma análise crítica dos principais trabalhos, os quais serão organizados usando como referência o livro de Simon Haykin~\cite{haykin2007neural} e as notas de aula. Na seção III serão apresentadas algumas das principais aplicações de RNAs publicadas. Finalmente, é feita uma conclusão deste trabalho.
+	Portanto, o objetivo deste trabalho é apresentar a uma revisão da literatura contendo os principais trabalhos e entender a evolução dos diferentes modelos de redes neurais utilizadas atualmente. Partindo das referências clássicas, diferentes abordagens propostas serão analisadas de forma cronológica com o intuito de se entender a evolução desta área de pesquisa até o tempo presente. Este trabalho será divido da seguinte forma: as Seções II e III apresentam uma revisão da literatura com uma análise crítica dos principais trabalhos, para técnicas de aprendizada supervisionando e não-supervisionado, respectivamente. Na seção IV serão apresentadas algumas das principais aplicações de RNAs publicadas. Finalmente, é feita uma conclusão deste trabalho.
 		
 	
 %	\subsection{Problemas de classificação}
@@ -67,7 +67,7 @@
 %
 %	\subsection{Problemas de reconhecimento de padrões}
 	
-	\section{Revisão da Literatura}
+	\section{Aprendizado supervisionado}
 	%RNAs de aprendizado supervisionado são responsáveis pela inferência de uma função desconhecida $f(.)$ que realiza o mapeamento entre uma saída e um conjunto de entradas medidas, representada pelo conjunto de $N$ pares de dados $\mathcal{D} = \left\lbrace (\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\right\rbrace $. Problemas de classificação e regressão são comumente solucionados com estas técnicas, para os quais as primeiras estruturas de rede e algoritmos de treinamento descritos na literatura são o \textit{Adaline}, em 1960, e o Perceptron simples, em 1957. 
 
 	\subsection{Perceptron}
@@ -204,64 +204,26 @@
 	
 	Os trabalhos anteriores possuem maior enfoque na estimativa da fronteira pareto. Do ponto de vista da etapa tomada de decisão, destacam-se o trabalho recente de~\cite{de2017multi}, onde é proposta uma nova técnica para a tomada de decisão em problemas de classificação binária. Os autores propõe o uso do conhecimento prévio sobre o problema representado pela medida de imprecisão do processo de obtenção dos dados, ao invés de se basear em um conjunto de validação. O método se mostra eficiente por deixar o processo de decisão independente de uma amostra dos dados, além de poder considerar todo o conjunto de dados para o treinamento. Isso evita problemas de generalização do modelo por uma escolha indevida do conjunto de treino e teste, bem como é importante para problemas com poucos dados disponíveis.
 	
+	\section{Aprendizado não-supervisionado}
+	
 	\subsection{Aprendizado Hebbiano}
 	
-	O aprendizado Hebbiano é considerada uma das primeiras propostas para aprendizado não-supervisionado de RNAs, sendo originada a partir do postulado de Hebb~\cite{hebb1949organization}. Nesta abordagem, a eficência da conexão entre dois neurônios é proporcional à co-ocorrência de ativação, conhecido também por plasticidade sináptica. Esta teoria é traduzida em linguagem matemática para o aprendizado de RNAs através da regra de Hebb, que diz que o ajuste dos pesos é proporcional ao produto entre entradas e saídas. Existe também a regra de Hebb diferencial \cite{kosko1986differential}, a qual leva em consideração relações temporais entre eventos neurais passados, através de derivadas. Entretanto, o aprendizado por esta abordagem é pouco estudada na literatura. 
+	O aprendizado Hebbiano é considerada uma das primeiras propostas para aprendizado não-supervisionado de RNAs, sendo originada a partir do postulado de Hebb~\cite{hebb1949organization}. Nesta abordagem, a eficência da conexão entre dois neurônios é proporcional à co-ocorrência de ativação, conhecido também por plasticidade sináptica. Esta teoria é traduzida em linguagem matemática para o aprendizado de RNAs através da regra de Hebb, que diz que o ajuste dos pesos é proporcional ao produto entre entradas e saídas \cite{gerstner2002mathematical}. Uma rede Hebbiana representa uma estrutura básica de memórias associativas, sendo sua saída uma codificação dos padrões presentes nos dados apresentados à rede. Este princípio é um dos pilares dos modelos de Hopfield \cite{hopfield1982neural}, Kohonen \cite{kohonen1982self} e de ressonância adaptiva \cite{carpenter1988art}.
 	
-	
-	O ajuste do pesos pela regra de Hebb clássica pode ser matematicamente resolvido pela pseudoinversa desse produto, a qual terá solução ótima (erro de treinamento zero) se os dados de entrada forem ortogonais. Como em aplicações práticas não temos garantia desta ortogonalidade, isso introduz na solução um termo conhecido como interferência cruzada (\textit{crosstalk}), que causa o deslocamento das estimativas da rede em relação ao esperado. O \textit{crosstalk} é inerente ao aprendizado Hebbiando, e irá depender de como os padrões estão espacialmente relacionados entre si, sendo possível de ser controlada, por exemplo, através de uma projeção para um espaço onde a ortogonalidade dos dados seja atingida.
-	
-	 	
-	
-%	 Este tipo de comportamento é uma característica de memórias associativas, a qual é um dos princípios da teoria de auto-organização.
-	
-	Se considerarmos uma rede com somente um neurônio MCP, uma regra simples de aprendizado Hebbiano foi proposta por~\cite{oja1982simplified}. Se utilizada diretamente, a regra de Hebb original apresenta problemas de estabilidade, levando a um crescimento ilimitado dos pesos sinápticos. Para lidar com este problema, o autor desenvolveu um algoritmo para o treinamento cujo resultado é a primeira componente pricipal dos dados de entrada da rede. Este foi um resultado muito interessante, uma vez que mostra correspondência direta com o método estatístico de análise de componentes principais (PCA). Este reultado resultado foi posteriomente generalizado por Sanger~\cite{sanger1989optimal}, onde o autor evolui a regra de Oja para múltiplos neurônios, onde cada um irá prover como saída uma das componentes principais das entradas.
-	
-	
+	O ajuste do pesos pela regra de Hebb clássica pode ser matematicamente resolvido pela pseudoinversa desse produto, a qual terá solução ótima (erro de treinamento zero) se os dados de entrada forem ortogonais. Como em aplicações práticas não temos garantia desta ortogonalidade, isso introduz na solução um termo conhecido como interferência cruzada (\textit{crosstalk}), que causa o deslocamento das estimativas da rede em relação ao esperado. O \textit{crosstalk} é inerente ao aprendizado Hebbiano, e irá depender de como os padrões estão espacialmente relacionados entre si, sendo possível de ser controlada, por exemplo, através de uma projeção para um espaço onde a ortogonalidade dos dados seja respeitada.
 
-		
-	% kernel hebbian
+	O tamanho do conjunto de dados também possui influência sobre o \textit{crosstalk}, o qual pode aumentar a probabilidade do seu crescimento ilimitado, pelo acréscimo de mais interferências presentes na rede. Além disso, teremos também um aumento na quantidade de produtos entre entradas-saídas, contribuindo para este mesmo efeito. Portanto, pode-se perceber que memórias associativas baseadas na regra de Hebb possuem capacidade de armazenamento limitada \cite{jain1996artificial}. Diferentes estudos sobre a capacidade de redes de Hopfield podem ser encontrados na literatura \cite{abu1985information, mceliece1987capacity}, para as quais o número máximo de padrões armazenados não ultrapassará 15\% da quantidade de dados. 
+
+	Se considerarmos uma rede onde as saídas são conectadas a um neurônio MCP, uma regra simples baseada no aprendizado Hebbiano foi proposta por~\cite{oja1982simplified}. O autor desenvolveu um algoritmo para o treinamento cujo resultado é a primeira componente pricipal dos dados de entrada da rede. Este foi um resultado muito interessante, uma vez que mostra correspondência direta com o método estatístico de análise de componentes principais (PCA). Este reultado resultado foi posteriomente generalizado por Sanger~\cite{sanger1989optimal}, onde o autor evolui a regra de Oja para múltiplos neurônios, onde cada um irá prover como saída uma das componentes principais das entradas.
 	
-	
-	
-	\subsection{SOM}
+	\subsection{Princípios de auto-organização}
 	Hebbian -> competitive
 	
-	\section{Aplicações}
+	% \section{Aplicações}
 	
 	\section{Conclusões}
 
-%	\section{Aprendizado semi-supervisionado}
 
-%	\section{Generalização}
-%	 Uma das suas principais características do modelo RNA é sua capacidade de generalização.  Em geral, algoritmos de aprendizado supervisionado possuem como objetivo minimizar o erro quadrático dos valores previstos pelo modelo em relação às saídas em estudo:
-%	 \begin{equation}
-%	 	\sum_{i=1}^{N} [y_i - f(\mathbf{x}_i)]^2
-%	 	\label{eq:sqrd}
-%	 \end{equation}
-%	 onde $y_i$ é uma resposta desejada para uma entrada $\mathbf{x}_i$, e $f$ é o função que aproxima a resposta desejada. Ou seja, estamos interessados em encontrar o conjunto de pesos $\mathbf{w}$ da rede a partir dos pares de dados de entrada-saída $\mathcal{D} = \left\lbrace (\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\right\rbrace $ que melhor aproxima a função desconhecida $f$.
-%	 
-%	 Entretanto, se os dados a serem modelados são ruidosos o uso deste único objetivo pode levar a um overfitting sobre o conjunto de dados de treinamento, de forma que este não consiga generalizar bem para novos valores observados. Estatisticamente, podemos definir a efetividade de $f$ como um estimador de $y$ como~\cite{geman1992neural}:
-%	 
-%	 \begin{equation}
-%	 	\begin{aligned}
-%	 		E[(y - f(\mathbf{x}; \mathcal{D}))^2 | \mathbf{x}, \mathcal{D}] \quad = & \quad E\left[ (y - E \left[ y | \mathbf{x}\right] )^2 | \mathbf{x}, \mathcal{D}\right]   \\
-%	 		& \quad + (f(\mathbf{x};\mathcal{D}) - E[y|\mathbf{x}])^2
-%	 	\end{aligned}
-%	 \end{equation}
-%	 
-%	 É importante notar neste indicador que o primeiro termo representa a variância de $y$ dado $\mathbf{x}$, não dependendo dos dados. Já o segundo termo mede a distância entre o estimador e a regressão. Logo, podemos definir o error quadrático médio de $f$ como um estimador da regressão $E[y|\mathbf{x}]$ para um conjunto de dados $\mathcal{D}$ como:
-%	 
-%	 \begin{equation}
-%	 	\begin{aligned}
-%	 		& E_{\mathcal{D}}[(f(\mathbf{x};\mathcal{D}) - E[y|\mathbf{x}])^2] = \\ 
-%	 		& \qquad \qquad \qquad (E_{\mathcal{D}}[f(\mathbf{x}; \mathcal{D})] - E[y|\mathbf{x}])^2 \quad \text{``viés''} \\
-%	 		& \qquad \quad  + E_{\mathcal{D}}\left[ f(\mathbf{x};\mathcal{D}) - E_{\mathcal{D}}[f(\mathbf{x};\mathcal{D})]\right]   \quad \text{``variância''}
-%	 	\end{aligned}
-%	 \end{equation}
-%	 A derivação completa da relação acima pode ser encontrada em~\cite{geman1992neural}. Logo é fácil notar que o aprendizado de RNAs é um problema multi-objetivo, no qual precisamos encontrar uma solução de compromisso entre o viés e a variância do modelo. Portanto, em um dos extremos teremos um conjunto de pesos que resultam em um viés máximo (\textit{underfitting}) e no outro variância máxima (\textit{overfitting}).
-
-	
     \bibliographystyle{unsrt}
 	\bibliography{survey}
 	
