@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 from models.elm import ELMClassifier
 from models.perceptron import PerceptronClassifier
+from models.rbf import RBFClassifier
 from sklearn.linear_model import Perceptron
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve, confusion_matrix, make_scorer, f1_score
@@ -36,6 +37,7 @@ models = []
 models.append(('Perceptron', PerceptronClassifier(max_epochs=200)))
 models.append(('ELM', ELMClassifier(p=5)))
 models.append(('SVM', SVC(C=1.5, degree=5)))
+models.append(('RBF', RBFClassifier(p=100)))
 
 def k_fold_cross_validation(X,y,models,n_splits=30,scoring='accuracy'):
     results = {}
