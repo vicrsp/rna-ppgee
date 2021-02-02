@@ -1,6 +1,8 @@
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
+from sklearn.utils.extmath import safe_sparse_dot
+from scipy.special import expit
 
 class ELMClassifier(BaseEstimator, ClassifierMixin):
     def __init__(self, p=5):
@@ -9,13 +11,12 @@ class ELMClassifier(BaseEstimator, ClassifierMixin):
     def predict(self, X):
         # input validation
         X = check_array(X, accept_sparse=True)
-        check_is_fitted(self, ['w_','Z_'])
+        check_is_fitted(self, ['coef_','Z_'])
 
         N, _ = X.shape
         x_aug = np.hstack((-np.ones((N, 1)), X))
         H = np.tanh(x_aug @ self.Z_)
-        u = np.sign(H @ self.w_)
-        return u
+        return np.sign(H @ self.coef_)
 
     def fit(self, X, y):
         # check X, y consistency
@@ -30,7 +31,7 @@ class ELMClassifier(BaseEstimator, ClassifierMixin):
         # calculate the weights
         w = np.linalg.pinv(H) @ y
         # store fitted data
-        self.w_ = w
+        self.coef_ = w
         self.Z_ = Z
 
         return self

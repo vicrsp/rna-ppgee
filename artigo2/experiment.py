@@ -37,9 +37,9 @@ models = []
 models.append(('Perceptron', PerceptronClassifier(max_epochs=200)))
 models.append(('ELM', ELMClassifier(p=5)))
 models.append(('SVM', SVC(C=1.5, degree=5)))
-models.append(('RBF', RBFClassifier(p=100)))
+models.append(('RBF', RBFClassifier(p=10)))
 
-def k_fold_cross_validation(X,y,models,n_splits=30,scoring='accuracy'):
+def k_fold_cross_validation(X,y,models,n_splits=10,scoring='accuracy'):
     results = {}
     for scorer in tqdm(scoring):
         kfold = StratifiedKFold(n_splits=n_splits, random_state=1234)
@@ -51,18 +51,26 @@ def k_fold_cross_validation(X,y,models,n_splits=30,scoring='accuracy'):
     return results
 
 def plot_distributions(results):
-    fig, ax = plt.subplots(len(results.keys()), 1, figsize=(10,8))
+    n_axes = len(results.keys())
+    fig, ax = plt.subplots(n_axes, 1, figsize=(5 + n_axes, n_axes + 3))
     for index, score in enumerate(results.keys()):
         for model, values in results[score].items():
-            sns.distplot(values, ax=ax[index], label=model)
-        
-        ax[index].legend()
-        ax[index].set_title(score)
+            if n_axes > 1:
+                sns.distplot(values, ax=ax[index], label=model) 
+            else:
+                sns.distplot(values, ax=ax, label=model) 
+
+        if n_axes > 1:
+            ax[index].legend()  
+            ax[index].set_title(score)
+        else:
+            ax.legend()  
+            ax.set_title(score)
 
     fig.tight_layout()
     fig.show()
 
-scoring = ['f1', 'accuracy', 'precision']
+scoring = ['accuracy','roc_auc']
 results_bc = k_fold_cross_validation(X_bc, y_bc, models, 10, scoring)
 plot_distributions(results_bc)
 

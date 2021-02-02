@@ -11,11 +11,11 @@ class PerceptronClassifier(BaseEstimator, ClassifierMixin):
     def predict(self, X):
         # input validation
         X = check_array(X, accept_sparse=True)
-        check_is_fitted(self, 'w_')
+        check_is_fitted(self, 'coef_')
 
         N, _ = X.shape
         X_aug = np.hstack((-np.ones((N, 1)), X))
-        u = X_aug @ self.w_
+        u = X_aug @ self.coef_
         return np.sign(u)
 
     def fit(self, X, y):
@@ -46,5 +46,5 @@ class PerceptronClassifier(BaseEstimator, ClassifierMixin):
             # increment number of epochs
             n_epochs = n_epochs + 1
 
-        self.w_ = wt
+        self.coef_ = wt
         return self        
