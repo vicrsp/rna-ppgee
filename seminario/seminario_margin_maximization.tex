@@ -71,9 +71,9 @@
 %\usecolortheme{wolverine}
 
 %\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
-%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
+\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
 
-%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
 }
 
 \usepackage{graphicx} % Allows including images
@@ -100,6 +100,11 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 \textit{victorspruela@ufmg.br} % Your email address
 }
 \date{\today} % Date, can be changed to a custom date
+
+%\setbeamertemplate{sidebar right}{}
+%\setbeamertemplate{footline}{%
+%	\hfill\usebeamertemplate***{navigation symbols}
+%	\hspace{1cm}\insertframenumber{}/\inserttotalframenumber}
 
 \begin{document}
 
@@ -155,7 +160,7 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 	\end{itemize}
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[width=3.0in]{fig02.png}
+		\includegraphics[width=3.0in]{fig01.png}
 		\label{fig:plano-mse}
 	\end{figure}
 \end{frame}
@@ -222,8 +227,8 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 		\item Para otimalidade, o par ($\textbf{w}_o$,$b_o$) deve satisfazer:
 		\begin{equation}
 		\begin{cases}
-			\textbf{w}^T_o\textbf{x}_i \geq -1, d_i = +1 \\ 
-			\textbf{w}^T_o\textbf{x}_i \leq -1 , d_i = -1
+			\textbf{w}^T_o\textbf{x}_i \geq 1, & d_i = +1 \\ 
+			\textbf{w}^T_o\textbf{x}_i \leq -1, & d_i = -1
 		\end{cases}
 		\label{eq:plano-cond}
 		\end{equation}
@@ -253,24 +258,124 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 		\item Finalmente, a margem ótima $\rho$ é:
 		\begin{equation}
 			\rho = \frac{2}{\left \| \textbf{w}_o \right \|}
+			\label{eq:margin-opt}
 		\end{equation}
 	\end{itemize}	
 	
 	\begin{block}{Conclusão}
-		Maximizar a separação entre classes binárias é equivalente a minimizar a norma Euclidiana to vetor de pesos $\textbf{w}$
+		Maximizar a margem de separação entre classes binárias é equivalente a minimizar a norma Euclidiana do vetor de pesos $\textbf{w}$
 	\end{block}
 
 \end{frame}
 
 %\subsection{Padrões Linearmente Separáveis}
 
-\subsection{Padrões Não-linearmente Separáveis}
-
 \subsection{Otimização}
 
-\section{Exemplos}
+\begin{frame}
+	\frametitle{Formulação}
+	\begin{itemize}
+		\item Combinando as Equações (\ref{eq:support-vectors}) e (\ref{eq:margin-opt}), podemos formular o problema de encontrar a margem ótima como:
+		\begin{align}
+			\underset{\textbf{w},b}{\text{minimizar}} \quad & \frac{1}{2}\textbf{w}^T\textbf{w} \\ 
+			\text{sujeito a} \quad & d_i(\textbf{w}^T\textbf{x}_i + b) \geq 1, \quad i=1,2,\dots,N  \nonumber
+			\label{eq:opt-prob1}
+		\end{align} 
+		\item Problema com objetivo quadrático e restrições lineares
+		\item É reformulado e resolvido através da técnica de multiplicadores de Lagrange \cite{haykin}
+	\end{itemize}
+	
+\end{frame}
 
-\subsection{SVM}
+\begin{frame}
+	\frametitle{Resultado}
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=3in]{fig02.png}
+		\caption{Superfícies de separação: erro mínimo (preta) e margem máxima (verde)}
+		\label{fig:opt-margin-ds}
+	\end{figure}
+\end{frame}
+
+\subsection{Padrões Não Separáveis}
+\begin{frame}
+	\frametitle{Padrões Não Separáveis}
+	\begin{itemize}
+		\item Em aplicações práticas, não podemos garantir que os dados sejam perfeitamente separáveis
+		\item Logo, é adicionada uma variável de folga $\xi$ para representar estas discrepâncias:
+		\begin{align}
+			\underset{\textbf{w},b}{\text{minimizar}} \quad & \frac{1}{2}\textbf{w}^T\textbf{w} + C\sum_{i=1}^{N}\xi_i \\ 
+			\text{sujeito a} \quad & d_i(\textbf{w}^T\textbf{x}_i + b) \geq 1 - \xi_i \quad i=1,2,\dots,N   \nonumber \\
+			& \xi_i \geq 0 \nonumber
+		\end{align} 
+		\item É reformulado e resolvido de forma similar ao Problema (\ref{eq:opt-prob1})
+		\item A constante $C$ é especificada pelo usuário e controla a generalização do modelo, sendo conhecida como o parâmetro de regularização
+	\end{itemize}
+	
+\end{frame}
+
+
+\section{Problemas não-linearmente separáveis}
+\begin{frame}
+	\frametitle{Problemas não-linearmente separáveis}
+	\begin{itemize}
+		\item Problemas reais nem sempre podem ser separados linearmente
+		\item Entretanto, podemos mapeá-lo para um novo espaço de alta dimensão onde ele é mais provável de ser linearmente separável: \textbf{Teorema de Cover} \cite{cover}
+		\item Este mapeamento é feito por funções não-lineares conhecidas como \textit{Kernels}
+	\end{itemize}
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=3in]{fig05.png}
+		\label{fig:kernel-trick}
+	\end{figure}
+\end{frame}
+
+
+\subsection{Exemplos}
+\begin{frame}
+	\frametitle{Exemplo - SVM}
+	\begin{columns}
+		\begin{column}{0.5\textwidth}  
+			\begin{figure}
+				\centering
+				\begin{subfigure}[h!]{1\textwidth}
+					\centering
+					\includegraphics[width=\linewidth]{fig08.png}
+					\label{fig:c-1000}
+				\end{subfigure}
+				\begin{subfigure}[h!]{1\textwidth}
+					\centering
+					\includegraphics[width=\linewidth]{fig09.png}
+					\label{fig:c-0.001}
+				\end{subfigure}
+				%\caption{Variação da constante de regularização $C$}
+				\label{fig:reg-C}
+			\end{figure}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\begin{figure}
+				\centering
+				\begin{subfigure}[h!]{1\textwidth}
+					\centering
+					\includegraphics[width=\linewidth]{fig10.png}
+					\label{fig:svc-poly}
+				\end{subfigure}
+				\begin{subfigure}[h!]{1\textwidth}
+					\centering
+					\includegraphics[width=\linewidth]{fig11.png}
+					\label{fig:svc-linear}
+				\end{subfigure}
+				%\caption{Diferentes escolhas de \textit{Kernel}}
+				\label{fig:kernel}
+			\end{figure}
+		\end{column}
+	\end{columns}
+	
+
+
+\end{frame}
+
+%\subsection{SVM}
 
 
 %\subsection{Sistemas de otimização em tempo-real} % A subsection can be created just before a set of slides with a common theme to further break down your presentation into chunks
@@ -595,6 +700,8 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 % APA
 \bibitem[Haykin, 2007]{haykin}
 Haykin, S. (2007). Neural Networks: A Comprehensive Foundation (3rd Edition).
+\bibitem[Cover, 1965]{cover}
+Cover, T. M. (1965). Geometrical and statistical properties of systems of linear inequalities with applications in pattern recognition. IEEE transactions on electronic computers, (3), 326-334.
 
 \end{thebibliography}
 }
