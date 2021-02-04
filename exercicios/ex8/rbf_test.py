@@ -4,14 +4,16 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy as sp
 
-from sklearn.metrics import confusion_matrix, accuracy_score, mean_squared_error
+from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import euclidean_distances
-import random
+from sklearn.model_selection import train_test_split
 
+from tqdm import tqdm
+import random
 
 class RBF(BaseEstimator):
     def __init__(self, p, center_estimation='kmeans'):
@@ -69,22 +71,21 @@ class RBF(BaseEstimator):
                 covlist.append(covi)
             self.cov_ = covlist
         elif (self.center_estimation == 'random'):
-            random_idx = random.sample(range(N), self.p * 2)
-            #random_idx = np.random.randint(0, N, size=(self.p * 2, 1))
+            random_idx = random.sample(range(N), self.p)
+            # define the maximum radius possible from the data
+            data_center = np.mean(X, axis=0).reshape(1,-1)
+            max_radius = np.max(np.linalg.norm(X - data_center, axis=1))
+            # Now define random radius values
+            random_radius = np.random.uniform(max_radius * 0.5, max_radius * 0.8, self.p)
+
             covlist = []
             centers = []
             for i in range(self.p):
                 # Get the two random points from list
-                x1 = X[random_idx[i], :]
-                x2 = X[random_idx[i+1], :]
-                center = (x1 + x2) / 2
-                radius = np.linalg.norm(x1 - x2) / 2
-                points_within_radius = np.linalg.norm(
-                    X - center, axis=1) <= radius
-
+                center = X[random_idx[i], :]
+                points_within_radius = np.linalg.norm(X - center, axis=1) <= random_radius[i]
                 xci = X[points_within_radius, :]
-                covi = np.cov(xci, rowvar=False) if n > 1 else np.asarray(
-                    np.var(xci))
+                covi = np.cov(xci, rowvar=False) if n > 1 else np.asarray(np.var(xci))
 
                 covlist.append(covi)
                 centers.append(center)
@@ -111,49 +112,65 @@ class RBF(BaseEstimator):
         return self
 
 
-# define the sinc function generator
-n_train = 100
-n_test = 50
-
-X_train = np.random.uniform(-15, 15, size=(n_train, 1))
-y_train = np.sin(X_train) / X_train + \
-    np.random.normal(loc=0, scale=0.05, size=(n_train, 1))
-
-X_test = np.random.uniform(-15, 15, size=(n_test, 1))
-y_test = np.sin(X_test) / X_test + np.random.normal(loc=0,
-                                                    scale=0.05, size=(n_test, 1))
+# load the statlog(heart) dataset
+heart_df = pd.read_csv('/home/victor/git/rna-ppgee/exercicios/ex8/heart.dat', sep=' ', header=None)
+X_hd, y_hd = heart_df.iloc[:,:-1].to_numpy(), heart_df.iloc[:,-1].map({2:1, 1:-1}).to_numpy()
+# scale the data
+scaler_hd = MinMaxScaler()
+X_hd = scaler_hd.fit_transform(X_hd)
 
 
-def plot_regression_results(X_train, y_train, X_test, y_test, p=5):
-    fig, ax = plt.subplots(figsize=(6, 4))
-    # horizontal stack vectors to create x1,x2 input for the model
-    grid = np.arange(np.min(X_train)-0.1, np.max(X_train) +
-                     0.1, 0.01).reshape(-1, 1)
+def rbf_experiment_multiple_neurons(X_train, y_train, X_test, y_test, neurons, reps=2):
+    accuracy_results = []
+    accuracy_results_train = []
+    for p in tqdm(neurons):
+        accuracy_test = []
+        accuracy_train = []
+        for rep in tqdm(range(reps)):
+            model = RBF(p=p,center_estimation='random').fit(X_train, y_train)
+            yhat = np.sign(model.predict(X_test))
+            yhat_train = np.sign(model.predict(X_train))
+            # accuracy
+            accuracy_test.append(accuracy_score(y_test, yhat))
+            accuracy_train.append(accuracy_score(y_train, yhat_train))
+            
+        accuracy_results.append(np.mean(accuracy_test))
+        accuracy_results_train.append(np.mean(accuracy_train))
+    return accuracy_results, accuracy_results_train
 
-    # train the model
-    model = RBF(p=p, center_estimation='random').fit(X_train, y_train)
+def rbf_experiment_dataset_split(X, y, N=30, neurons=[5,10,30,50,100,300], plot=True):
+    experiment_values_test = []
+    experiment_values_train = []
+    data_sets = {}
+    for i in tqdm(range(N)):
+        # split the data
+        X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.7)
+        data_sets[i] = (X_train, y_train, X_test, y_test)
+        # run for every neuron
+        test_values, train_values = rbf_experiment_multiple_neurons(X_train, y_train, X_test, y_test, neurons, reps=1)
 
-    # make predictions for the grid
-    yhat_grid = model.predict(grid)
-    # make predictions for the datasets
-    yhat_test = model.predict(X_test)
-    yhat_train = model.predict(X_train)
+        experiment_values_test.append(test_values)
+        experiment_values_train.append(train_values)
 
-    mse_test = mean_squared_error(y_test, yhat_test.ravel())
-    mse_train = mean_squared_error(y_train, yhat_train.ravel())
+    def convert_results(res, set): 
+        df = pd.DataFrame(res, columns=neurons).melt(value_vars=neurons,value_name='Acurácia', var_name='Neurônios')
+        df['Conjunto'] = set
+        return df
 
-    ax.scatter(X_train, y_train, color='red', label='Treinamento')
-    ax.scatter(X_train, y_train, color='blue', label='Teste')
-    ax.plot(grid, yhat_grid, color='black', label='RBF')
+    train_values_df = convert_results(experiment_values_train, 'Treino')
+    test_values_df = convert_results(experiment_values_test, 'Teste')
+    
+    experiment_values_df = pd.concat([train_values_df, test_values_df], ignore_index=True)
+    # clear_output(wait=True)
+    if (plot==True):
+        # Plot the accuracy boxplots
+        plt.figure(figsize=(10,6))
+        sns.boxplot(data=experiment_values_df, x='Conjunto',y='Acurácia', hue='Neurônios', showfliers=False)
 
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
+        # # Print the results table
+        # display('Tabela: Acurácia Média e Desvio Padrão')
+        # display(experiment_values_df.groupby(['Neurônios','Conjunto'])['Acurácia'].agg([np.mean, np.std]))
 
-    ax.legend()
-    fig.suptitle(
-        f'Neurônios:{p}\n MSE treino: {mse_train} \n MSE teste: {mse_test}')
-    fig.tight_layout()
-    fig.show()
+    return experiment_values_df, data_sets 
 
-
-plot_regression_results(X_train, y_train, X_test, y_test, p=50)
+results_hd, datasets_hd = rbf_experiment_dataset_split(X_hd, y_hd,neurons=[150], N=10)
