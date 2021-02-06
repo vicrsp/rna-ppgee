@@ -3,78 +3,71 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from models.elm import ELMClassifier
+from models.elm import ELMClassifier, ELMRegressor
 from models.perceptron import PerceptronClassifier
-from models.rbf import RBFClassifier
-from sklearn.linear_model import Perceptron
-from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve, confusion_matrix, make_scorer, f1_score
-from sklearn.datasets import load_iris, load_breast_cancer
+from models.rbf import RBFClassifier, RBFRegressor
+from models.adaline import Adaline
+from experiments.evaluation import k_fold_cross_validation, plot_scores_per_dataset
+from sklearn.datasets import load_digits, load_breast_cancer, load_wine, load_boston, load_diabetes, load_iris
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import train_test_split, cross_val_score, cross_validate, StratifiedKFold
-from tqdm import tqdm
 
-# load the statlog(heart) dataset
-heart_df = pd.read_csv('datasets/heart.dat', sep=' ', header=None)
-X_hd, y_hd = heart_df.iloc[:,:-1].to_numpy(), heart_df.iloc[:,-1].map({2:1, 1:-1}).to_numpy()
-
-# scale the data
-scaler_hd = MinMaxScaler()
-X_hd = scaler_hd.fit_transform(X_hd)
-
-# load the breast cancer data
+#%% Load the data
+# breast_cancer: classificaçao
 X_bc, y_bc = load_breast_cancer(return_X_y = True)
-# convert the classes to -1 or 1
 y_bc = pd.Series(y_bc).map({0:-1,1:1}).to_numpy()
-# scale the data
-scaler_bc = MinMaxScaler()
-X_bc = scaler_bc.fit_transform(X_bc)
+# digits: classificação
+X_dg, y_dg = load_digits(return_X_y = True)
+y_dg = pd.Series(y_dg).map(lambda x: -1 if x == 8 else 1).to_numpy()
+# iris: classificação
+X_ir, y_ir = load_iris(return_X_y = True)
+y_ir = pd.Series(y_ir).map({0:-1,1:1,2:1}).to_numpy()
+# wine: regressão
+X_wn, y_wn = load_wine(return_X_y = True)
+y_wn = pd.Series(y_wn).map({0:-1,1:1,2:1}).to_numpy()
+# boston: regressão
+X_bo, y_bo = load_boston(return_X_y = True)
+# diabetes: regressão
+X_di, y_di = load_diabetes(return_X_y = True)
 
-# split the data
-X_train, X_test, y_train, y_test = train_test_split(X_hd, y_hd, test_size=0.2)
+#%% Pre-process the data
+# Normalization
+X_bc = MinMaxScaler().fit_transform(X_bc)
+X_dg = MinMaxScaler().fit_transform(X_dg)
+X_ir = MinMaxScaler().fit_transform(X_ir)
+X_wn = MinMaxScaler().fit_transform(X_wn)
+X_bo = MinMaxScaler().fit_transform(X_bo)
+X_di = MinMaxScaler().fit_transform(X_di)
 
-models = []
-models.append(('Perceptron', PerceptronClassifier(max_epochs=200)))
-models.append(('ELM', ELMClassifier(p=5)))
-models.append(('SVM', SVC(C=1.5, degree=5)))
-models.append(('RBF', RBFClassifier(p=10)))
+#%% Experiment definition
+# Classification
+models_classification = []
+models_classification.append(('Perceptron', PerceptronClassifier(max_epochs=200)))
+models_classification.append(('ELM', ELMClassifier(p=5)))
+models_classification.append(('RBF', RBFClassifier(p=10)))
 
-def k_fold_cross_validation(X,y,models,n_splits=10,scoring='accuracy'):
-    results = {}
-    for scorer in tqdm(scoring):
-        kfold = StratifiedKFold(n_splits=n_splits, random_state=1234)
-        scores = {}
-        for name, model in tqdm(models):
-            scores[name] = cross_val_score(model, X, y, cv=kfold, scoring=scorer)
+datasets_classification = []
+datasets_classification.append(('Breast Cancer', (X_bc, y_bc)))
+datasets_classification.append(('Digitis (8)', (X_dg, y_dg)))
+datasets_classification.append(('Iris', (X_ir, y_ir)))
 
-        results[scorer] = scores
-    return results
+scoring_classification = ['accuracy','precision','recall']
 
-def plot_distributions(results):
-    n_axes = len(results.keys())
-    fig, ax = plt.subplots(n_axes, 1, figsize=(5 + n_axes, n_axes + 3))
-    for index, score in enumerate(results.keys()):
-        for model, values in results[score].items():
-            if n_axes > 1:
-                sns.distplot(values, ax=ax[index], label=model) 
-            else:
-                sns.distplot(values, ax=ax, label=model) 
 
-        if n_axes > 1:
-            ax[index].legend()  
-            ax[index].set_title(score)
-        else:
-            ax.legend()  
-            ax.set_title(score)
+# Regression
+models_regression = []
+models_regression.append(('Adaline', Adaline(max_epochs=200)))
+models_regression.append(('ELM', ELMRegressor(p=5)))
+models_regression.append(('RBF', RBFRegressor(p=10)))
 
-    fig.tight_layout()
-    fig.show()
+datasets_regression = []
+datasets_regression.append(('Wine', (X_wn, y_wn)))
+datasets_regression.append(('Boston Housing', (X_bo, y_bo)))
+datasets_regression.append(('Diabetes', (X_di, y_di)))
 
-scoring = ['accuracy','roc_auc']
-results_bc = k_fold_cross_validation(X_bc, y_bc, models, 10, scoring)
-plot_distributions(results_bc)
+scoring_regression = ['r2','neg_mean_squared_error','explained_variance']
 
-results_hd = k_fold_cross_validation(X_hd, y_hd, models, 10, scoring)
-plot_distributions(results_hd)
 
+#%% Experimento run
+results_classification = k_fold_cross_validation(datasets_classification, models_classification, scoring_classification)
+plot_scores_per_dataset(results_classification)
 
