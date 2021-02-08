@@ -90,7 +90,7 @@
 %	TITLE PAGE
 %----------------------------------------------------------------------------------------
 
-\title[Otimização em Redes 2020/1]{Maximização de Margem} % The short title appears at the bottom of every slide, the full title is only on the title page
+\title[Redes Neurais Artificiais 2020/2]{Maximização de Margem} % The short title appears at the bottom of every slide, the full title is only on the title page
 
 \author{Victor Ruela} % Your name
 \institute[PPGEE - UFMG] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
@@ -105,6 +105,15 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 %\setbeamertemplate{footline}{%
 %	\hfill\usebeamertemplate***{navigation symbols}
 %	\hspace{1cm}\insertframenumber{}/\inserttotalframenumber}
+
+
+\AtBeginSection[]
+{
+	\begin{frame}
+		\frametitle{Agenda}
+		\tableofcontents[currentsection,currentsubsection]
+	\end{frame}
+}
 
 \begin{document}
 
@@ -125,21 +134,26 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 \section{Introdução} % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
 %------------------------------------------------
 
-\subsection{Aprendizado Supervisionado}
+%\subsection{Aprendizado Supervisionado}
 
 \begin{frame}
-	\frametitle{Problema de Classificação}
+	\frametitle{Definição do Problema}
 	\begin{itemize}
 		\item Dados de treinamento: $\mathcal{T} = \left\lbrace (\textbf{x}_1, d_1), \dots, (\textbf{x}_N, d_N)\right\rbrace $
-		\item Para um problema de classificação binário: $d_i = \{ -1, 1 \} $
-		\item Assume-se que os padrões são linearmente separáveis
-		\item Em geral, algoritmos para treinamento de RNAs objetivam minimizar o erro quadrático:
-		\begin{equation}
-			\min \sum_{i=1}^{N} [d_i - sign(\textbf{w}^T\textbf{x}_i + b)]^2
-			\label{eq:sqrd}
-		\end{equation}
+		\item Problema de classificação binário: $d_i = \{ -1, 1 \} $ \textbf{linearmente separável}
+		\item Existem infinitos hiperplanos separadores!
+%		\item Em geral, algoritmos para treinamento de RNAs objetivam minimizar o erro quadrático:
+%		\begin{equation}
+%			\min \sum_{i=1}^{N} [d_i - sign(\textbf{w}^T\textbf{x}_i + b)]^2
+%			\label{eq:sqrd}
+%		\end{equation}
 		
 	\end{itemize}
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=3.0in]{fig01_01.png}
+		\label{fig:plano-mse}
+	\end{figure}
 %	\begin{figure}[h!]
 %		\centering
 %		\includegraphics[width=3.0in]{fig01.png}
@@ -147,83 +161,71 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 
 \end{frame}
 
-\subsection{Minimização do Erro}
+%\subsection{Minimização do Erro}
 
 \begin{frame}
-	\frametitle{Minimização do Erro}
+	\frametitle{Definição do Problema}
 	\begin{itemize}
-		\item O resultado da solução do Problema \ref{eq:sqrd} será um conjunto de pesos representando um hiperplano que separa estes padrões:
+		\item O uso do Perceptron, por exemplo, encontrará um hiperplano que separa estes padrões:
 		\begin{equation}
 	 		\textbf{w}^T\textbf{x} + b = 0
 	 		\label{eq:plano}
  		\end{equation}
+ 		\item Entretanto, considerar a distância de todos os pontos para treinamento não é uma garantia de otimalidade
+		\item E se fossem usados somente aqueles mais difíceis de serem separados e próximos da superfície de separação?
+		
+		\begin{block}{Maximização de Margem}
+			Abordagem introduzida por Vapnik \cite{vapnik} para encontrar uma superfície de separação ótima com boa generalização, aplicável a diferentes modelos lineares
+		\end{block}		
+
 	\end{itemize}
-	\begin{figure}[h!]
-		\centering
-		\includegraphics[width=3.0in]{fig01.png}
-		\label{fig:plano-mse}
-	\end{figure}
+
 \end{frame}
 
 \section{Maximização de Margem}
 
-\begin{frame}
-	\frametitle{O Hiperplano Ótimo}
-	\begin{columns}
-		\begin{column}{0.5\textwidth}  
-			\begin{center}
-				\frametitle{O Hiperplano Ótimo}
-				\begin{itemize}
-					\item Margem de separação: $\rho$
-					\item Quando a escolha de $\textbf{w}$ e $b$ maximizam $\rho$, o hiperplano é dito \textbf{ótimo} \cite{haykin}.
-				\end{itemize}
-			\end{center}
-		\end{column}
-		\begin{column}{0.5\textwidth}
-			\begin{figure}[h!]
-			\centering
-			\includegraphics[width=2.2in]{fig03.png}
-			\label{fig:haykin-01}
-			\end{figure}
-		\end{column}
+\subsection{O Hiperplano Ótimo}
 
-	\end{columns}
-	
-\end{frame}
 
-\begin{frame}
-	\frametitle{O Hiperplano Ótimo}
-	\begin{columns}
-		\begin{column}{0.5\textwidth}  
-			\begin{center}
-				\begin{itemize}
-					\item A função discriminante ótima é definida como:
-					\begin{equation}
-						g(\textbf{x}) = \textbf{w}^T_o\textbf{x} + b_o
-						\label{eq:plano-opt}
-					\end{equation}		
-					\item E distância deste hiperplano por:
-					\begin{equation}
-						r = \frac{g(\textbf{x})}{\left \| \textbf{w}_o \right \|} 
-						\label{eq:plano-dist}
-					\end{equation}		
-				\end{itemize}
-			\end{center}
-		\end{column}
-		\begin{column}{0.5\textwidth}
-			\begin{figure}[h!]
-				\centering
-				\includegraphics[width=2in]{fig04.png}
-				\label{fig:haykin-03}
-			\end{figure}
-		\end{column}
-	\end{columns}
-\end{frame}
+%\begin{frame}
+%	\frametitle{O Hiperplano Ótimo}
+%	\begin{columns}
+%		\begin{column}{0.5\textwidth}  
+%			\begin{center}
+%				\begin{itemize}
+%					\item A função discriminante ótima é definida como:
+%					\begin{equation}
+%						g(\textbf{x}) = \textbf{w}^T_o\textbf{x} + b_o
+%						\label{eq:plano-opt}
+%					\end{equation}		
+%					\item E a distância deste hiperplano por:
+%					\begin{equation}
+%						r = \frac{g(\textbf{x})}{\left \| \textbf{w}_o \right \|} 
+%						\label{eq:plano-dist}
+%					\end{equation}		
+%				\end{itemize}
+%			\end{center}
+%		\end{column}
+%		\begin{column}{0.5\textwidth}
+%			\begin{figure}[h!]
+%				\centering
+%				\includegraphics[width=2in]{fig04.png}
+%				\label{fig:haykin-03}
+%			\end{figure}
+%		\end{column}
+%	\end{columns}
+%\end{frame}
 
 
 \begin{frame}
 	\frametitle{O Hiperplano Ótimo}
 	\begin{itemize}
+		\item Quando a escolha de $\textbf{w}$ e $b$ maximizam a margem de separação ($\rho$), o hiperplano é dito \textbf{ótimo} \cite{haykin}:
+		\begin{equation}
+			\textbf{w}^T_o\textbf{x} + b_o = 0
+			\label{eq:plano-opt}
+		\end{equation}		
+
 		\item Para otimalidade, o par ($\textbf{w}_o$,$b_o$) deve satisfazer:
 		\begin{equation}
 		\begin{cases}
@@ -238,6 +240,16 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 
 \end{frame}
 
+\begin{frame}
+	\frametitle{O Hiperplano Ótimo}
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=0.6\textwidth]{fig03.png}
+		\caption{Representação do hiperplano ótimo e seus elementos. Extraído de \cite{haykin}}
+		\label{fig:haykin-01}
+	\end{figure}
+\end{frame}
+
 
 \begin{frame}
 	\frametitle{O Hiperplano Ótimo}
@@ -245,12 +257,12 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 	\begin{itemize}
 		\item Por definição:
 		\begin{equation}
-			g(\textbf{x}^{(s)}) = \textbf{w}^T_o\textbf{x}^{(s)} + b_o = \mp 1
+			\textbf{w}^T_o\textbf{x}^{(s)} + b_o = \mp 1
 			\label{eq:support-vectors}
 		\end{equation}	
-		\item Logo, a distância do vetor de suporte $\textbf{x}^{(s)}$ é dada por:
+		\item Logo, a distância do vetor de suporte $\textbf{x}^{(s)}$ ao hiperplano separador é dada por:
 		\begin{equation}
-		\begin{cases}
+		r = \begin{cases}
 			\frac{1}{\left \| \textbf{w}_o \right \|} & \text{ se } d^{(s)}= +1\\ 
 			\frac{-1}{\left \| \textbf{w}_o \right \|}& \text{ se } d^{(s)}= -1 
 		\end{cases}
@@ -273,7 +285,7 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 \subsection{Otimização}
 
 \begin{frame}
-	\frametitle{Formulação}
+	\frametitle{Formulação do Problema}
 	\begin{itemize}
 		\item Combinando as Equações (\ref{eq:support-vectors}) e (\ref{eq:margin-opt}), podemos formular o problema de encontrar a margem ótima como:
 		\begin{align}
@@ -292,7 +304,7 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[width=3in]{fig02.png}
-		\caption{Superfícies de separação: erro mínimo (preta) e margem máxima (verde)}
+		\caption{Superfícies de separação: MSE (preta) e margem máxima (verde)}
 		\label{fig:opt-margin-ds}
 	\end{figure}
 \end{frame}
@@ -698,6 +710,8 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 \footnotesize{
 \begin{thebibliography}{99} % Beamer does not support BibTeX so references must be inserted manually as below
 % APA
+\bibitem{vapnik}
+Boser, B. E., Guyon, I. M., \& Vapnik, V. N. (1992, July). A training algorithm for optimal margin classifiers. In Proceedings of the fifth annual workshop on Computational learning theory (pp. 144-152).
 \bibitem[Haykin, 2007]{haykin}
 Haykin, S. (2007). Neural Networks: A Comprehensive Foundation (3rd Edition).
 \bibitem[Cover, 1965]{cover}
