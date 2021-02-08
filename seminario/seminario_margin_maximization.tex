@@ -168,7 +168,7 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 	\begin{itemize}
 		\item O uso do Perceptron, por exemplo, encontrará um hiperplano que separa estes padrões:
 		\begin{equation}
-	 		\textbf{w}^T\textbf{x} + b = 0
+	 		g(\textbf{x}) = \textbf{w}^T\textbf{x} + b = 0
 	 		\label{eq:plano}
  		\end{equation}
  		\item Entretanto, considerar a distância de todos os pontos para treinamento não é uma garantia de otimalidade
@@ -282,7 +282,7 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 
 %\subsection{Padrões Linearmente Separáveis}
 
-\subsection{Otimização}
+\subsection{Solução}
 
 \begin{frame}
 	\frametitle{Formulação do Problema}
@@ -293,8 +293,9 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 			\text{sujeito a} \quad & d_i(\textbf{w}^T\textbf{x}_i + b) \geq 1, \quad i=1,2,\dots,N  \nonumber
 			\label{eq:opt-prob1}
 		\end{align} 
-		\item Problema com objetivo quadrático e restrições lineares
+		\item Problema com objetivo quadrático e restrições lineares. Por ser convexo, possuirá solução única.
 		\item É reformulado e resolvido através da técnica de multiplicadores de Lagrange \cite{haykin}
+		
 	\end{itemize}
 	
 \end{frame}
@@ -340,6 +341,27 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 		\includegraphics[width=3in]{fig05.png}
 		\label{fig:kernel-trick}
 	\end{figure}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Truque do Kernel}
+	\begin{itemize}
+		\item No espaço original:
+		\begin{equation}
+	 		g(\textbf{x})^p = \textbf{w}^T.\varphi(\textbf{x}) + b
+	 		\label{eq:primal}
+		\end{equation}
+		\item Após a transformação para o espaço dual:
+		\begin{equation}
+			g(\textbf{x})^d = \sum_{k=1}^{N} \alpha_kK(\textbf{x}_k,\textbf{x}) + b
+	 		\label{eq:dual}
+		\end{equation}
+		\item Escolhendo um Kernel apropriado \cite{mercer}, as Equações (\ref{eq:primal}) e (\ref{eq:dual}) são representações duais da mesma superfície de decisão, portanto:
+		\begin{equation}
+		 	w_i = \sum_{k=1}^{N} \alpha_k\varphi_i(\textbf{x}_k)
+			\label{eq:rela}
+		\end{equation}
+	\end{itemize}
 \end{frame}
 
 
@@ -710,12 +732,14 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 \footnotesize{
 \begin{thebibliography}{99} % Beamer does not support BibTeX so references must be inserted manually as below
 % APA
-\bibitem{vapnik}
+\bibitem[Vapnik, 1992]{vapnik}
 Boser, B. E., Guyon, I. M., \& Vapnik, V. N. (1992, July). A training algorithm for optimal margin classifiers. In Proceedings of the fifth annual workshop on Computational learning theory (pp. 144-152).
 \bibitem[Haykin, 2007]{haykin}
 Haykin, S. (2007). Neural Networks: A Comprehensive Foundation (3rd Edition).
 \bibitem[Cover, 1965]{cover}
 Cover, T. M. (1965). Geometrical and statistical properties of systems of linear inequalities with applications in pattern recognition. IEEE transactions on electronic computers, (3), 326-334.
+\bibitem[Mercer, 1909]{mercer}
+Mercer, J. (1909). Xvi. functions of positive and negative type, and their connection the theory of integral equations. Philosophical transactions of the royal society of London. Series A, containing papers of a mathematical or physical character, 209(441-458), 415-446.
 
 \end{thebibliography}
 }
