@@ -85,6 +85,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{tikz}
+\usepackage{xcolor}
 
 %----------------------------------------------------------------------------------------
 %	TITLE PAGE
@@ -107,13 +108,13 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 %	\hspace{1cm}\insertframenumber{}/\inserttotalframenumber}
 
 
-\AtBeginSection[]
-{
-	\begin{frame}
-		\frametitle{Agenda}
-		\tableofcontents[currentsection,currentsubsection]
-	\end{frame}
-}
+%\AtBeginSection[]
+%{
+%	\begin{frame}
+%		\frametitle{Agenda}
+%		\tableofcontents[currentsection,currentsubsection]
+%	\end{frame}
+%}
 
 \begin{document}
 
@@ -140,7 +141,8 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 	\frametitle{Definição do Problema}
 	\begin{itemize}
 		\item Dados de treinamento: $\mathcal{T} = \left\lbrace (\textbf{x}_1, d_1), \dots, (\textbf{x}_N, d_N)\right\rbrace $
-		\item Problema de classificação binário: $d_i = \{ -1, 1 \} $ \textbf{linearmente separável}
+		\item Problema de classificação binário: $d_i = \{ -1, 1 \} $
+		\item Linearmente separável
 		\item Existem infinitos hiperplanos separadores!
 %		\item Em geral, algoritmos para treinamento de RNAs objetivam minimizar o erro quadrático:
 %		\begin{equation}
@@ -255,18 +257,19 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 	\frametitle{O Hiperplano Ótimo}
 	
 	\begin{itemize}
-		\item Por definição:
+		\item Pela definição do vetor de suporte $\textbf{x}^{(s)}$:
 		\begin{equation}
 			\textbf{w}^T_o\textbf{x}^{(s)} + b_o = \mp 1
 			\label{eq:support-vectors}
 		\end{equation}	
-		\item Logo, a distância do vetor de suporte $\textbf{x}^{(s)}$ ao hiperplano separador é dada por:
-		\begin{equation}
-		r = \begin{cases}
+		\item Logo, sua distância ao hiperplano separador é dada por:
+		\begin{eqnarray}
+		r &=& \frac{g(\textbf{x}^{(s)})}{\left \| \textbf{w}_o \right \|} \\
+		  &=& \begin{cases}
 			\frac{1}{\left \| \textbf{w}_o \right \|} & \text{ se } d^{(s)}= +1\\ 
 			\frac{-1}{\left \| \textbf{w}_o \right \|}& \text{ se } d^{(s)}= -1 
 		\end{cases}
-		\end{equation}
+		\end{eqnarray}
 		\item Finalmente, a margem ótima $\rho$ é:
 		\begin{equation}
 			\rho = \frac{2}{\left \| \textbf{w}_o \right \|}
@@ -277,6 +280,19 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 	\begin{block}{Conclusão}
 		Maximizar a margem de separação entre classes binárias é equivalente a minimizar a norma Euclidiana do vetor de pesos $\textbf{w}$
 	\end{block}
+
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{O Hiperplano Ótimo}
+
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[width=0.5\textwidth]{fig04.png}
+			\caption{Distância de um ponto ao hiperplano ótimo. Extraído de \cite{haykin}}
+			\label{fig:haykin-03}
+		\end{figure}
 
 \end{frame}
 
@@ -293,8 +309,10 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 			\text{sujeito a} \quad & d_i(\textbf{w}^T\textbf{x}_i + b) \geq 1, \quad i=1,2,\dots,N  \nonumber
 			\label{eq:opt-prob1}
 		\end{align} 
-		\item Problema com objetivo quadrático e restrições lineares. Por ser convexo, possuirá solução única.
+		\item Problema com objetivo quadrático e restrições lineares. 
+		\item Por ser convexo, possuirá solução única.
 		\item É reformulado e resolvido através da técnica de multiplicadores de Lagrange \cite{haykin}
+		\item Mais fácil de ser reolvido e fornece os vetores de suporte
 		
 	\end{itemize}
 	
@@ -317,12 +335,13 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 		\item Em aplicações práticas, não podemos garantir que os dados sejam perfeitamente separáveis
 		\item Logo, é adicionada uma variável de folga $\xi$ para representar estas discrepâncias:
 		\begin{align}
-			\underset{\textbf{w},b}{\text{minimizar}} \quad & \frac{1}{2}\textbf{w}^T\textbf{w} + C\sum_{i=1}^{N}\xi_i \\ 
-			\text{sujeito a} \quad & d_i(\textbf{w}^T\textbf{x}_i + b) \geq 1 - \xi_i \quad i=1,2,\dots,N   \nonumber \\
-			& \xi_i \geq 0 \nonumber
+			\underset{\textbf{w},b}{\text{minimizar}} \quad & \frac{1}{2}\textbf{w}^T\textbf{w} + \textcolor{red}{C\sum_{i=1}^{N}\xi_i} \\ 
+			\text{sujeito a} \quad & d_i(\textbf{w}^T\textbf{x}_i + b) \geq 1 \textcolor{red}{- \xi_i} \quad i=1,2,\dots,N   \nonumber \\
+			& \textcolor{red}{\xi_i \geq 0} \nonumber
 		\end{align} 
 		\item É reformulado e resolvido de forma similar ao Problema (\ref{eq:opt-prob1})
-		\item A constante $C$ é especificada pelo usuário e controla a generalização do modelo, sendo conhecida como o parâmetro de regularização
+		\item A constante $C$ controla a generalização do modelo
+		\item Deve ser definida usando validação cruzada, por exemplo
 	\end{itemize}
 	
 \end{frame}
@@ -346,7 +365,7 @@ Programa de Pós-Graduação em Engenharia Elétrica\\ Universidade Federal de M
 \begin{frame}
 	\frametitle{Truque do Kernel}
 	\begin{itemize}
-		\item No espaço original:
+		\item No espaço original (primal):
 		\begin{equation}
 	 		g(\textbf{x})^p = \textbf{w}^T.\varphi(\textbf{x}) + b
 	 		\label{eq:primal}
