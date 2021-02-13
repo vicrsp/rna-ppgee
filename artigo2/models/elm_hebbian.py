@@ -23,7 +23,7 @@ class ELMHebbianRegressor(BaseEstimator, RegressorMixin):
     def predict(self, X):
         # input validation
         X = check_array(X, accept_sparse=True)
-        check_is_fitted(self, ['coef_', 'Z_'])
+        check_is_fitted(self, ['coef_', 'Z_', 'scaler_'])
 
         N, _ = X.shape
         X_p = self.scaler_.transform(X)
@@ -113,13 +113,24 @@ class ELMHebbianRegressor(BaseEstimator, RegressorMixin):
         # apply activation function: tanh
         H = np.tanh(x_aug @ Z)
         # calculate weights
-        w = np.random.rand(self.p)
-        for _ in range(100):
-            y_k = H @ w
-            w0 = y_k @ H
-            #w0 = w0 / np.linalg.norm(w0)
+        w = np.random.uniform(-0.5, 0.5, (self.p,))
+        
+        eta = 0.001
+        tol = 1e-4
+        delta = np.Inf
 
-            w = w + 0.001 * w0
+        iters = 0
+        while delta > tol:
+            dw = eta * y @ (H - y.reshape(-1,1) @ w.reshape(-1,1).T)
+            w_old = w
+            w = w + dw
+            delta = np.linalg.norm(w - w_old)
+
+            iters += 1
+            if(iters > 1000):
+                print('No convergence for hebbian perceptron!')
+                break
+
         self.coef_ = w
         self.Z_ = Z
 
