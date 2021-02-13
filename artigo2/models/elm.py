@@ -2,9 +2,10 @@ import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 
+
 class ELMClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, p=5):
-        self.base = ELMRegressor(p)
+    def __init__(self, p=5, reg_factor=None):
+        self.base = ELMRegressor(p, reg_factor)
 
     def predict(self, X):
         return np.sign(self.base.predict(X))
@@ -13,9 +14,11 @@ class ELMClassifier(BaseEstimator, ClassifierMixin):
         self.base.fit(X, y)
         return self
 
+
 class ELMRegressor(BaseEstimator, RegressorMixin):
-    def __init__(self, p=5):
+    def __init__(self, p=5, reg_factor=None):
         self.p = p
+        self.reg_factor = reg_factor
 
     def predict(self, X):
         # input validation
@@ -38,7 +41,11 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
         # apply activation function: tanh
         H = np.tanh(x_aug @ Z)
         # calculate the weights
-        w = np.linalg.pinv(H) @ y
+        if(self.reg_factor == None):
+            w = np.linalg.pinv(H) @ y
+        else:
+            A = H.T @ H + np.eye(self.p) * self.reg_factor
+            w = np.linalg.inv(A) @ H.T @ y
         # store fitted data
         self.coef_ = w
         self.Z_ = Z
