@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 
 
 class ELMHebbianClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, p=5, hebbian_rule='oja'):
+    def __init__(self, p=5, hebbian_rule='default'):
         self.base = ELMHebbianRegressor(p, hebbian_rule)
 
     def predict(self, X):
@@ -20,7 +20,7 @@ class ELMHebbianClassifier(BaseEstimator, ClassifierMixin):
 
 
 class ELMHebbianRegressor(BaseEstimator, RegressorMixin):
-    def __init__(self, p=5, hebbian_rule='oja'):
+    def __init__(self, p=5, hebbian_rule='default'):
         self.p = p
         self.hebbian_rule = hebbian_rule
 
@@ -60,7 +60,7 @@ class ELMHebbianRegressor(BaseEstimator, RegressorMixin):
                 break
         return w
 
-    def calculate_weights_spp(self, y, H):
+    def calculate_weights_default(self, y, H):
         w0 = y @ H
         w = w0 / np.linalg.norm(w0)
         return w
@@ -82,8 +82,8 @@ class ELMHebbianRegressor(BaseEstimator, RegressorMixin):
         # calculate weights
         if self.hebbian_rule == 'oja':
             self.coef_ = self.calculate_weights_oja_rule(y, H)
-        elif self.hebbian_rule == 'spp':
-            self.coef_ = self.calculate_weights_spp(y, H)
+        elif self.hebbian_rule == 'default':
+            self.coef_ = self.calculate_weights_default(y, H)
         else:
             raise ValueError('Invalid hebbian_rule!')
 
