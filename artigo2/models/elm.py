@@ -1,22 +1,32 @@
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
-
+from sklearn.utils.multiclass import unique_labels
+from sklearn.metrics import roc_auc_score, mean_squared_error
 
 class ELMClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, p=5, reg_factor=None):
-        self.base = ELMRegressor(p, reg_factor)
+    def __init__(self, p=5):
+        self.base = ELMRegressor(p)
 
     def predict(self, X):
         return np.sign(self.base.predict(X))
 
     def fit(self, X, y):
         self.base.fit(X, y)
+        self.classes_ = unique_labels(y)
         return self
+    
+    def decision_function(self, X):
+        return self.base.predict(X)
 
+    def score(self, X, y):
+        return roc_auc_score(y, self.predict(X))
+    
+    def set_regularization_factor(self, reg_factor):
+        self.base.set_regularization_factor(reg_factor)
 
 class ELMRegressor(BaseEstimator, RegressorMixin):
-    def __init__(self, p=5, reg_factor=None):
+    def __init__(self, p=5, reg_factor=0.0):
         self.p = p
         self.reg_factor = reg_factor
 
@@ -41,13 +51,18 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
         # apply activation function: tanh
         H = np.tanh(x_aug @ Z)
         # calculate the weights
-        if(self.reg_factor == None):
-            w = np.linalg.pinv(H) @ y
-        else:
-            A = H.T @ H + np.eye(self.p) * self.reg_factor
-            w = np.linalg.inv(A) @ H.T @ y
+        A = H.T @ H + np.eye(self.p) * self.reg_factor
+        w = np.linalg.inv(A) @ H.T @ y
         # store fitted data
         self.coef_ = w
         self.Z_ = Z
 
         return self
+
+    def set_regularization_factor(self, reg_factor):
+        self.reg_factor = reg_factor
+
+    def score(self, X, y):
+        return mean_squared_error(y, self.predict(X))
+
+

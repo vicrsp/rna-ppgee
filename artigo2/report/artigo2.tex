@@ -1,0 +1,78 @@
+\documentclass[conference]{IEEEtran}
+% If the IEEEtran.cls has not been installed into the LaTeX system files, 
+% manually specify the path to it:
+% \documentclass[conference]{../sty/IEEEtran} 
+\usepackage[brazil]{babel}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor IEEEtran}
+
+\begin{document}
+	
+	% paper title
+	\title{Redes Neurais Artificiais: Artigo 2}
+	
+	
+	% author names and affiliations
+	% use a multiple column layout for up to three different
+	% affiliations
+	\author{\authorblockN{Victor São Paulo Ruela \\}
+		\authorblockA{Programa de Pós-Graduação em Engenharia Elétrica\\
+			Universidade Federal de Minas Gerais\\
+			Belo Horizonte, Brasil\\
+            Email: victorspruela@ufmg.br}}
+	
+	% avoiding spaces at the end of the author lines is not a problem with
+	% conference papers because we don't use \thanks or \IEEEmembership
+	
+	% use only for invited papers
+	%\specialpapernotice{(Invited Paper)}
+	
+	% make the title area
+	\maketitle
+	
+	\begin{abstract}
+		Este trabalho tem como objetivo apresentar uma revisão da literatura de redes neurais artificiais, com enfoque nas evoluções desenvolvidas a partir dos principais trabalhos clássicos que estabeleceram os fundamentos desta enorme área de pesquisa. 
+	\end{abstract}
+
+	\section{Introdução}
+	A Rede Neural Artificial (RNA) é uma classe de modelos muito popular em problemas de classificação, reconhecimento de padrões, regressão e predição~\cite{jain1996artificial}. Inspirado pelas características do cérebro humano, elas possuem como elementos básicos neurônios artificiais capazes de executar operações matemáticas, representando desta forma modelos de neurônios biológicos. Através de sua organização em diferentes estruturas de rede, tais modelos são capazes de se adaptar e representar funções matemáticas bastante complexas. 
+
+	
+	\section{Metodologia}
+	
+	Para cada modelo, o seguinte experimento será realizado:
+	\begin{enumerate}
+		\item Particionar os dados $D$ em $k$ sub-grupos para validação cruzada, mantendo a mesma proporção entre os rótulos
+		\begin{enumerate}
+			\item Criar o conjunto de treino $T = D - k$
+			\item Dividir $T$ em dois novos conjuntos $T1$ e $T2$, mantendo a mesma proporção entre os rótulos
+			\item Para cada valor de parâmetro de regularização $\lambda$:
+			\begin{enumerate}
+				\item Treinar o modelo sobre $T1$
+				\item Estimar a métrica de teste sobre $T2$
+			\end{enumerate}
+			\item Escolher $\lambda$ que corresponde ao mínimo da curva de validação sobre $T2$
+			\item Avaliar a métrica do modelo sobre $k$
+		\end{enumerate}
+		\item Estimar o intervalo de confiança do valor médio da métrica usando \textit{bootstraping}
+	\end{enumerate}
+
+
+			
+	\section{Conclusões}
+	
+	Neste trabalho foi feita uma revisão bibligráfica de alguns dos principais trabalhos sobre redes neurais aritificiais. Realizando a divisão entre modelos para aprendizado supervisionado e não-supersvisionado, os conceitos básicos dos modelos estudados foram apresentados para contextualização, bem como uma breve análise das principais evoluções e aplicações propostas na literatura. Cada um destes modelos possui uma enorme quantidade de trabalhos publicados, portanto é de se esperar que publicações importantes tenham sido omitidos.
+	
+	Um aspecto não muito abordado neste trabalho foram as aplicações de RNAs, dado que o foco deste trabalho foi em entender um pouco mais de sua teoria. Em~\cite{abiodun2018state} está disponível uma lista das diferentes áreas em que RNAs são comumente aplicadas. Conforme observado durante a realização deste trabalho, grande partes das evoluções visam aprimorar eficiência dos algoritmos treinamento. Isso também é observado por~\cite{abiodun2018state}, o qual considera uma tendência trabalhos futuros visando aprimorar este aspecto.
+
+
+    \bibliographystyle{unsrt}
+	\bibliography{artigo2}
+	
+\end{document} 

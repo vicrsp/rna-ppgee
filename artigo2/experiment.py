@@ -7,7 +7,8 @@ from models.elm import ELMClassifier, ELMRegressor
 from models.perceptron import PerceptronClassifier
 from models.rbf import RBFClassifier, RBFRegressor
 from models.adaline import Adaline
-from experiments.evaluation import k_fold_cross_validation, plot_scores_per_dataset
+from models.elm_hebbian import ELMHebbianClassifier, ELMHebbianRegressor
+from experiments.evaluation import ModelEvaluationExperiment
 from sklearn.datasets import load_digits, load_breast_cancer, load_wine, load_boston, load_diabetes, load_iris
 from sklearn.preprocessing import MinMaxScaler
 
@@ -41,17 +42,15 @@ X_di = MinMaxScaler().fit_transform(X_di)
 #%% Experiment definition
 # Classification
 models_classification = []
-models_classification.append(('Perceptron', PerceptronClassifier(max_epochs=200)))
-models_classification.append(('ELM', ELMClassifier(p=5)))
-models_classification.append(('RBF', RBFClassifier(p=10)))
+models_classification.append(('Perceptron', PerceptronClassifier(max_epochs=200), None))
+models_classification.append(('ELM', ELMClassifier(p=15), np.linspace(0,0.001,100)))
+models_classification.append(('RBF', RBFClassifier(p=15), np.linspace(0,0.001,100)))
+models_classification.append(('ELMHebbian', ELMHebbianClassifier(p=15), None)) 
 
 datasets_classification = []
 datasets_classification.append(('Breast Cancer', (X_bc, y_bc)))
 datasets_classification.append(('Digitis (8)', (X_dg, y_dg)))
 datasets_classification.append(('Iris', (X_ir, y_ir)))
-
-scoring_classification = ['accuracy','precision','recall']
-
 
 # Regression
 models_regression = []
@@ -64,10 +63,10 @@ datasets_regression.append(('Wine', (X_wn, y_wn)))
 datasets_regression.append(('Boston Housing', (X_bo, y_bo)))
 datasets_regression.append(('Diabetes', (X_di, y_di)))
 
-scoring_regression = ['r2','neg_mean_squared_error','explained_variance']
-
 
 #%% Experimento run
-results_classification = k_fold_cross_validation(datasets_classification, models_classification, scoring_classification)
-plot_scores_per_dataset(results_classification)
+experiment_classification = ModelEvaluationExperiment(datasets_classification)
+experiment_classification.start(models_classification)
 
+#%% Experiment analysis
+experiment_classification.plot_final_scores()

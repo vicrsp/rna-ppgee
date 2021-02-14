@@ -9,24 +9,35 @@ from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.datasets import load_iris, load_breast_cancer
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import accuracy_score
-
+from sklearn.utils.multiclass import unique_labels
+from sklearn.metrics import roc_auc_score, mean_squared_error
 
 class RBFClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, p=5, reg_factor=None):
-        self.base = RBFRegressor(p, reg_factor)
+    def __init__(self, p=5):
+        self.base = RBFRegressor(p)
 
     def predict(self, X):
         return np.sign(self.base.predict(X))
 
     def fit(self, X, y):
         self.base.fit(X, y)
+        self.classes_ = unique_labels(y)
         return self
+
+    def decision_function(self, X):
+        return self.base.predict(X)
+
+    def score(self, X, y):
+        return roc_auc_score(y, self.predict(X))
+
+    def set_regularization_factor(self, reg_factor):
+        self.base.set_regularization_factor(reg_factor)
 
 
 class RBFRegressor(BaseEstimator, RegressorMixin):
-    def __init__(self, p=5, reg_factor=None):
+    def __init__(self, p=5):
         self.p = p
-        self.reg_factor = reg_factor
+        self.reg_factor = 0.0
 
     def apply_transformation(self, X):
         check_is_fitted(self, ['cov_', 'centers_'])
@@ -81,15 +92,17 @@ class RBFRegressor(BaseEstimator, RegressorMixin):
         H = self.apply_transformation(X)
         H_aug = np.hstack((np.ones((N, 1)), H))
 
-        # calculate the weights
-        if(self.reg_factor == None):
-            # (sp.linalg.inv(H_aug.T @ H_aug) @ H_aug.T) @ y
-            w = np.linalg.pinv(H_aug) @ y
-        else:
-            A = H_aug.T @ H_aug + np.eye(self.p + 1) * self.reg_factor
-            w = np.linalg.inv(A) @ H_aug.T @ y
+        # calculate the weight
+        A = H_aug.T @ H_aug + np.eye(self.p + 1) * self.reg_factor
+        w = np.linalg.inv(A) @ H_aug.T @ y
 
         self.coef_ = w
         self.H_ = H
-
+        
         return self
+
+    def set_regularization_factor(self, reg_factor):
+        self.reg_factor = reg_factor
+
+    def score(self, X, y):
+        return mean_squared_error(y, self.predict(X))
