@@ -84,12 +84,8 @@ class ModelEvaluationExperiment:
         # find the optimal factor
         scores_array = np.asarray(scores)
         factors, metric_value = scores_array[:, 0], scores_array[:, 1]
-        if(model._estimator_type == "classifier"):
-            i_max = np.argmax(metric_value)
-            opt_factor = factors[i_max]
-        elif(model._estimator_type == "regressor"):
-            i_min = np.argmin(metric_value)
-            opt_factor = factors[i_min]
+        i_max = np.argmax(metric_value)
+        opt_factor = factors[i_max]
 
         return opt_factor, scores_array
 
@@ -109,7 +105,7 @@ class ModelEvaluationExperiment:
             sns.catplot(data=tuning_data, x='factor',
                         kind='box', y='metric', col='model_name')
 
-    def plot_final_scores(self):
+    def plot_final_scores(self, path='/home/victor/git/rna-ppgee/artigo2/report/figures'):
         for name in self.dataset_results.keys():
             results = self.dataset_results[name]
             score_data = []
@@ -121,5 +117,4 @@ class ModelEvaluationExperiment:
             fig, ax = plt.subplots(figsize=(8, 6))
             sns.boxplot(data=score_data, x='model_name', y='score', ax=ax)
             ax.set_title(name)
-            fig.savefig(
-                f'/home/victor/git/rna-ppgee/artigo2/report/figures/{name}_scores')
+            fig.savefig(f'{path}/{name}_scores')

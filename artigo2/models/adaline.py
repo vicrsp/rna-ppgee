@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 
 class Adaline(BaseEstimator,RegressorMixin):
     def __init__(self, eta=0.01, tol=1e-6, max_epochs=100):
@@ -48,4 +48,4 @@ class Adaline(BaseEstimator,RegressorMixin):
         return self
 
     def score(self, X, y):
-        return mean_squared_error(y, self.predict(X))
+        return r2_score(y, self.predict(X))

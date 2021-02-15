@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.utils.multiclass import unique_labels
-from sklearn.metrics import roc_auc_score, mean_squared_error
+from sklearn.metrics import roc_auc_score, r2_score
 
 class ELMClassifier(BaseEstimator, ClassifierMixin):
     def __init__(self, p=5):
@@ -63,6 +63,6 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
         self.reg_factor = reg_factor
 
     def score(self, X, y):
-        return mean_squared_error(y, self.predict(X))
+        return r2_score(y, self.predict(X))
 
 

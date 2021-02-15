@@ -37,7 +37,7 @@
 	\maketitle
 	
 	\begin{abstract}
-		Este trabalho tem como objetivo apresentar uma revisão da literatura de redes neurais artificiais, com enfoque nas evoluções desenvolvidas a partir dos principais trabalhos clássicos que estabeleceram os fundamentos desta enorme área de pesquisa. 
+		Este trabalho tem como objetivo avaliar o desempneho de diferentes modelos de redes neurais artificiais estudados durante a disciplina sobre bases de dados de benchmark presentes na literatura. Serão considerados o Perceptron, Adaline, Redes RBF, ELM e ELM com aprendizado Hebbiano. Para três problemas de regressão e classificação binária escolhidos, um experimento foi desenhado seguindo as recomendações da literatura. Os resultados de cada modelos são comparados por meio de testes estatíscticos para as metrícas AUC (classficação) e coeficiente de correlação linear (regressão). Os resultados mostraram que ...
 	\end{abstract}
 
 	\section{Introdução}
@@ -45,22 +45,33 @@
 
 	
 	\section{Metodologia}
+	\subsection{Bases de Dados}
 	
-	Para cada modelo, o seguinte experimento será realizado:
+	\subsubsection{Classificação}
+	Serão consideradas as bases de dados 
+	Suas informações estão resumidas na tabela:
+
+	\subsubsection{Regressão}
+	\subsection{Desenho do experimento}
+	A partir das recomendações para desenho de experimento para comparação de algoritmos proposta em \cite{salzberg1997comparing}, a seguinte metodologia será adotada:
 	\begin{enumerate}
-		\item Particionar os dados $D$ em $k$ sub-grupos para validação cruzada, mantendo a mesma proporção entre os rótulos
-		\begin{enumerate}
-			\item Criar o conjunto de treino $T = D - k$
-			\item Dividir $T$ em dois novos conjuntos $T1$ e $T2$, mantendo a mesma proporção entre os rótulos
-			\item Para cada valor de parâmetro de regularização $\lambda$:
+		\item Para cada base de dados:
 			\begin{enumerate}
-				\item Treinar o modelo sobre $T1$
-				\item Estimar a métrica de teste sobre $T2$
+			\item Particionar os dados $D$ em $k$ sub-grupos para validação cruzada, mantendo a mesma proporção entre os rótulos
+			\begin{enumerate}
+				\item Criar o conjunto de treino $T = D - k$
+				\item Dividir $T$ em dois novos conjuntos $T1$ e $T2$, mantendo a mesma proporção entre os rótulos
+				\item Para cada valor de parâmetro de regularização $\lambda$:
+				\begin{enumerate}
+					\item Treinar cada modelo sobre $T1$
+					\item Estimar a métrica de teste sobre $T2$
+				\end{enumerate}
+				\item Escolher $\lambda$ que corresponde ao mínimo da curva de validação sobre $T2$
+				\item Avaliar a métrica do modelo sobre $k$
 			\end{enumerate}
-			\item Escolher $\lambda$ que corresponde ao mínimo da curva de validação sobre $T2$
-			\item Avaliar a métrica do modelo sobre $k$
+			\item Estimar o intervalo de confiança do valor médio da métrica usando \textit{bootstraping}
 		\end{enumerate}
-		\item Estimar o intervalo de confiança do valor médio da métrica usando \textit{bootstraping}
+		
 	\end{enumerate}
 
 

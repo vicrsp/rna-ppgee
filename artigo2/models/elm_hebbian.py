@@ -3,7 +3,7 @@ import random
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import mean_squared_error, roc_auc_score
+from sklearn.metrics import r2_score, roc_auc_score
 
 
 class ELMHebbianClassifier(BaseEstimator, ClassifierMixin):
@@ -21,9 +21,7 @@ class ELMHebbianClassifier(BaseEstimator, ClassifierMixin):
         return self.base.predict(X)
 
     def score(self, X, y):
-        return 1 / roc_auc_score(y, self.predict(X))
-# http://persoal.citius.usc.es/manuel.fernandez.delgado/programs/dpp_two_class.c
-
+        return roc_auc_score(y, self.predict(X))
 
 class ELMHebbianRegressor(BaseEstimator, RegressorMixin):
     def __init__(self, p=5, hebbian_rule='default'):
@@ -96,5 +94,5 @@ class ELMHebbianRegressor(BaseEstimator, RegressorMixin):
         return self
 
     def score(self, X, y):
-        return mean_squared_error(y, self.predict(X))
+        return r2_score(y, self.predict(X))
 
