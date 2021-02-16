@@ -60,16 +60,11 @@
 			\item Particionar os dados $D$ em $k$ sub-grupos para validação cruzada, mantendo a mesma proporção entre os rótulos
 			\begin{enumerate}
 				\item Criar o conjunto de treino $T = D - k$
-				\item Dividir $T$ em dois novos conjuntos $T1$ e $T2$, mantendo a mesma proporção entre os rótulos
-				\item Para cada valor de parâmetro de regularização $\lambda$:
-				\begin{enumerate}
-					\item Treinar cada modelo sobre $T1$
-					\item Estimar a métrica de teste sobre $T2$
-				\end{enumerate}
-				\item Escolher $\lambda$ que corresponde ao mínimo da curva de validação sobre $T2$
+				\item Executar busca exaustiva com validação cruzada sobre $T$ para os coeficientes de regularização $\lambda$
+				\item Escolher $\lambda$ que obtém o melhor ajuste médio 
 				\item Avaliar a métrica do modelo sobre $k$
 			\end{enumerate}
-			\item Estimar o intervalo de confiança do valor médio da métrica usando \textit{bootstraping}
+			\item Estimar o intervalo de confiança do valor médio da métrica sobre $k$ usando \textit{bootstraping}
 		\end{enumerate}
 		
 	\end{enumerate}

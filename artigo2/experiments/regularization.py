@@ -4,39 +4,33 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
-from sklearn.model_selection import train_test_split, StratifiedKFold
+from sklearn.model_selection import train_test_split, StratifiedKFold, GridSearchCV
 
-class ModelTuner:
-    def __init__(self, dataset, model, reg_factor=(0,100,20), tuning_size=0.3):
+class ModelTunerCV:
+    def __init__(self, dataset, model, reg_factor):
         self.X, self.y = dataset
         self.model = model
-        self.tuning_size = tuning_size
-        reg_min, reg_max, reg_num = reg_factor
-        self.reg_factor = np.linspace(reg_min, reg_max, reg_num)
+        self.param_grid = {'reg_factor': reg_factor}
 
-    def tune(self, repetitions=30):
-        tuning_data = []
-        for i in range(repetitions):
-            X_t1, X_t2, y_t1, y_t2 = train_test_split(self.X, self.y, test_size=self.tuning_size, shuffle=True)
-            for factor in tqdm(self.reg_factor):
-                scores = []
-                for _ in range(int(repetitions/3)):
-                    # train regularized model on T1
-                    self.model.set_regularization_factor(factor)
-                    self.model.fit(X_t1, y_t1)
-                    # evaluate it on T2
-                    score = self.model.score(X_t2, y_t2)
-                    scores.append(score)
-
-                tuning_data.append((i, factor, np.mean(score)))
-          
-        self.results = pd.DataFrame(tuning_data, columns=['i','factor','score'])
+    def tune(self, folds=5):
+        self.tuner = GridSearchCV(self.model, self.param_grid, cv=folds, n_jobs=2, verbose=3)
+        self.tuner.fit(self.X, self.y)
+        
+        self.opt_param = self.tuner.best_params_['reg_factor']
         return self
 
     def plot(self, title):
         fig, ax = plt.subplots(figsize=(8,6))
-        sns.lineplot(data=self.results, x='factor',y='score', ax=ax)
-        ax.set_title(title)
+        
+        mean_data = self.tuner.cv_results_['mean_test_score']
+        std_data = self.tuner.cv_results_['std_test_score']
+        reg_factors = self.param_grid['reg_factor']
+
+        ax.plot(reg_factors, mean_data, 'ko-')
+        ax.fill_between(reg_factors, mean_data, mean_data + std_data, color='red', alpha=0.5)
+        ax.fill_between(reg_factors, mean_data - std_data, mean_data, color='red', alpha=0.5)
+
+        ax.set_title(f'{title} - {self.opt_param}')
         fig.show()
 
 

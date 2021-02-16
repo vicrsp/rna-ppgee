@@ -7,8 +7,8 @@ from sklearn.metrics import r2_score, roc_auc_score
 
 
 class ELMHebbianClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, p=5, hebbian_rule='default'):
-        self.base = ELMHebbianRegressor(p, hebbian_rule)
+    def __init__(self, p=5):
+        self.base = ELMHebbianRegressor(p)
 
     def predict(self, X):
         return np.sign(self.base.predict(X))
@@ -24,9 +24,8 @@ class ELMHebbianClassifier(BaseEstimator, ClassifierMixin):
         return roc_auc_score(y, self.predict(X))
 
 class ELMHebbianRegressor(BaseEstimator, RegressorMixin):
-    def __init__(self, p=5, hebbian_rule='default'):
+    def __init__(self, p=5):
         self.p = p
-        self.hebbian_rule = hebbian_rule
 
     def predict(self, X):
         # input validation
@@ -42,27 +41,6 @@ class ELMHebbianRegressor(BaseEstimator, RegressorMixin):
     def pre_process(self, X):
         self.scaler_ = StandardScaler().fit(X)
         return self.scaler_.transform(X)
-
-    def calculate_weights_oja_rule(self, y, H):
-        # calculate weights
-        w = np.random.uniform(-0.5, 0.5, (self.p,))
-
-        eta = 0.001
-        tol = 1e-4
-        delta = np.Inf
-
-        iters = 0
-        while delta > tol:
-            dw = eta * y @ (H - y.reshape(-1, 1) @ w.reshape(-1, 1).T)
-            w_old = w
-            w = w + dw
-            delta = np.linalg.norm(w - w_old)
-
-            iters += 1
-            if(iters > 1000):
-                print('No convergence for hebbian perceptron!')
-                break
-        return w
 
     def calculate_weights_default(self, y, H):
         w0 = y @ H
@@ -84,13 +62,8 @@ class ELMHebbianRegressor(BaseEstimator, RegressorMixin):
         H = np.tanh(x_aug @ Z)
 
         # calculate weights
-        if self.hebbian_rule == 'oja':
-            self.coef_ = self.calculate_weights_oja_rule(y, H)
-        elif self.hebbian_rule == 'default':
-            self.coef_ = self.calculate_weights_default(y, H)
-        else:
-            raise ValueError('Invalid hebbian_rule!')
-
+        self.coef_ = self.calculate_weights_default(y, H)
+        
         return self
 
     def score(self, X, y):

@@ -5,10 +5,10 @@ from sklearn.utils.multiclass import unique_labels
 from sklearn.metrics import roc_auc_score
 
 class PerceptronClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, eta=0.01, max_epochs=100):
+    def __init__(self, eta=0.01, max_epochs=100, reg_factor = 0.0):
         self.eta = eta
         self.max_epochs = max_epochs
-        self.reg_factor = 0.0
+        self.reg_factor = reg_factor
 
     def predict(self, X):
         # input validation
@@ -65,7 +65,3 @@ class PerceptronClassifier(BaseEstimator, ClassifierMixin):
         X_aug = np.hstack((-np.ones((N, 1)), X))
         u = X_aug @ self.coef_
         return u
-
-    def set_regularization_factor(self, reg_factor):
-        self.reg_factor = reg_factor
-

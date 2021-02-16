@@ -5,8 +5,10 @@ from sklearn.utils.multiclass import unique_labels
 from sklearn.metrics import roc_auc_score, r2_score
 
 class ELMClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, p=5):
-        self.base = ELMRegressor(p)
+    def __init__(self, p=5, reg_factor=0.0):
+        self.base = ELMRegressor(p, reg_factor)
+        self.reg_factor = reg_factor
+        self.p = p
 
     def predict(self, X):
         return np.sign(self.base.predict(X))
@@ -21,9 +23,6 @@ class ELMClassifier(BaseEstimator, ClassifierMixin):
 
     def score(self, X, y):
         return roc_auc_score(y, self.predict(X))
-    
-    def set_regularization_factor(self, reg_factor):
-        self.base.set_regularization_factor(reg_factor)
 
 class ELMRegressor(BaseEstimator, RegressorMixin):
     def __init__(self, p=5, reg_factor=0.0):
@@ -58,9 +57,6 @@ class ELMRegressor(BaseEstimator, RegressorMixin):
         self.Z_ = Z
 
         return self
-
-    def set_regularization_factor(self, reg_factor):
-        self.reg_factor = reg_factor
 
     def score(self, X, y):
         return r2_score(y, self.predict(X))

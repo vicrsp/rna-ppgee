@@ -13,8 +13,10 @@ from sklearn.utils.multiclass import unique_labels
 from sklearn.metrics import roc_auc_score, r2_score
 
 class RBFClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, p=5):
-        self.base = RBFRegressor(p)
+    def __init__(self, p=5, reg_factor=0.0):
+        self.base = RBFRegressor(p,reg_factor)
+        self.reg_factor = reg_factor
+        self.p = p
 
     def predict(self, X):
         return np.sign(self.base.predict(X))
@@ -30,14 +32,10 @@ class RBFClassifier(BaseEstimator, ClassifierMixin):
     def score(self, X, y):
         return roc_auc_score(y, self.predict(X))
 
-    def set_regularization_factor(self, reg_factor):
-        self.base.set_regularization_factor(reg_factor)
-
-
 class RBFRegressor(BaseEstimator, RegressorMixin):
-    def __init__(self, p=5):
+    def __init__(self, p=5, reg_factor = 0.0):
         self.p = p
-        self.reg_factor = 0.0
+        self.reg_factor = reg_factor
 
     def pdfnvar(self, x, m, K, n):
         """Função radial Gaussiana
@@ -115,9 +113,6 @@ class RBFRegressor(BaseEstimator, RegressorMixin):
         self.H_ = H
         
         return self
-
-    def set_regularization_factor(self, reg_factor):
-        self.reg_factor = reg_factor
 
     def score(self, X, y):
         return r2_score(y, self.predict(X))
