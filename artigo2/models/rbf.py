@@ -39,6 +39,20 @@ class RBFRegressor(BaseEstimator, RegressorMixin):
         self.p = p
         self.reg_factor = 0.0
 
+    def pdfnvar(self, x, m, K, n):
+        """Função radial Gaussiana
+            Parâmetros
+            ----------
+            x: amostra de forma (1, n_características)
+            m: vetor de médias de forma (n_características,)   
+            K: matriz de covariâncias de forma (n_características, n_características)   
+            Retorna
+            -------
+            p: pdf para cada entrada em um dado cluster determinado po m e K
+        """
+        p = 1/np.sqrt((2*np.pi) ** n * np.linalg.det(K)) * np.exp((-0.5*(x - m).T).dot(np.linalg.pinv(K)).dot(x-m))
+        return p
+
     def apply_transformation(self, X):
         check_is_fitted(self, ['cov_', 'centers_'])
         N, n = X.shape
@@ -47,8 +61,9 @@ class RBFRegressor(BaseEstimator, RegressorMixin):
             for i in range(self.p):
                 mi = self.centers_[i, :]
                 covi = self.cov_[i] + 0.001 * np.eye(n)
-                H[j, i] = self.gaussian_kernel(X[j, :], mi, covi, n)
+                H[j, i] = self.pdfnvar(X[j, :], mi, covi, n)
         return H
+
 
     def predict(self, X):
         # check X, y consistency
