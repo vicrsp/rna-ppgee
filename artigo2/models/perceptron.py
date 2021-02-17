@@ -5,11 +5,10 @@ from sklearn.utils.multiclass import unique_labels
 from sklearn.metrics import roc_auc_score
 
 class PerceptronClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, eta=0.01, max_epochs=100, reg_factor = 0.0):
+    def __init__(self, eta=0.01, max_epochs=100):
         self.eta = eta
         self.max_epochs = max_epochs
-        self.reg_factor = reg_factor
-
+        
     def predict(self, X):
         # input validation
         X = check_array(X, accept_sparse=True)

@@ -13,7 +13,7 @@ class ModelTunerCV:
         self.param_grid = {'reg_factor': reg_factor}
 
     def tune(self, folds=5):
-        self.tuner = GridSearchCV(self.model, self.param_grid, cv=folds, n_jobs=2, verbose=3)
+        self.tuner = GridSearchCV(self.model, self.param_grid, cv=folds, n_jobs=2, verbose=2)
         self.tuner.fit(self.X, self.y)
         
         self.opt_param = self.tuner.best_params_['reg_factor']

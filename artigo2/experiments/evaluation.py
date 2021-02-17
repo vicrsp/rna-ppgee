@@ -67,6 +67,8 @@ class ModelEvaluationExperiment:
         return opt_factor
 
     def plot_final_scores(self, path='/home/victor/git/rna-ppgee/artigo2/report/figures'):
+        table = pd.DataFrame()
+        
         for name in self.dataset_results.keys():
             results = self.dataset_results[name]
             score_data = []
@@ -79,6 +81,11 @@ class ModelEvaluationExperiment:
             sns.boxplot(data=score_data, x='model_name', y='score', ax=ax)
             ax.set_title(name)
             fig.savefig(f'{path}/{name}_scores')
+
+            score_data['dataset'] = name
+            table = pd.concat([score_data, table], ignore_index=True)
+
+        table.to_csv(f'{path}/{self.model_type}_experiment_chart_data.csv',sep=",")
 
     def save_final_scores_table(self, path='/home/victor/git/rna-ppgee/artigo2/report/tables'):
         

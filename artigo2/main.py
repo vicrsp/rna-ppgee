@@ -10,7 +10,7 @@ from experiments.evaluation import ModelEvaluationExperiment
 from datasets.load import load_regression_datasets, load_classification_datasets
 
 
-def run_regression_experiment():
+def run_classification_experiment():
     models_classification = get_classification_models()
     datasets_classification = load_classification_datasets()
 
@@ -22,7 +22,7 @@ def run_regression_experiment():
     experiment_classification.save_final_scores_table()
 
 
-def run_classification_experiment():
+def run_regression_experiment():
     models_regression = get_regression_models()
     datasets_regression = load_regression_datasets()
 

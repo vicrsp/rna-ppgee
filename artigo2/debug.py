@@ -9,10 +9,9 @@ from models.perceptron import PerceptronClassifier
 from models.rbf import RBFClassifier, RBFRegressor
 from models.elm_hebbian import ELMHebbianClassifier, ELMHebbianRegressor
 from models.adaline import Adaline
-from experiments.evaluation import k_fold_cross_validation, plot_scores_per_dataset
 from sklearn.datasets import load_digits, load_breast_cancer, load_wine, load_boston, load_diabetes, load_iris, make_blobs
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, mean_squared_error
 
 #%% 
 # blobs
@@ -55,3 +54,47 @@ ax.contour(xx, yy, zz_elm, colors=['green'])
 
 fig.show()
 
+#%% regression
+# define the sinc function generator
+n_train = 100
+n_test = 50
+
+X_train = np.random.uniform(-15,15,size=(n_train,1))
+y_train = np.sin(X_train) / X_train + np.random.normal(loc=0,scale=0.05, size=(n_train,1))
+
+X_test = np.random.uniform(-15,15, size=(n_test,1))
+y_test = np.sin(X_test) / X_test + np.random.normal(loc=0,scale=0.05, size=(n_test,1))
+
+
+def plot_regression_results(X_train, y_train, X_test, y_test, reg=0.0):
+    fig, ax = plt.subplots(figsize=(6,4))
+     # horizontal stack vectors to create x1,x2 input for the model
+    grid = np.arange(np.min(X_train)-0.1, np.max(X_train)+0.1, 0.01).reshape(-1, 1)
+    
+    # train the model
+    model = Adaline(reg_factor=reg).fit(X_train, y_train)
+    
+    # make predictions for the grid
+    yhat_grid = model.predict(grid)
+    # make predictions for the datasets
+    yhat_test = model.predict(X_test)
+    yhat_train = model.predict(X_train)
+
+    mse_test = mean_squared_error(y_test, yhat_test.ravel())
+    mse_train = mean_squared_error(y_train, yhat_train.ravel())
+
+    ax.scatter(X_train, y_train, color='red', label='Treinamento')
+    ax.scatter(X_train, y_train, color='blue', label='Teste')
+    ax.plot(grid, yhat_grid, color='black', label='RBF')
+
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    
+    ax.legend()
+    fig.suptitle(f'Neurônios:{reg}\n MSE treino: {mse_train} \n MSE teste: {mse_test}')
+    fig.tight_layout()
+    fig.show()
+
+
+plot_regression_results(X_train, y_train, X_test, y_test, reg=10)
+# %%
