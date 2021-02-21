@@ -7,13 +7,14 @@ from tqdm import tqdm
 from sklearn.model_selection import train_test_split, StratifiedKFold, GridSearchCV
 
 class ModelTunerCV:
-    def __init__(self, dataset, model, reg_factor):
+    def __init__(self, dataset, model, reg_factor, n_jobs=2):
         self.X, self.y = dataset
         self.model = model
         self.param_grid = {'reg_factor': reg_factor}
+        self.n_jobs = n_jobs
 
     def tune(self, folds=5):
-        self.tuner = GridSearchCV(self.model, self.param_grid, cv=folds, n_jobs=2, verbose=2)
+        self.tuner = GridSearchCV(self.model, self.param_grid, cv=folds, n_jobs=self.n_jobs, verbose=2)
         self.tuner.fit(self.X, self.y)
         
         self.opt_param = self.tuner.best_params_['reg_factor']

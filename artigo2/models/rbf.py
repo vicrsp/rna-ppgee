@@ -10,7 +10,7 @@ from sklearn.datasets import load_iris, load_breast_cancer
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import accuracy_score
 from sklearn.utils.multiclass import unique_labels
-from sklearn.metrics import roc_auc_score, r2_score
+from sklearn.metrics import roc_auc_score, r2_score, mean_squared_error
 
 class RBFClassifier(BaseEstimator, ClassifierMixin):
     def __init__(self, p=5, reg_factor=0.0):
@@ -115,4 +115,4 @@ class RBFRegressor(BaseEstimator, RegressorMixin):
         return self
 
     def score(self, X, y):
-        return r2_score(y, self.predict(X))
+        return mean_squared_error(y, self.predict(X))

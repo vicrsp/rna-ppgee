@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.metrics import r2_score
+from sklearn.neural_network import MLPRegressor
 
 class Adaline(BaseEstimator,RegressorMixin):
     def __init__(self, eta=0.01, tol=1e-6, max_epochs=100):
@@ -49,3 +50,5 @@ class Adaline(BaseEstimator,RegressorMixin):
 
     def score(self, X, y):
         return r2_score(y, self.predict(X))
+
+

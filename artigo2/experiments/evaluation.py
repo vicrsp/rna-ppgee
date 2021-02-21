@@ -22,11 +22,12 @@ class CVFoldResult:
 
 
 class ModelEvaluationExperiment:
-    def __init__(self, datasets, model_type, n_splits=10, tuning_size=0.3):
+    def __init__(self, datasets, model_type, n_splits=10, tuning_size=0.3, n_jobs=2):
         self.n_splits = n_splits
         self.tuning_size = tuning_size
         self.datasets = datasets
         self.model_type = model_type
+        self.n_jobs = n_jobs
 
     def start(self, models):
         self.dataset_results = {}
@@ -62,7 +63,7 @@ class ModelEvaluationExperiment:
         return results
 
     def tune_model(self, X_t, y_t, model, regularization_factors):
-        cv = ModelTunerCV((X_t, y_t), model, regularization_factors).tune()
+        cv = ModelTunerCV((X_t, y_t), model, regularization_factors, self.n_jobs).tune()
         opt_factor = cv.opt_param
         return opt_factor
 
@@ -117,3 +118,76 @@ class ModelEvaluationExperiment:
 
         table.to_csv(f'{path}/{self.model_type}_experiment_results.csv',sep=",")
         return table
+
+
+def plot_scores(filename, ylabel, xlabel, save_path=None):
+    data = pd.read_csv(filename, sep=',')
+
+    for ds_name, ds_data in data.groupby('dataset'):
+        fig, ax = plt.subplots(figsize=(8, 6))
+        q1 = ds_data['score'].quantile(0.25)                 
+        q3 = ds_data['score'].quantile(0.75)
+        iqr = q3 - q1
+
+        filter = (ds_data['score'] >= q1 - 1.5*iqr) & (ds_data['score'] <= q3 + 1.5*iqr)
+        ds_data_filt = ds_data[filter]
+
+        sns.boxplot(data=ds_data_filt, x='model_name', y='score', ax=ax, showfliers=False)
+        sns.pointplot(data=ds_data_filt, x='model_name', y='score', ax=ax, join=False,capsize=.2,color="k")
+        ax.set_title(ds_name)
+        ax.set_ylabel(ylabel)
+        ax.set_xlabel(xlabel)
+        if(save_path is not None):
+            fig.savefig(f'{save_path}/{ds_name}_scores')
+
+
+def plot_ci(filename, ylabel, xlabel, save_path=None):
+    data = pd.read_csv(filename, sep=',')
+
+    for ds_name, ds_data in data.groupby('dataset'):
+        fig, ax = plt.subplots(figsize=(8, 6))
+
+        q1 = ds_data['score'].quantile(0.25)                 
+        q3 = ds_data['score'].quantile(0.75)
+        iqr = q3 - q1
+
+        filter = (ds_data['score'] >= q1 - 1.5*iqr) & (ds_data['score'] <= q3 + 1.5*iqr)
+        ds_data_filt = ds_data[filter]
+
+        sns.pointplot(data=ds_data_filt, x='model_name', y='score', ax=ax, join=False,capsize=.2,color="k")
+        sns.boxplot(data=ds_data, x='model_name', y='score', ax=ax, showfliers=False)
+        ax.set_title(ds_name)
+        ax.set_ylabel(ylabel)
+        ax.set_xlabel(xlabel)
+        # if(save_path is not None):
+        #     fig.savefig(f'{save_path}/{ds_name}_scores')
+
+def plot_ci_all(filename, ylabel, xlabel, save_path=None):
+    data = pd.read_csv(filename, sep=',')
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.pointplot(data=data, x='model_name', y='score', hue='dataset', ax=ax, join=False,capsize=.2)
+    ax.set_ylabel(ylabel)
+    ax.set_xlabel(xlabel)
+
+def display_stats(filename, metric, save_path=None):
+    # calculate statistics
+    def get_ci(values):
+        q1 = values.quantile(0.25)                 
+        q3 = values.quantile(0.75)
+        iqr = q3 - q1
+
+        filter = (values >= q1 - 1.5*iqr) & (values <= q3 + 1.5*iqr)
+        values_filt = values[filter]
+        ci_bs = bs.bootstrap(
+            values_filt.to_numpy(), stat_func=bs_stats.mean, num_iterations=1000, return_distribution=False)
+        return f'{ci_bs.value:.2f} ({ci_bs.lower_bound:.2f},{ci_bs.upper_bound:.2f})'
+
+    data = pd.read_csv(filename, sep=',')
+    agg_data = data.groupby(['dataset','model_name'])['score'].agg(get_ci)
+    agg_data = agg_data.reset_index().pivot('dataset', 'model_name')
+
+    if(save_path is not None):
+        agg_data.to_csv(f'{save_path}/{metric}_scores.csv')
+    
+    return agg_data
