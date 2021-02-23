@@ -70,8 +70,6 @@
 	
 	ELMs são capazes de definir adaptivamente o número neurônios da rede e aleatoriamente escolher os pesos das entradas e viéses da camada escondida~\cite{huang2006extreme}. Isso faz com o que a rede possa ser considerada como um sistema linear, o qual pode ser calculado de forma analítica através de uma operação de inversão da matriz de pesos da camada de saídas~\cite{huang2006extreme}. Essa característica permite uma drástica redução do esforço computacional do treinamento, geralmente de 10 vezes ou mais~\cite{deng2010research}. 
 	
-	Uma variação presente na literatura para controlar a generalização do ELM consiste no uso do aprendizado Hebbiano após a camada escondida \cite{horta2015aplicaccao}. Conforme sugerido pelo autor, podemos substituir o cálculo da pseudo-inversa da matriz de projeção aleatória por um Perceptron Hebbiano com pesos normalizados. Outras abordagens foram investigadas, mas este trabalho ficará restrito a avaliar esta mais simples.
-	
 	\section{Metodologia}
 	\subsection{Bases de Dados}
 	Neste trabalho serão consideradas três bases de dados referentes a problemas de classificação binários e regressão multivariada disponíveis no repositório da UCI \cite{dua2019}, totalizando seis problemas. Antes do treinamento, os dados de entrada serão normalizados para o intervalo $[-1,1]$ e filtrados para remoção de valores inválidos. Um sumário das bases de dados consideradas pode ser vista na Tabela \ref{tab:datasets}.
@@ -79,14 +77,15 @@
 	\begin{table}[thpbh]
 		\caption{Principais características das bases de dados utilizadas}
 		\label{tab:datasets}
+		\centering
 		\begin{tabular}{l|c|c|c|}
 			\cline{2-4}
-			& \textbf{Instâncias} & \textbf{Atributos} & \textbf{Proporção dos rótulos} \\ \hline
+			& \textbf{Instâncias} & \textbf{Atributos} & \textbf{Proporção} \\ \hline
 			\multicolumn{1}{|l|}{\textbf{Breast Cancer}}   & 569                 & 32                 & 0.66                           \\ \hline
 			\multicolumn{1}{|l|}{\textbf{Liver Disorder}}  & 245                 & 6                  & 0.58                           \\ \hline
 			\multicolumn{1}{|l|}{\textbf{Statlog (Heart)}} & 270                 & 13                 & 0.66                           \\ \hline
 			\multicolumn{1}{|l|}{\textbf{Boston Housing}}  & 506                 & 13                 & N/A                            \\ \hline
-			\multicolumn{1}{|l|}{\textbf{Parkinsons}}      & 195                 & 22                 & N/A                            \\ \hline
+			\multicolumn{1}{|l|}{\textbf{Wine Quality (Red)}}      & 1599                 & 11                 & N/A                            \\ \hline
 			\multicolumn{1}{|l|}{\textbf{Diabetes}}        & 442                 & 10                 & N/A                            \\ \hline
 		\end{tabular}
 	\end{table}
@@ -113,6 +112,23 @@
 	O número de partições consideradas será de $k=10$. Para o item \ref{item:grid-search}, serão considerados um número fixo de valores igualmente espaçados  dentro de um intervalo pré-definido. Além disso, serão considerados cinco partições para a validação cruzada, como forma de controlar um pouco o tamanho do experimento. Serão consideradas as métricas AUC para classificação e erro quadrático médio (MSE) para regressão, respectivamente.
 	
 	A implementação deste experimento, bem como dos modelos utilizados, será feita em Python e utilizando principalmente os pacotes \textit{numpy} \cite{harris2020array} e \textit{scikit-learn} \cite{scikit-learn}. Os algoritmos ELM e RBF foram implementados seguindo as notas de aula do professor, sendo que o RBF irá considerar o \textit{k-means} para o cálculo dos centros e raios. O Percepton utilizado está disponível na biblioteca \textit{scikit-learn} diretamente, suportando o uso de regularização. Já o Adaline foi implementado usando o algoritmo MLP disponível no \textit{scikit-learn}, considerando um único neurônio na camada escondida e aprendizado via o algoritmo do gradiente estocástico. Isso foi necessário uma vez que esta implementação suporta o uso de regularização. O experimento será realizado em um Notebook Intel Core i7 Quad Core com 8Gb de memória RAM, sendo que o uso de paralelização será utilizado sempre que possível visto a enorme quantidade de vezes que os modelos serão treinados.
+	
+	\subsection{ELM Hebbiano}
+	Uma variação presente na literatura para controlar a generalização do ELM consiste no uso do aprendizado Hebbiano após a camada escondida \cite{horta2015aplicaccao}. Conforme sugerido pelo autor, podemos substituir o cálculo da pseudo-inversa da matriz de projeção aleatória por um Perceptron Hebbiano com pesos normalizados. Será considerada o algoritmo de aprendizado Hebbiano considerando somente um neurônio, similiar ao Perceptron simples. Essa abordagem é melhor descrita em \cite{fernandez2011direct}, da qual podemos retirar a seguinte regra para problemas de classificação binários:
+	\begin{equation}
+		w = \frac{ \sum^{N}_{i=1} y_i\textbf{h}_i}{\left\|  \sum^{N}_{i=1} y_i\textbf{h}_i \right\| }
+	\end{equation}
+	onde $\textbf{h}_i$ é á $i$-ésima linha da matriz de projeção aleatória do algoritmo ELM original. É importante ressaltar que esta regra assume que os dados foram normalizados para possuir média zero e desvio padrão unitário. Para validar a implementação, o algoritmo foi executado sobre duas bases de dados simples e 100 neurônios na camada escondida, cujos resultados podem ser vistos na Figura \ref{fig:box-hebb-test}.
+	
+	\begin{figure}[thpbh]
+		\centering
+		\includegraphics[width=0.5\textwidth]{figures/hebb_test.png}
+		\caption{Comparação entre o ELM original (verde) e sua versão com aprendizado Hebbiano (preto) em um problema linearmente e outro não-linearmente separável}
+		\label{fig:box-hebb-test}
+	\end{figure}
+	
+	Através destes resultados, podemos concluir que o uso do aprendizado Hebbiano é capaz de atingir a regularização desejada. Entretanto, nota-se que a superfície de separação torna-se predominantemente linear, de forma que seja esperado que esta abordagem possua desempenho limitado para problemas que não sejam linearmente separáveis.
+	
 	
 	\section{Resultados}
 	
@@ -158,14 +174,14 @@
 		\begin{tabular}{r|r|r|r|r|}
 			\cline{2-5}
 			\multicolumn{1}{l|}{}                          & \multicolumn{1}{c|}{\textbf{ELM}} & \multicolumn{1}{c|}{\textbf{ELM Hebbiano}} & \multicolumn{1}{c|}{\textbf{Perceptron}} & \multicolumn{1}{c|}{\textbf{RBF}} \\ \hline
-			\multicolumn{1}{|r|}{\textbf{Breast Cancer}}   & \textbf{0.95 (0.93,0.96)}         & 0.89 (0.85,0.92)                           & \textbf{0.95 (0.93,0.97)}                & 0.51 (0.50,0.52)                  \\ \hline
-			\multicolumn{1}{|r|}{\textbf{Liver Disorder}}  & \textbf{0.68 (0.62,0.74)}         & 0.58 (0.53,0.62)                           & 0.53 (0.51,0.55)                         & 0.52 (0.50,0.54)                  \\ \hline
-			\multicolumn{1}{|r|}{\textbf{Statlog (Heart)}} & \textbf{0.81 (0.77,0.85)}         & 0.76 (0.70,0.82)                           & 0.77 (0.70,0.84)                         & 0.55 (0.52,0.57)                  \\ \hline
+			\multicolumn{1}{|r|}{\textbf{Breast Cancer}}   & \textbf{0.948 (0.935,0.963)}         & 0.887 (0.853,0.920)                           & \textbf{0.950 (0.930,0.971)}                & 0.512 (0.505,0.519)                  \\ \hline
+			\multicolumn{1}{|r|}{\textbf{Liver Disorder}}  & \textbf{0.677 (0.621,0.733)}         & 0.582 (0.536,0.628)                           & 0.532 (0.509,0.553)                         & 0.515 (0.498,0.537)                  \\ \hline
+			\multicolumn{1}{|r|}{\textbf{Statlog (Heart)}} & \textbf{0.812 (0.769,0.851)}         & 0.762 (0.698,0.819)                           & 0.772 (0.700,0.846)                         & 0.547 (0.522,0.569)                  \\ \hline
 		\end{tabular}
 	\end{table*}
 
 	\subsection{Problemas de Regressão}
-	Para os problemas de classificação foram considerados os algoritmos Adaline, RBF e ELM. Não foi possível realizar uma implementação do ELM Hebbiano que funcionasse com problemas de regressão, logo este modelo teve que ser descartado. Foi estabelecido um número fixo de 20 neurônions na camada escondida e a regularização foi considerada somente para todos os algoritmos. 50 valores de coeficiente de regularização foram escolhidos no intervalo $[0,1]$. Nenhum outro ajuste de hiper-parâmetro foi feito para o Adaline, sendo usados os valores padrão da biblioteca \textit{scikit-learn}. Os gráficos boxplot para cada conjunto de dados considerado é exibido nas Figuras \ref{fig:box-Boston-Housing}, \ref{fig:box-Parkinsons} e \ref{fig:box-Diabetes}.  Os intervalos de confiança calculados são exibidos na Tabela \ref{tab:classification}.
+	Para os problemas de classificação foram considerados os algoritmos Adaline, RBF e ELM. Não foi possível realizar uma implementação do ELM Hebbiano que funcionasse com problemas de regressão, logo este modelo teve que ser descartado. Foi estabelecido um número fixo de 20 neurônions na camada escondida e a regularização foi considerada somente para todos os algoritmos. 50 valores de coeficiente de regularização foram escolhidos no intervalo $[0,1]$. Nenhum outro ajuste de hiper-parâmetro foi feito para o Adaline, sendo usados os valores padrão da biblioteca \textit{scikit-learn}. Os gráficos boxplot para cada conjunto de dados considerado é exibido nas Figuras \ref{fig:box-Boston-Housing}, \ref{fig:box-Wine} e \ref{fig:box-Diabetes}.  Os intervalos de confiança calculados são exibidos na Tabela \ref{tab:classification}.
 
 	\begin{figure}[thpbh]
 		\centering
@@ -176,9 +192,9 @@
 	
 	\begin{figure}[thpbh]
 		\centering
-		\includegraphics[width=0.5\textwidth]{figures/Parkinsons_scores.png}
-		\caption{Boxplots para a base de dados \textit{Parkinsons}. Intervalos de confiança de 95\% para a média são exibidos em preto.}
-		\label{fig:box-Parkinsons}
+		\includegraphics[width=0.5\textwidth]{figures/Wine Quality (Red)_scores.png}
+		\caption{Boxplots para a base de dados \textit{Wine Quality (Red)}. Intervalos de confiança de 95\% para a média são exibidos em preto.}
+		\label{fig:box-Wine}
 	\end{figure}
 	
 	\begin{figure}[thpbh]
@@ -189,7 +205,7 @@
 	\end{figure}
 
 	
-	\begin{table}[thpbh]
+	\begin{table*}[thpbh]
 		\caption{Intervalos de confiança de 95\% calculados para o MSE médio}
 		\label{tab:regression}
 		\centering
@@ -197,12 +213,12 @@
 			\begin{tabular}{l|c|c|c|}
 				\cline{2-4}
 				& \textbf{Adaline} & \textbf{ELM}              & \textbf{RBF}     \\ \hline
-				\multicolumn{1}{|l|}{\textbf{Boston Housing}} & 0.07 (0.05,0.09) & \textbf{0.01 (0.01,0.01)} & 0.04 (0.03,0.06) \\ \hline
-				\multicolumn{1}{|l|}{\textbf{Diabetes}}       & 0.06 (0.05,0.07) & \textbf{0.03 (0.03,0.03)} & 0.06 (0.05,0.06) \\ \hline
-				\multicolumn{1}{|l|}{\textbf{Parkinsons}}     & 0.04 (0.02,0.05) & \textbf{0.00 (0.00,0.01)} & 0.04 (0.02,0.05) \\ \hline
+				\multicolumn{1}{|l|}{\textbf{Boston Housing}} & 0.069 (0.039,0.096) & \textbf{0.012 (0.008,0.016)} & 0.044 (0.025,0.061) \\ \hline
+				\multicolumn{1}{|l|}{\textbf{Diabetes}}       & 0.078 (0.066,0.091) & \textbf{0.029 (0.025,0.033)} & 0.054 (0.048,0.061) \\ \hline
+				\multicolumn{1}{|l|}{\textbf{Wine Quality (Red)}}     & 0.037 (0.031,0.043) & \textbf{0.017 (0.016,0.019)} & 0.024 (0.022,0.026) \\ \hline
 			\end{tabular}
 %		\end{adjustbox}
-	\end{table}
+	\end{table*}
 
 	A partir destes resultados, podemos chegar às seguintes conclusões:
 	\begin{itemize}

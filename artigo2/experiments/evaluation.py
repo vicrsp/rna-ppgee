@@ -181,7 +181,7 @@ def display_stats(filename, metric, save_path=None):
         values_filt = values[filter]
         ci_bs = bs.bootstrap(
             values_filt.to_numpy(), stat_func=bs_stats.mean, num_iterations=1000, return_distribution=False)
-        return f'{ci_bs.value:.2f} ({ci_bs.lower_bound:.2f},{ci_bs.upper_bound:.2f})'
+        return f'{ci_bs.value:.3f} ({ci_bs.lower_bound:.3f},{ci_bs.upper_bound:.3f})'
 
     data = pd.read_csv(filename, sep=',')
     agg_data = data.groupby(['dataset','model_name'])['score'].agg(get_ci)

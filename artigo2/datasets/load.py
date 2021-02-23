@@ -29,10 +29,18 @@ def load_diabetes_dataset():
     
     return X, y
 
-def load_parkinsons():
-    data = pd.read_csv(f'{path}/parkinsons.data', sep=',')
+def load_red_wine_dataset():
+    data = pd.read_csv(f'{path}/winequality-red.csv', sep=';')
     data.dropna(inplace=True)
-    data_np = data.to_numpy()[:,1:]
+    data_np = data.to_numpy()
+    data_np = MinMaxScaler().fit_transform(data_np)
+    X, y = data_np[:,:-1], data_np[:,-1]
+    return X, y
+
+def load_white_wine_dataset():
+    data = pd.read_csv(f'{path}/winequality-white.csv', sep=';')
+    data.dropna(inplace=True)
+    data_np = data.to_numpy()
     data_np = MinMaxScaler().fit_transform(data_np)
     X, y = data_np[:,:-1], data_np[:,-1]
     return X, y
@@ -78,7 +86,7 @@ def load_breast_cancer_dataset():
 def load_regression_datasets():
     datasets = []
     datasets.append(('Boston Housing', load_boston_housing()))
-    datasets.append(('Parkinsons', load_parkinsons()))
+    datasets.append(('Wine Quality (Red)', load_red_wine_dataset()))
     datasets.append(('Diabetes', load_diabetes_dataset()))
 
     return datasets
