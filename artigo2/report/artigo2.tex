@@ -16,7 +16,7 @@
 \begin{document}
 	
 	% paper title
-	\title{Redes Neurais Artificiais: Artigo 2}
+	\title{Comparação de Modelos de Redes Neurais Artificiais sobre Problemas de Benchmark}
 	
 	
 	% author names and affiliations
@@ -38,13 +38,13 @@
 	\maketitle
 	
 	\begin{abstract}
-		Este trabalho tem como objetivo avaliar o desempneho de diferentes modelos de redes neurais artificiais estudados durante a disciplina sobre bases de dados de benchmark presentes na literatura. Serão considerados o Perceptron, Adaline, Redes RBF, ELM e ELM com aprendizado Hebbiano. Para três problemas de regressão e classificação binária escolhidos, um experimento foi desenhado seguindo as recomendações da literatura. Os resultados de cada modelos são comparados por meio de testes estatíscticos para as metrícas AUC (classficação) e coeficiente de correlação linear (regressão). Os resultados mostraram que, em geral, o ELM obteve um excelente desempenho para todas as bases de dados consideradas em relação aos demais modelos avaliados. Além disso, ficou evidente a dificuldade de se trabalhar com o RBF, o qual obteve os piores resultados para classificação. Bons resultados também foram obtidos para o ELM Hebbiano, mostrando o potencial desta abordagem para problemas de classificação.
+		Este trabalho tem como objetivo avaliar o desempenho de diferentes modelos de redes neurais artificiais estudados durante a disciplina sobre bases de dados de benchmark presentes na literatura. Serão considerados o Perceptron, Adaline, Redes RBF, ELM e ELM com aprendizado Hebbiano. Para três problemas de regressão e classificação binária escolhidos, um experimento foi desenhado seguindo as recomendações da literatura. Os resultados de cada modelos são comparados por meio de testes estatíscticos para as metrícas AUC (classficação) e erro quadrático médio (regressão). Os resultados mostraram que, em geral, o ELM obteve um excelente desempenho para todas as bases de dados consideradas em relação aos demais modelos avaliados. Além disso, ficou evidente a dificuldade de se trabalhar com o RBF, o qual aparenta necessitar de bastante ajuste de seus hiper-parâmetros. Bons resultados também foram obtidos para o ELM Hebbiano, mostrando o potencial desta abordagem para problemas de classificação linearmente separáveis.
 	\end{abstract}
 
 	\section{Introdução}
 	A Rede Neural Artificial (RNA) é uma classe de modelos muito popular em problemas de classificação, reconhecimento de padrões, regressão e predição~\cite{jain1996artificial}. Inspirado pelas características do cérebro humano, elas possuem como elementos básicos neurônios artificiais capazes de executar operações matemáticas, representando desta forma modelos de neurônios biológicos. Através de sua organização em diferentes estruturas de rede, tais modelos são capazes de se adaptar e representar funções matemáticas bastante complexas. 
 	
-	Neste trabalho será feita uma comparação entre diferentes modelos de RNAs: Perceptron, Adaline, Redes RBF, ELM e ELM com aprendizado Hebbiano. Para isso, um experimento será desenhado para comparar estatisticamente o seu desempenho sobre diferentes bases de dados de \textit{benchmark} disponíveis na literatura. Serão considerados tantos problemas de regressão e classificação.
+	Neste trabalho será feita uma comparação entre diferentes modelos de RNAs: Perceptron, Adaline, Redes RBF, ELM e ELM com aprendizado Hebbiano. Para isso, um experimento será desenhado para comparar estatisticamente o seu desempenho sobre diferentes bases de dados de \textit{benchmark} disponíveis na literatura. Serão considerados tantos problemas de regressão e classificação, como forma de se explorar melhor a característica dos modelos considerados. 
 	
 
 	\section{Revisão da literatura}
@@ -53,7 +53,7 @@
 	\subsection{Perceptron}
 	Proposto inicialmente por Rosenblatt~\cite{rosenblatt1957perceptron}, este é um modelo geralmente utilizado para a solução de problemas de classificação lineares. No seu trabalho original, o autor descreve formas de adaptação dos parâmetros, ou pesos, da rede com o objetivo de reduzir a discrepância entre as saídas esperadas e estimadas e aprender associações entre os neurônios, o que é a base da indução para diversos algoritmos atuais. Este trabalho é considerado um marco na literatura por diversos autores.
 	
-	Se considerarmos uma função de ativação contínua e diferenciável, os pesos da rede poderão ser inferidos de forma explícita, através do cálculo da pseudo-inversa, ou pelo algoritmo do gradiente descendente~\cite{hertz1991introduction}. Exemplos de funções de ativação com esta característica frequentemente empregadas na literatura são a função logística, tangente hiperbólica e linear~\cite{jain1996artificial}. Vale a pena ressaltar que a covergência destas abordagens está condicionada aos dados utilizados para treinamento serem linearmente independentes~\cite{hertz1991introduction}.
+	Se considerarmos uma função de ativação contínua e diferenciável, os pesos da rede poderão ser inferidos de forma explícita, através do cálculo da pseudo-inversa, ou pelo algoritmo do gradiente descendente~\cite{hertz1991introduction}. Vale a pena ressaltar que a covergência destas abordagens está condicionada aos dados utilizados para treinamento serem linearmente independentes~\cite{hertz1991introduction}.
 	
 	\subsection{Adaline}
 	O Adaline foi inicialmente desenvolvido por Widrow em 1960~\cite{widrow1960adaptive}, sendo principamente aplicado em problemas de regressão lineares. Assim como o Perceptron, originalmente este modelo considera somente um neurônio MCP em sua formulação, entretando sua função de ativação é a identidade. Seu treinamento é formulado como um problema de otimização com custo quadrático, onde originalmente foi utilizado o algoritmo do gradiente descendente para sua solução. 
@@ -61,7 +61,7 @@
 	Para este agoritmo, em cada iteração é dado um passo na direção oposta ao gradiente da função objetivo, resultanto em uma convergência gradual para o mínimo do problema. Este gradiente pode ser calculado de forma análitica para a estrutura de rede do Adaline, o qual é no fim proporcional à diferença entre os valores estimados e reais~\cite{widrow1960adaptive}, bastante similar ao Perceptron simples. É fácil notar que o treinamento também pode ser realizado de forma direta através do cálculo da pseudo-inversa dos dados de entrada, já que este é um problema de mínimos quadrados~\cite{haykin2007neural}.
 	
 	\subsection{Redes RBF}
-	As redes RBF foram inicialmente introduzidas por~\cite{broomhead1988multivariablefi} e são caracterizadas por um aprendizado que envolve duas etapas: (i) aplicar uma transformação aos padrões para um espaço onde a probabilidade de serem linearmente separáveis é alta (ii) encontrar os pesos usando o estimador mínimos quadrados usado no Perceptron simples. Essa estrutura pode ser representada por um rede de três camadas, onde sua camada escondida é reponsável pela transformação não-linear das estradas para o novo espaço, geralmente para uma dimensão muito alta. 
+	As redes RBF foram inicialmente introduzidas por~\cite{broomhead1988multivariablefi} e são caracterizadas por um aprendizado que envolve duas etapas: (i) aplicar uma transformação aos padrões para um espaço onde a probabilidade de serem linearmente separáveis é alta (ii) encontrar os pesos usando o estimador mínimos quadrados usado no Perceptron simples. Essa estrutura pode ser representada por um rede de três camadas, onde sua camada escondida é reponsável pela transformação não-linear das entradas para o novo espaço, geralmente para uma dimensão muito alta. 
 	
 	Essa transformação é justificada pelo teorema de Cover sobre a separabilidade de padrões~\cite{cover1965geometrical}, o qual diz que um problema de classificação complexo projetado não-linearmente para um espaço de alta dimensão é mais provável de ser separável do que em um espaço de baixa dimensão, desde que o espaço não seja densamente povoado. Boa parte da teoria, que é relacionada ao campo de interpolação multivariável, considera um kernel baseado na função Gaussiana, que é uma classe importante de RBFs. Teoricamente, as redes RBF podem ser consideradas um aproximador universal de funções contínuas se a RBF é selecionada apropriadamente~\cite{poggio1990networks, park1991universal, liao2003relaxed}.
 	
@@ -72,7 +72,7 @@
 	
 	\section{Metodologia}
 	\subsection{Bases de Dados}
-	Neste trabalho serão consideradas três bases de dados referentes a problemas de classificação binários e regressão multivariada disponíveis no repositório da UCI \cite{dua2019}, totalizando seis problemas. Antes do treinamento, os dados de entrada serão normalizados para o intervalo $[-1,1]$ e filtrados para remoção de valores inválidos. Um sumário das bases de dados consideradas pode ser vista na Tabela \ref{tab:datasets}.
+	Neste trabalho serão consideradas três bases de dados referentes a problemas de classificação binários e regressão multivariada disponíveis no repositório da UCI \cite{dua2019}, totalizando seis problemas. Antes do treinamento, os dados de entrada serão normalizados para o intervalo $[0,1]$ e filtrados para remoção de valores inválidos. Um sumário das bases de dados consideradas pode ser vista na Tabela \ref{tab:datasets}.
 	
 	\begin{table}[thpbh]
 		\caption{Principais características das bases de dados utilizadas}
@@ -100,7 +100,7 @@
 				\item Criar o conjunto de treino $T = D - k$
 				\item Para cada modelo:
 				\begin{enumerate}
-					\item Executar busca exaustiva com validação cruzada sobre $T$ para os coeficientes de regularização $\lambda$ \label{item:grid-search}
+					\item Executar busca exaustiva com validação cruzada de $z$ sobre $T$ para os coeficientes de regularização $\lambda$ \label{item:grid-search}
 					\item Escolher $\lambda$ que obtém o melhor ajuste médio 
 					\item Avaliar a métrica do modelo sobre $k$
 				\end{enumerate}
@@ -109,9 +109,9 @@
 		\end{enumerate}
 	\end{itemize}
 	
-	O número de partições consideradas será de $k=10$. Para o item \ref{item:grid-search}, serão considerados um número fixo de valores igualmente espaçados  dentro de um intervalo pré-definido. Além disso, serão considerados cinco partições para a validação cruzada, como forma de controlar um pouco o tamanho do experimento. Serão consideradas as métricas AUC para classificação e erro quadrático médio (MSE) para regressão, respectivamente.
+	O número de partições consideradas será de $k=10$. Para o item \ref{item:grid-search}, serão considerados um número fixo de valores igualmente espaçados dentro de um intervalo pré-definido. Além disso, serão considerados $z=5$ partições, como forma de controlar um pouco o tamanho do experimento. Serão consideradas as métricas AUC para classificação e erro quadrático médio (MSE) para regressão, respectivamente. A implementação deste experimento, bem como dos modelos utilizados, será feita em Python e utilizando principalmente os pacotes \textit{numpy} \cite{harris2020array} e \textit{scikit-learn} \cite{scikit-learn}. 
 	
-	A implementação deste experimento, bem como dos modelos utilizados, será feita em Python e utilizando principalmente os pacotes \textit{numpy} \cite{harris2020array} e \textit{scikit-learn} \cite{scikit-learn}. Os algoritmos ELM e RBF foram implementados seguindo as notas de aula do professor, sendo que o RBF irá considerar o \textit{k-means} para o cálculo dos centros e raios. O Percepton utilizado está disponível na biblioteca \textit{scikit-learn} diretamente, suportando o uso de regularização. Já o Adaline foi implementado usando o algoritmo MLP disponível no \textit{scikit-learn}, considerando um único neurônio na camada escondida e aprendizado via o algoritmo do gradiente estocástico. Isso foi necessário uma vez que esta implementação suporta o uso de regularização. O experimento será realizado em um Notebook Intel Core i7 Quad Core com 8Gb de memória RAM, sendo que o uso de paralelização será utilizado sempre que possível visto a enorme quantidade de vezes que os modelos serão treinados.
+	Os algoritmos ELM e RBF foram implementados seguindo as notas de aula do professor, sendo que o RBF irá considerar o \textit{k-means} para o cálculo dos centros e raios. O Percepton utilizado está disponível na biblioteca \textit{scikit-learn} diretamente, suportando o uso de regularização. Já o Adaline foi implementado usando o algoritmo MLP disponível no \textit{scikit-learn}, considerando um único neurônio na camada escondida e aprendizado via o algoritmo do gradiente estocástico. Isso foi necessário uma vez que esta implementação suporta o uso de regularização. O experimento será realizado em um Notebook Intel Core i7 Quad Core com 8Gb de memória RAM, sendo que o uso de paralelização será utilizado sempre que possível visto a enorme quantidade de vezes que os modelos serão treinados.
 	
 	\subsection{ELM Hebbiano}
 	Uma variação presente na literatura para controlar a generalização do ELM consiste no uso do aprendizado Hebbiano após a camada escondida \cite{horta2015aplicaccao}. Conforme sugerido pelo autor, podemos substituir o cálculo da pseudo-inversa da matriz de projeção aleatória por um Perceptron Hebbiano com pesos normalizados. Será considerada o algoritmo de aprendizado Hebbiano considerando somente um neurônio, similiar ao Perceptron simples. Essa abordagem é melhor descrita em \cite{fernandez2011direct}, da qual podemos retirar a seguinte regra para problemas de classificação binários:
@@ -164,7 +164,8 @@
 		\item Para a base de dados \textit{Statlog (Heart)} não podemos rejeitar a hipótese de que os modelos ELM, ELM Hebbiano e Perceptron possuam desempenhos iguais para o intervalo de confiança de 95\%.
 		\item Para a base de dados \textit{Liver Disorder}, podemos afirmar que para um intervalo de confiança de 95\%, o ELM possui desempenho superior aos demais modelos.
 		\item Uma hipótese para o desempenho muito abaixo do esperado do RBF pode estar no número de neurônions escolhidos para a camada escondida. Este hiperparâmetro não foi ajustado para que a comparação com o ELM seja justa e também para limitar o tamanho do experimento a ser executado. 
-		\item A diferença de desempenho entre o ELM e sua versão com aprendizado Hebbiano está no fato deste última poder estár resultando em uma regularização excessiva. Isso sugere que o uso de um modelo Hebbiano diferente é indicado para controlar melhor a sua generalização.
+		\item A diferença de desempenho entre o ELM e sua versão com aprendizado Hebbiano está no fato deste última poder estar resultando em uma regularização excessiva. Isso sugere que uma implementação diferente do modelo Hebbiano é indicado para controlar melhor a sua generalização.
+		\item É interessante notar que para problemas lineares não houve uma perda muito grande na AUC média dos modelos ELM e ELM Hebbiano. Entretanto, nota-se uma maior variabilidade para este último modelo, o que sugere uma maior sensibilidade à base de dados em estudo. 
 	\end{itemize}
 
 	\begin{table*}[thpbh]
@@ -181,7 +182,7 @@
 	\end{table*}
 
 	\subsection{Problemas de Regressão}
-	Para os problemas de classificação foram considerados os algoritmos Adaline, RBF e ELM. Não foi possível realizar uma implementação do ELM Hebbiano que funcionasse com problemas de regressão, logo este modelo teve que ser descartado. Foi estabelecido um número fixo de 20 neurônions na camada escondida e a regularização foi considerada somente para todos os algoritmos. 50 valores de coeficiente de regularização foram escolhidos no intervalo $[0,1]$. Nenhum outro ajuste de hiper-parâmetro foi feito para o Adaline, sendo usados os valores padrão da biblioteca \textit{scikit-learn}. Os gráficos boxplot para cada conjunto de dados considerado é exibido nas Figuras \ref{fig:box-Boston-Housing}, \ref{fig:box-Wine} e \ref{fig:box-Diabetes}.  Os intervalos de confiança calculados são exibidos na Tabela \ref{tab:classification}.
+	Para os problemas de classificação foram considerados os algoritmos Adaline, RBF e ELM. Não foi possível realizar uma implementação do ELM Hebbiano que funcionasse com problemas de regressão, logo este modelo teve que ser descartado. Foi estabelecido um número fixo de 20 neurônios na camada escondida e a regularização foi considerada somente para todos os algoritmos. 50 valores de coeficiente de regularização foram escolhidos no intervalo $[0,1]$. Nenhum outro ajuste de hiper-parâmetro foi feito para o Adaline, sendo usados os valores padrão da biblioteca \textit{scikit-learn}. Os gráficos boxplot para cada conjunto de dados considerado é exibido nas Figuras \ref{fig:box-Boston-Housing}, \ref{fig:box-Wine} e \ref{fig:box-Diabetes}.  Os intervalos de confiança calculados são exibidos na Tabela \ref{tab:classification}.
 
 	\begin{figure}[thpbh]
 		\centering
@@ -222,8 +223,10 @@
 
 	A partir destes resultados, podemos chegar às seguintes conclusões:
 	\begin{itemize}
-		\item Para um intervalo de confiança de 95\%, podemos afirmar que o ELM teve desempenho médio superior aos demais algoritmos em todas as bases de dados avaliadas.
-		\item Não podemos rejeitar a hipótese de que os algoritmos RBF e Adaline possuam desempenhos médios iguais para todas as bases de dados, considerando o intervalo de confiança de 95\%
+		\item Para um intervalo de confiança de 95\%, podemos afirmar que o ELM teve desempenho médio superior aos demais algoritmos para as bases de dados \textit{Diabeters} e \textit{Wine Quality (Red)}. Embora não podemos afirmar estatisticamente que o ELM seja superior, é importante notar que ele apresentou uma variabilidade muito menor.
+		\item O Problema \textit{Boston Housing} é conhecido pela sua característica linear, o que explica os bons resultados obtidos para o Adaline.
+		\item Ao contrário do que ocorrou para os problemas de classificação, o RBF obteve bons resultados quando utilizado para regressão.
+		\item O Adaline possuiu um desempenho bem abaixo do esperado, apresentando muita variação e uma MSE médio superior se o problema apresentar comportamento predominantemente não-linear. Isso está de acordo com a característica deste modelo.
 	\end{itemize}
 	
 	
