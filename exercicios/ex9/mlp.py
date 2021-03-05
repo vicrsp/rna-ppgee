@@ -2,6 +2,7 @@
 import numpy as np
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
+from sklearn.neural_network import MLPRegressor
 
 class MLP:
     def __init__(self, p, m, max_epochs=100, eta=0.01):
@@ -66,6 +67,8 @@ class MLP:
         self.coef_ = w
         self.Z_ = Z
 
+        return self
+
     def predict(self, X):
         N, _ = X.shape
         x_aug = np.hstack((np.ones((N, 1)), X))
@@ -84,13 +87,17 @@ y = np.sin(X) + np.random.uniform(-0.1,0.1, (len(X),1))
 X_test = np.arange(0, 2 * np.pi, step=0.01).reshape(-1,1)
 y_test = np.sin(X_test)
 
-mlp = MLP(3,1,1000,0.01)
-mlp.fit(X,y)
+mlp_sk = MLPRegressor((3,), activation='tanh',solver='adam',learning_rate_init=0.01).fit(X,y)
+mlp = MLP(3,1,200,0.01).fit(X,y)
+
 y_hat = mlp.predict(X_test)
+y_hat_sk = mlp_sk.predict(X_test)
 
 #%%
 print(mean_squared_error(y_test, y_hat))
 plt.plot(X, y, 'ro')
 plt.plot(X_test, y_test, 'b-')
 plt.plot(X_test, y_hat, 'g--')
+plt.plot(X_test, y_hat_sk, 'k--')
+
 # %%
