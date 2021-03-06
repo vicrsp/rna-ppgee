@@ -9,6 +9,7 @@ from sklearn.datasets import load_breast_cancer, make_moons
 from scipy.optimize import minimize_scalar
 from sklearn.neighbors import KernelDensity
 from matplotlib import animation
+from sklearn.metrics.pairwise import euclidean_distances
 
 plt.style.use('ggplot')
 #%%
@@ -28,7 +29,6 @@ def calculate_likelihood(X, y, sigma):
 
 def calculate_similarities(X, y, sigma):
     V = np.zeros((2, 2))  # binary problem
-    S = []
     for i in range(2):
         # Define Ci and Cj
         Xi = X[(y == np.sign(2*i - 1)), :]
@@ -37,10 +37,13 @@ def calculate_similarities(X, y, sigma):
             Xj = X[(y == np.sign(2*j - 1)), :]
             Nj = Xj.shape[0]
             # Calculate the similarities
-            Sm = [np.exp(-np.linalg.norm(xk - xl)/(2*(sigma**2)))/(Ni*Nj) for xk in Xi for xl in Xj]
-            S.append((i,j,np.asarray(Sm).reshape(Ni,Nj)))
+            # Sm = [np.exp(-np.linalg.norm(xk - xl)/(2*(sigma**2)))/(Ni*Nj) for xk in Xi for xl in Xj]
+            # V[i,j] = np.sum(Sm)
+            # Sum only the upper triangular matrix
+            Sm = np.exp(-euclidean_distances(Xi, Xj)/(2*(sigma**2)))/(Ni*Nj)
             V[i,j] = np.sum(Sm)
-    return V, S
+
+    return V
 
 
 def kde_estimation(X,y,sigma=0.22):
@@ -61,8 +64,9 @@ def kde_estimation(X,y,sigma=0.22):
 data = pd.read_csv('spirals_original.csv')
 X, y = data[['X1','X2']].to_numpy(), data['Class'].to_numpy()
 y = pd.Series(y).map({1:-1,2:1}).to_numpy()
-#X, y = make_moons(200,random_state=1234,noise=0.1)
-#y = pd.Series(y).map({0:-1,1:1}).to_numpy()
+
+# X, y = make_moons(200,random_state=1234,noise=0.1)
+# y = pd.Series(y).map({0:-1,1:1}).to_numpy()
 
 plt.scatter(X[y==-1,0], X[y==-1,1], color='r')
 plt.scatter(X[y==1,0], X[y==1,1], color='b')
@@ -76,20 +80,20 @@ plt.scatter(px_C1[:, 0], px_C1[:, 1], color='r')
 plt.scatter(px_C2[:, 0], px_C2[:, 1], color='b')
 plt.plot(np.arange(0,0.7,0.1),np.arange(0,0.7,0.1),'k')
 #%%
-sigma_values = np.linspace(0.0, 5, 50)
+sigma_values = np.linspace(0.001, 2, 100)
 Dvalues = []
 for sigma in tqdm(sigma_values):
-    Vs, _ = calculate_similarities(X, y, sigma)
+    Vs = calculate_similarities(X, y, sigma)
     V1, V2 = Vs[0,:], Vs[1,:]
     D = np.dot(V1,V2) * np.linalg.norm(V1 - V2)/(np.linalg.norm(V1)*np.linalg.norm(V1))
     Dvalues.append(D)
 
-plt.plot(sigma_values, Dvalues)
+plt.plot(sigma_values, Dvalues, 'g')
 
 #%%
 def f(x):
     print(f's: {x}')
-    Vs, _ = calculate_similarities(X, y, x)
+    Vs = calculate_similarities(X, y, x)
     V1, V2 = Vs[0,:], Vs[1,:]
     D = np.dot(V1,V2) * np.linalg.norm(V1 - V2)/(np.linalg.norm(V1)*np.linalg.norm(V1))
     return -D
@@ -102,11 +106,12 @@ px_C1 = p_kde[p_kde[:,1] >= p_kde[:,0],:]
 px_C2 = p_kde[p_kde[:,1] < p_kde[:,0],:]
 
 plt.figure()
+plt.title(f'$\sigma = {res.x:.3f}$')
 plt.scatter(px_C1[:, 0], px_C1[:, 1], color='r')
 plt.scatter(px_C2[:, 0], px_C2[:, 1], color='b')
 plt.plot(np.arange(0,0.6,0.1),np.arange(0,0.6,0.1),'k')
 # %%
-sigma_k = np.linspace(0.001,2,120,endpoint=True)
+sigma_k = np.linspace(0.0001,2,480,endpoint=True)
 sigma_y = np.array([-f(x) for x in tqdm(sigma_k)])
 
 # First set up the figure, the axis, and the plot element we want to animate
@@ -119,7 +124,13 @@ point, = ax[1].plot([], [], 'go')
 def init():
     # draw the separation surface
     ax[0].plot(np.arange(0,1,0.01),np.arange(0,1,0.01),'k')
+    ax[0].set_ylabel('$P(x|C_2)$')
+    ax[0].set_xlabel('$P(x|C_1)$')
+
     ax[1].plot(sigma_k, sigma_y, 'k')
+    ax[1].set_ylabel('Distance')
+    ax[1].set_xlabel('$\sigma$')
+
     line1.set_data([], [])
     line2.set_data([], [])
     point.set_data([], [])
@@ -128,7 +139,6 @@ def init():
 
 # animation function.  This is called sequentially
 def animate(i):
-    print(i)
     p_kde = kde_estimation(X,y,sigma_k[i])
     
     px_C1 = p_kde[p_kde[:,1] >= p_kde[:,0],:]
@@ -145,7 +155,7 @@ def animate(i):
     return line1,line2,point
 # call the animator.  blit=True means only re-draw the parts that have changed.
 anim = animation.FuncAnimation(fig, animate, init_func=init,
-                               frames=len(sigma_k), interval=500, blit=True)
+                               frames=len(sigma_k), interval=20, blit=True)
 anim.save('projection_animation.gif', fps=24)
 fig.show()
 
