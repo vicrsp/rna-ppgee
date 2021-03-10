@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 
-from kernel_optimizer.optimizer import KernelOptimizer
+from kerneloptimizer.optimizer import KernelOptimizer
 
-X_df = pd.DataFrame({'a':[1,2,3,4],'b':[5,6,7,8],'c':[2,6,8,9]})
+X_df = pd.DataFrame({'a':[1,2,3,4],'b':[5,6,7,8]})
 X = X_df.to_numpy()
 y = np.array([1,1,2,2])
 d = X.shape[1]

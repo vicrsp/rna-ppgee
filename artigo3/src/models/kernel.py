@@ -6,18 +6,13 @@ from sklearn.utils.multiclass import unique_labels
 from sklearn.metrics import roc_auc_score, r2_score, mean_squared_error
 from sklearn.neural_network import MLPRegressor
 from sklearn.linear_model import Perceptron
-from kerneloptimizer.optimizer import KernelOptimizer
+from kernel_optimizer.optimizer import KernelOptimizer
 
-class PerceptronClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, kernel, reg_factor=0):
-        self.kernel = kernel
-        self.reg_factor = reg_factor
-        self.base = Perceptron(penalty='l2', alpha=reg_factor)
-
-    def predict(self, X):
-        
-        return self.base.predict(X)
-
+class KernelClassifier(BaseEstimator, ClassifierMixin):
+    def __init__(self, model, kernel='gaussian'):
+      self.kernel = kernel
+      self.model = model
+      
     def fit(self, X, y):
         if(self.kernel == 'mlp'):
             opt = KernelOptimizer(
@@ -32,17 +27,25 @@ class PerceptronClassifier(BaseEstimator, ClassifierMixin):
             raise ValueError()
 
         # calculate the optimal projection
-        opt.fit(X,y)
-        X_proj = opt.get_likelihood_space(X,y)
+        opt.fit(X, y)
+        kernel_matrix = self.transform(X,y)
         
-        # and train in the projected space
-        self.base.fit(X_proj, y)
-        self.classes_ = unique_labels(y)
-        self.opt_ = opt
+        # fit the model on the projected space
+        self.model.fit(kernel_matrix, y)        
+
+        self.kernel_opt = opt
+        self.kernel_matrix = kernel_matrix
+
         return self
-    
+
+    def transform(self, X, y):
+        return self.kernel_opt.get_likelihood_space(X,y)
+
+    def predict(self, X):
+        return self.model.predict(self.kernel_opt.to_likelihood_space(X))
+
     def decision_function(self, X):
-        return self.base.decision_function(X)
+        return self.model.decision_function(X)
 
     def score(self, X, y):
         return roc_auc_score(y, self.predict(X))
