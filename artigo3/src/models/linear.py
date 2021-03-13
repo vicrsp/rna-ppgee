@@ -1,13 +1,15 @@
 import numpy as np
 from .kernel import KernelProjection
+
+from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.linear_model import Perceptron
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, accuracy_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.utils.multiclass import unique_labels
 from abc import ABC, abstractmethod 
 
-class KernelLinearModel(ABC):
+class KernelLinearModel(BaseEstimator, ClassifierMixin, ABC):
     def __init__(self, kernel):
         self.kernel = kernel
 
@@ -44,7 +46,7 @@ class KernelLinearModel(ABC):
         return np.sign(self.decision_function(X))
 
     def score(self, X, y):
-        return roc_auc_score(y, self.predict(X))
+        return accuracy_score(y, self.predict(X))
 
 
 class KernelPerceptron(KernelLinearModel):

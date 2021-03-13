@@ -416,3 +416,7 @@ TSWLatexianTemp*
 
 # exclude gifs under this folder
 artigo3/*.gif
+artigo3/report/figures/*.png
+artigo3/report/tables/*.csv
+artigo3/report/figures/*.csv
+

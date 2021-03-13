@@ -2,7 +2,7 @@ import numpy as np
 from .kernel import KernelProjection
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.svm import SVC
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, accuracy_score
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.utils.multiclass import unique_labels
 
@@ -28,7 +28,7 @@ class KernelSVM(BaseEstimator, ClassifierMixin):
         return self.model_.decision_function(X)
 
     def score(self, X, y):
-        return roc_auc_score(y, self.predict(X))
+        return accuracy_score(y, self.predict(X))
 
 
 class ELM(BaseEstimator, ClassifierMixin):
@@ -70,4 +70,4 @@ class ELM(BaseEstimator, ClassifierMixin):
         return np.sign(self.decision_function(X))
 
     def score(self, X, y):
-        return roc_auc_score(y, self.predict(X))
+        return accuracy_score(y, self.predict(X))

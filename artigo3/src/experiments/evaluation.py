@@ -44,7 +44,7 @@ class ModelEvaluationExperiment:
             n_splits=n_splits) if self.model_type == 'classification' else KFold(n_splits=n_splits)
         self.cv_scores = []
         fold = 1
-        for train_index, test_index in kfold.split(X, y):
+        for train_index, test_index in tqdm(kfold.split(X, y)):
             # create the T and k dataset
             X_t, X_k = X[train_index, :], X[test_index, :]
             y_t, y_k = y[train_index], y[test_index]
