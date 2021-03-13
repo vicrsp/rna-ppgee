@@ -1,11 +1,16 @@
 import numpy as np
 import pandas as pd
+from sklearn.datasets import make_moons
 
 from kernel_optimizer.optimizer import KernelOptimizer
 
-X_df = pd.DataFrame({'a':[1,2,3,4],'b':[5,6,7,8],'c':[2,6,8,9]})
-X = X_df.to_numpy()
-y = np.array([1,1,2,2])
+
+X, y = make_moons(200,random_state=1234,noise=0.1)
+# y = pd.Series(y).map({0:-1,1:1}).to_numpy()
+
+# X_df = pd.DataFrame({'a':[1,2,3,4],'b':[5,6,7,8],'c':[2,6,8,9]})
+# X = X_df.to_numpy()
+# y = np.array([1,1,2,2])
 d = X.shape[1]
 
 print("initializing MLP kernel")
@@ -34,3 +39,9 @@ opt2.fit(X,y)
 lspace2 = opt2.get_likelihood_space(X,y)
 
 print(lspace2)
+
+
+w = np.linalg.pinv(lspace) @ y
+w2 = np.linalg.pinv(lspace2) @ y
+
+Xt, yt = make_moons(50,random_state=1234,noise=0.1)

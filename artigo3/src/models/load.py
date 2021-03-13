@@ -1,20 +1,13 @@
 import numpy as np
-from .elm import ELMClassifier, ELMRegressor
-from .rbf import RBFClassifier, RBFRegressor
-from .elm_hebbian import ELMHebbianClassifier, ELMHebbianRegressor
-from .linear import AdalineRegressor, PerceptronClassifier
+from .non_linear import ELM, KernelSVM
+from .linear import KernelPerceptron, KernelHebbian
 
 def get_classification_models():
     models = []
-    models.append(('Perceptron', PerceptronClassifier(), np.linspace(0,1,50)))
-    models.append(('ELM', ELMClassifier(p=20), np.linspace(0,1,50)))
-    models.append(('RBF', RBFClassifier(p=20), np.linspace(0,1,50)))
-    models.append(('ELMHebbian', ELMHebbianClassifier(p=10), None)) 
-    return models
+    regularization_factors = [2 ** i for i in range(-5,8)]
+    models.append(('ELM', ELM(p=30), regularization_factors))
+    models.append(('KernelHebbian', KernelHebbian(), None)) 
+    models.append(('KernelPerceptron', KernelPerceptron(), None))
+    models.append(('KernelSVM', KernelSVM(), regularization_factors))
 
-def get_regression_models():
-    models = []
-    models.append(('Adaline', AdalineRegressor(), np.linspace(0,1,50)))
-    models.append(('ELM', ELMRegressor(p=20), np.linspace(0,1,50)))
-    models.append(('RBF', RBFRegressor(p=20), np.linspace(0,1,50)))
     return models

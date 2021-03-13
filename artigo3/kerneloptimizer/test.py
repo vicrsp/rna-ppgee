@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 
-from kernel_optimizer.optimizer import KernelOptimizer
+from kerneloptimizer.optimizer import KernelOptimizer
 
-X_df = pd.DataFrame({'a':[1,2,3,4],'b':[5,6,7,8],'c':[2,6,8,9]})
+X_df = pd.DataFrame({'a':[1,2,3,4],'b':[5,6,7,8]})
 X = X_df.to_numpy()
 y = np.array([1,1,2,2])
 d = X.shape[1]
@@ -19,7 +19,8 @@ opt = KernelOptimizer(
 print("Training MLP")
 opt.fit(X,y,n_epochs=100)
 
-lspace = opt.get_likelihood_space(X,y)
+X_test = np.array([[1,5],[2,3]])
+lspace = opt.get_likelihood_space(X_test)#,y)
 
 print(lspace)
 
@@ -31,6 +32,6 @@ opt2 = KernelOptimizer(
 print("Finding the width")
 opt2.fit(X,y)
 
-lspace2 = opt2.get_likelihood_space(X,y)
+lspace2 = opt2.get_likelihood_space(X_test)#,y)
 
 print(lspace2)
