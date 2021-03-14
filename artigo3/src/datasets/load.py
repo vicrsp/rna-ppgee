@@ -16,6 +16,15 @@ def read_dat_file(filepath):
         y = np.asarray([line.split(',')[-1].strip() for line in lines[data_start:]])
         return X, y
 
+def load_sonar_uci():
+    data = pd.read_csv(f'{path}/sonar.all-data', sep=',', header=None)
+    data.dropna(inplace=True)
+    data_np = data.to_numpy()
+    X, y = data_np[:,:-1], data_np[:,-1]
+    X = MinMaxScaler().fit_transform(X)
+    y = pd.Series(y).map({'R':-1,'M':1}).to_numpy()
+    return X, y
+
 def load_sonar():
     X, y = read_dat_file(f'{path}/sonar.dat')
     X = MinMaxScaler().fit_transform(X)
@@ -134,21 +143,21 @@ def load_ilpd():
 
 def load_classification_datasets():
     datasets = []
-    datasets.append(('appendicitis', load_appendicitis()))
-    datasets.append(('australian', load_australian()))
-    datasets.append(('banknote', load_banknote()))
-    datasets.append(('breastcancer', load_breast_cancer_dataset()))
-    datasets.append(('bupa', load_bupa()))
-    datasets.append(('climate', load_pop_failures()))
-    datasets.append(('fertility', load_fertility()))
-    datasets.append(('glass', load_glass()))
-    datasets.append(('haberman', load_haberman()))
-    datasets.append(('heart', load_heart_disease()))
-    datasets.append(('ILPD', load_ilpd()))
-    datasets.append(('ionosphere', load_ionosphere()))
+    # datasets.append(('appendicitis', load_appendicitis()))
+    # datasets.append(('australian', load_australian()))
+    # datasets.append(('banknote', load_banknote()))
+    # datasets.append(('breastcancer', load_breast_cancer_dataset()))
+    # datasets.append(('bupa', load_bupa()))
+    # datasets.append(('climate', load_pop_failures()))
+    # datasets.append(('fertility', load_fertility()))
+    # datasets.append(('glass', load_glass()))
+    # datasets.append(('haberman', load_haberman()))
+    # datasets.append(('heart', load_heart_disease()))
+    # datasets.append(('ILPD', load_ilpd()))
+    # datasets.append(('ionosphere', load_ionosphere()))
     datasets.append(('sonar', load_sonar()))
-    datasets.append(('segmentation', load_segmentation()))
-    datasets.append(('pima', load_pima()))
+    # datasets.append(('segmentation', load_segmentation()))
+    # datasets.append(('pima', load_pima()))
 
     return datasets
 

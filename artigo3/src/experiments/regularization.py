@@ -14,7 +14,7 @@ class ModelTunerCV:
         self.n_jobs = n_jobs
 
     def tune(self, folds=5):
-        self.tuner = GridSearchCV(self.model, self.param_grid, cv=folds, n_jobs=self.n_jobs, verbose=0)
+        self.tuner = GridSearchCV(self.model, self.param_grid, cv=StratifiedKFold(n_splits=folds), n_jobs=self.n_jobs, verbose=0)
         self.tuner.fit(self.X, self.y)
         
         self.opt_param = self.tuner.best_params_['reg_factor']
