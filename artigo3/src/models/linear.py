@@ -17,17 +17,23 @@ class KernelLinearModel(BaseEstimator, ClassifierMixin, ABC):
     def calculate_weights(self, y, H):
         pass
 
+    def pre_process(self, X):
+        return X
+
+    def transform(self, X):
+        return X
+
     def fit(self, X, y):
         # check X, y consistency
         X, y = check_X_y(X, y, accept_sparse=True)
         # augument x
-        N = X.shape[0]
-        x_aug = np.hstack((-np.ones((N, 1)), X))
+        # N = X.shape[0]
+        # x_aug = np.hstack((-np.ones((N, 1)), X))
         # x_aug = self.pre_process(x_aug)
         # calculate the likelihood space
-        self.kernel_projection_ = KernelProjection(kernel=self.kernel).fit(x_aug, y)
+        self.kernel_projection_ = KernelProjection(kernel=self.kernel).fit(X, y)
         # calculate the projected X
-        H = self.kernel_projection_.H_
+        H = self.pre_process(self.kernel_projection_.H_)
         # fit the model 
         self.coef_ = self.calculate_weights(y, H)
 
@@ -37,9 +43,9 @@ class KernelLinearModel(BaseEstimator, ClassifierMixin, ABC):
     def decision_function(self, X):
         # check X, y consistency
         X = check_array(X, accept_sparse=True)
-        N, _ = X.shape
-        x_aug = np.hstack((-np.ones((N, 1)), X))
-        H = self.kernel_projection_.transform(x_aug)
+        # N, _ = X.shape
+        # x_aug = np.hstack((-np.ones((N, 1)), X))
+        H = self.transform(self.kernel_projection_.transform(X))
         return H @ self.coef_
 
     def predict(self, X):
@@ -64,3 +70,10 @@ class KernelHebbian(KernelLinearModel):
         w0 = y @ H
         w = w0 / np.linalg.norm(w0)
         return w
+
+    def pre_process(self, X):
+        self.scaler_ = StandardScaler().fit(X)
+        return self.scaler_.transform(X)
+
+    def transform(self, X):
+        return self.scaler_.transform(X)
