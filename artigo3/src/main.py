@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import multiprocessing
 
 from models.load import get_classification_models
 from experiments.evaluation import ModelEvaluationExperiment

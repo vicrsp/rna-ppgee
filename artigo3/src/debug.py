@@ -14,11 +14,11 @@ plt.style.use('ggplot')
 
 #%% 
 
-X, y = make_moons(200, random_state=1234,noise=0.1)
-y = pd.Series(y).map({0:-1,1:1}).to_numpy()
-
-# X, y = make_blobs(200, n_features=2, centers=[[-1,-1], [1,1]], random_state=1234)
+# X, y = make_moons(200, random_state=1234,noise=0.1)
 # y = pd.Series(y).map({0:-1,1:1}).to_numpy()
+
+X, y = make_blobs(200, n_features=2, centers=[[-1,-1], [1,1]], random_state=1234)
+y = pd.Series(y).map({0:-1,1:1}).to_numpy()
 
 models = get_classification_models()
 cmap = cm.get_cmap('Dark2', len(models))
