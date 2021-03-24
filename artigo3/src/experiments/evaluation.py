@@ -29,11 +29,13 @@ class ModelEvaluationExperiment:
         self.model_type = model_type
         self.n_jobs = n_jobs
 
-    def start(self, models):
+    def start(self, models, cv_type='cv'):
         self.dataset_results = {}
         for name, data in tqdm(self.datasets):
-            cv_results = self.k_fold_cross_validation(
-                data, models, self.n_splits, self.tuning_size)
+            if (cv_type == 'cv'): 
+                cv_results = self.k_fold_cross_validation(data, models, self.n_splits, self.tuning_size)
+            else:
+                cv_results = self.random_cross_validation(data, models, self.n_splits, self.tuning_size)
             self.dataset_results[name] = cv_results
         return self
 
@@ -44,7 +46,7 @@ class ModelEvaluationExperiment:
             n_splits=n_splits) if self.model_type == 'classification' else KFold(n_splits=n_splits)
         self.cv_scores = []
         fold = 1
-        for train_index, test_index in tqdm(kfold.split(X, y)):
+        for train_index, test_index in kfold.split(X, y):
             # create the T and k dataset
             X_t, X_k = X[train_index, :], X[test_index, :]
             y_t, y_k = y[train_index], y[test_index]
@@ -61,6 +63,28 @@ class ModelEvaluationExperiment:
             fold += 1
 
         return results
+    
+    
+    def random_cross_validation(self, data, models, n_splits, tuning_size):
+        X, y = data
+        results = []
+        for fold in range(n_splits):
+            # create the T and k dataset
+            X_t, X_k, y_t, y_k = train_test_split(X, y, shuffle=True, test_size=0.3, stratify=y)
+            for model_name, model, reg_factors in tqdm(models):
+                opt_factor = np.nan
+                if(reg_factors is not None):
+                    opt_factor = self.tune_model(X_t, y_t, model, reg_factors)
+                    model.set_params(reg_factor=opt_factor)
+                # Train the tuned model on T
+                model.fit(X_t, y_t)
+                # Evalute the score on k and store the results
+                results.append(CVFoldResult(model_name, fold,
+                                            opt_factor, model.score(X_k, y_k)))
+
+        return results
+
+
 
     def tune_model(self, X_t, y_t, model, regularization_factors):
         cv = ModelTunerCV((X_t, y_t), model, regularization_factors, self.n_jobs).tune()
@@ -170,7 +194,7 @@ def plot_ci_all(filename, ylabel, xlabel, save_path=None):
     ax.set_ylabel(ylabel)
     ax.set_xlabel(xlabel)
 
-def display_stats(filename, metric, save_path=None):
+def display_stats(filename, metric, agg='ci', save_path=None):
     # calculate statistics
     def get_ci(values):
         q1 = values.quantile(0.25)                 
@@ -181,13 +205,33 @@ def display_stats(filename, metric, save_path=None):
         values_filt = values[filter]
         ci_bs = bs.bootstrap(
             values_filt.to_numpy(), stat_func=bs_stats.mean, num_iterations=1000, return_distribution=False)
-        return f'{ci_bs.value:.3f} ({ci_bs.lower_bound:.3f},{ci_bs.upper_bound:.3f})'
+        return f'{100 * ci_bs.value:.2f} ({100 * ci_bs.lower_bound:.2f},{100 * ci_bs.upper_bound:.2f})'
+
+    # calculate statistics
+    def get_std(values):
+        q1 = values.quantile(0.25)                 
+        q3 = values.quantile(0.75)
+        iqr = q3 - q1
+
+        filter = (values >= q1 - 1.5*iqr) & (values <= q3 + 1.5*iqr)
+        values_filt = values[filter]
+        
+        return f'{100 * np.mean(values_filt):.3f} ± {100 * np.std(values_filt):.3f}'
 
     data = pd.read_csv(filename, sep=',')
-    agg_data = data.groupby(['dataset','model_name'])['score'].agg(get_ci)
+    if (agg == 'ci'):
+        agg_data = data.groupby(['dataset','model_name'])['score'].agg(get_ci)
+        average_results = data.groupby('model_name')['score'].agg(get_ci)
+    else:
+        agg_data = data.groupby(['dataset','model_name'])['score'].agg(get_std)
+        average_results = data.groupby('model_name')['score'].agg(get_std)
+
+    print(average_results)
     agg_data = agg_data.reset_index().pivot('dataset', 'model_name')
 
+    # agg_data = agg_data.append(pd.DataFrame(average_results), ignore_index=True, sort=False)
+
     if(save_path is not None):
-        agg_data.to_csv(f'{save_path}/{metric}_scores.csv')
+        agg_data.to_csv(f'{save_path}/{metric}_{agg}_scores.csv')
     
     return agg_data

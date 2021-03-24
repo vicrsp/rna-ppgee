@@ -143,28 +143,32 @@ def load_ilpd():
 
 def load_classification_datasets():
     datasets = []
-    # datasets.append(('appendicitis', load_appendicitis()))
-    # datasets.append(('australian', load_australian()))
-    # datasets.append(('banknote', load_banknote()))
-    # datasets.append(('breastcancer', load_breast_cancer_dataset()))
-    # datasets.append(('bupa', load_bupa()))
-    # datasets.append(('climate', load_pop_failures()))
-    # datasets.append(('fertility', load_fertility()))
-    # datasets.append(('glass', load_glass()))
-    # datasets.append(('haberman', load_haberman()))
-    # datasets.append(('heart', load_heart_disease()))
-    # datasets.append(('ILPD', load_ilpd()))
-    # datasets.append(('ionosphere', load_ionosphere()))
+    datasets.append(('appendicitis', load_appendicitis()))
+    datasets.append(('australian', load_australian()))
+    datasets.append(('banknote', load_banknote()))
+    datasets.append(('breastcancer', load_breast_cancer_dataset()))
+    datasets.append(('bupa', load_bupa()))
+    datasets.append(('climate', load_pop_failures()))
+    datasets.append(('fertility', load_fertility()))
+    datasets.append(('glass', load_glass()))
+    datasets.append(('haberman', load_haberman()))
+    datasets.append(('heart', load_heart_disease()))
+    datasets.append(('ILPD', load_ilpd()))
+    datasets.append(('ionosphere', load_ionosphere()))
     datasets.append(('sonar', load_sonar()))
-    # datasets.append(('segmentation', load_segmentation()))
-    # datasets.append(('pima', load_pima()))
+    datasets.append(('segmentation', load_segmentation()))
+    datasets.append(('pima', load_pima()))
 
     return datasets
 
 
 def print_stats(datasets):
+    stats = []
     for name, ds in datasets:
-        _, y = ds
+        X, y = ds
         yp = pd.Categorical(y)
-        print(name)
-        print(yp.describe())
+        stats.append((name, X.shape[0], X.shape[1],  f'{yp.describe()["freqs"][0]:.2f}/{yp.describe()["freqs"][1]:.2f}'))
+
+    print(pd.DataFrame(stats, columns=['Dataset','Instâncias','Atributos','Proporção']))
+
+print_stats(load_classification_datasets())

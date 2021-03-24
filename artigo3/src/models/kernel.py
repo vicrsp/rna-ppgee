@@ -7,6 +7,7 @@ from sklearn.metrics import roc_auc_score, r2_score, mean_squared_error
 from sklearn.neural_network import MLPRegressor
 from sklearn.linear_model import Perceptron
 from kerneloptimizer.optimizer import KernelOptimizer
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 class KernelProjection:
     def __init__(self, kernel='gaussian'):
@@ -33,8 +34,21 @@ class KernelProjection:
       
         # calculate the projection
         self.H_ = self.transform(X)
-     
+        self.y_ = y
+
         return self
 
     def transform(self, X):
         return self.kernel_opt_.get_likelihood_space(X).to_numpy()
+
+
+    def calculate_crosstalk(self):
+        H = MinMaxScaler().fit(self.H_).transform(self.H_)
+        N = H.shape[0]        
+        crosstalk = 0
+        for k in range(N):
+            for j in range(N):
+                if(k != j):
+                    crosstalk += H[k,:].T @ H[j,:] * self.y_[j]
+        
+        return crosstalk / N

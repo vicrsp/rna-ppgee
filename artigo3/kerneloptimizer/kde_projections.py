@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from tqdm import tqdm
-from sklearn.datasets import load_breast_cancer, make_moons
+from sklearn.datasets import load_breast_cancer, make_moons, make_gaussian_quantiles
 from scipy.optimize import minimize_scalar
 from sklearn.neighbors import KernelDensity
 from matplotlib import animation
@@ -58,8 +58,8 @@ def kde_estimation(X,y,sigma=0.22):
 def plot_decision_boundary(X, y, gamma, C):
     fig, ax = plt.subplots(figsize=(6,4))
     
-    x1 = np.arange(-1, 1, step=0.01)
-    x2 = np.arange(-1, 1, step=0.01)
+    x1 = np.arange(-2, 6, step=0.01)
+    x2 = np.arange(-2, 6, step=0.01)
 
     xx, yy = np.meshgrid(x1, x2)
     # flatten each grid to a vector
@@ -93,9 +93,20 @@ def plot_decision_boundary(X, y, gamma, C):
 #X_bc, y_bc = load_breast_cancer(return_X_y=True)
 #y_bc = pd.Series(y_bc).map({0: -1, 1: 1}).to_numpy()
 
-data = pd.read_csv('spirals_original.csv')
-X, y = data[['X1','X2']].to_numpy(), data['Class'].to_numpy()
-y = pd.Series(y).map({1:-1,2:1}).to_numpy()
+# data = pd.read_csv('spirals_original.csv')
+# X, y = data[['X1','X2']].to_numpy(), data['Class'].to_numpy()
+# y = pd.Series(y).map({1:-1,2:1}).to_numpy()
+
+# Construct gaussian quantiles dataset
+X1, y1 = make_gaussian_quantiles(cov=2.,
+                                 n_samples=100, n_features=2,
+                                 n_classes=2, random_state=1)
+X2, y2 = make_gaussian_quantiles(mean=(3, 3), cov=1.5,
+                                 n_samples=100, n_features=2,
+                                 n_classes=2, random_state=1)
+X = np.concatenate((X1, X2))
+y = np.concatenate((y1, -y2 + 1))
+y = pd.Series(y).map({0:-1,1:1}).to_numpy()
 
 # X, y = make_moons(200,random_state=1234,noise=0.1)
 # y = pd.Series(y).map({0:-1,1:1}).to_numpy()
@@ -110,9 +121,9 @@ px_C2 = p_kde[p_kde[:,1] < p_kde[:,0],:]
 plt.figure()
 plt.scatter(px_C1[:, 0], px_C1[:, 1], color='r')
 plt.scatter(px_C2[:, 0], px_C2[:, 1], color='b')
-plt.plot(np.arange(0,0.7,0.1),np.arange(0,0.7,0.1),'k')
+plt.plot(np.arange(0,0.3,0.1),np.arange(0,0.3,0.1),'k')
 #%%
-sigma_values = np.linspace(0.001, 2, 100)
+sigma_values = np.linspace(0.001, 10, 100)
 Dvalues = []
 for sigma in tqdm(sigma_values):
     Vs = calculate_similarities(X, y, sigma)

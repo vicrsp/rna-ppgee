@@ -69,25 +69,33 @@
 %	ELMs são capazes de definir adaptivamente o número neurônios da rede e aleatoriamente escolher os pesos das entradas e viéses da camada escondida~\cite{huang2006extreme}. Isso faz com o que a rede possa ser considerada como um sistema linear, o qual pode ser calculado de forma analítica através de uma operação de inversão da matriz de pesos da camada de saídas~\cite{huang2006extreme}. Essa característica permite uma drástica redução do esforço computacional do treinamento, geralmente de 10 vezes ou mais~\cite{deng2010research}. 
 	
 	\section{Metodologia}
-%	\subsection{Bases de Dados}
-%	Neste trabalho serão consideradas três bases de dados referentes a problemas de classificação binários e regressão multivariada disponíveis no repositório da UCI~\cite{dua2019}, totalizando seis problemas. Antes do treinamento, os dados de entrada serão normalizados para o intervalo $[0,1]$ e filtrados para remoção de valores inválidos. Um sumário das bases de dados consideradas pode ser vista na Tabela \ref{tab:datasets}.
-%	
-%	\begin{table}[thpbh]
-%		\caption{Principais características das bases de dados utilizadas}
-%		\label{tab:datasets}
-%		\centering
-%		\begin{tabular}{l|c|c|c|}
-%			\cline{2-4}
-%			& \textbf{Instâncias} & \textbf{Atributos} & \textbf{Proporção} \\ \hline
-%			\multicolumn{1}{|l|}{\textbf{Breast Cancer}}   & 569                 & 32                 & 0.66                           \\ \hline
-%			\multicolumn{1}{|l|}{\textbf{Liver Disorder}}  & 245                 & 6                  & 0.58                           \\ \hline
-%			\multicolumn{1}{|l|}{\textbf{Statlog (Heart)}} & 270                 & 13                 & 0.66                           \\ \hline
-%			\multicolumn{1}{|l|}{\textbf{Boston Housing}}  & 506                 & 13                 & N/A                            \\ \hline
-%			\multicolumn{1}{|l|}{\textbf{Wine Quality (Red)}}      & 1599                 & 11                 & N/A                            \\ \hline
-%			\multicolumn{1}{|l|}{\textbf{Diabetes}}        & 442                 & 10                 & N/A                            \\ \hline
-%		\end{tabular}
-%	\end{table}
-%	
+	\subsection{Bases de Dados}
+	Neste trabalho serão consideradas quinze bases de dados referentes a problemas de classificação binários disponíveis no repositório da UCI~\cite{dua2019}. Antes do treinamento, os dados de entrada serão normalizados para o intervalo $[0,1]$ e filtrados para remoção de valores inválidos. Um sumário das bases de dados consideradas pode ser vista na Tabela \ref{tab:datasets}.
+
+	\begin{table}[h!]
+		\centering
+		\label{tab:datasets}
+		\begin{tabular}{|l|c|c|c|}
+			\hline
+			\multicolumn{1}{|c|}{\textbf{Dataset}} & \textbf{Instâncias} & \textbf{Atributos} & \textbf{Proporção} \\ \hline
+			ILPD                                   & 578                 & 10                 & 0.71/0.29          \\ \hline
+			appendicitis                           & 106                 & 7                  & 0.80/0.20          \\ \hline
+			australian                             & 690                 & 14                 & 0.56/0.44          \\ \hline
+			banknote                               & 1372                & 4                  & 0.56/0.44          \\ \hline
+			breastcancer                           & 569                 & 30                 & 0.37/0.63          \\ \hline
+			bupa                                   & 345                 & 6                  & 0.42/0.58          \\ \hline
+			climate                                & 540                 & 18                 & 0.09/0.91          \\ \hline
+			fertility                              & 100                 & 9                  & 0.88/0.12          \\ \hline
+			glass                                  & 214                 & 9                  & 0.86/0.14          \\ \hline
+			haberman                               & 306                 & 3                  & 0.74/0.26          \\ \hline
+			heart                                  & 270                 & 13                 & 0.56/0.44          \\ \hline
+			ionosphere                             & 351                 & 33                 & 0.64/0.36          \\ \hline
+			sonar                                  & 208                 & 60                 & 0.47/0.53          \\ \hline
+			segmentation                           & 2310                & 19                 & 0.86/0.14          \\ \hline
+			pima                                   & 768                 & 8                  & 0.65/0.35          \\ \hline
+		\end{tabular}
+	\end{table}
+
 	\subsection{Desenho do experimento}
 	A partir das recomendações para desenho de experimento para comparação de algoritmos proposta em~\cite{salzberg1997comparing}, a seguinte metodologia será adotada:
 	\begin{itemize}
@@ -114,7 +122,7 @@
 	\begin{equation}
 		w = \frac{ \sum^{N}_{i=1} y_i\textbf{h}_i}{\left\|  \sum^{N}_{i=1} y_i\textbf{h}_i \right\| }
 	\end{equation}
-	onde $\textbf{h}_i$ é á $i$-ésima linha da matriz de projeção. É importante ressaltar que esta regra assume que os dados foram normalizados para possuir média zero e desvio padrão unitário. Conforme os resultados obtidos no anterior da disciplina, o uso do aprendizado Hebbiano é capaz de atingir a regularização desejada, porém seu desempenho é limitado a projeções que tornam os dados linearmente separáveis. Logo, podemos concluir que esta abordagem poderá ter desempenho satisfatório caso a projeção no espaço de verossimilhanças seja adequada.
+	onde $\textbf{h}_i$ é á $i$-ésima linha da matriz de projeção. É importante ressaltar que esta regra assume que os dados foram normalizados para possuir média zero e desvio padrão unitário. Conforme os resultados obtidos no anterior da disciplina, o uso do aprendizado Hebbiano é capaz de atingir a regularização desejada, porém seu desempenho é limitado a projeções que tornam os dados linearmente separáveis. Logo, podemos concluir que esta abordagem poderá ter desempenho satisfatório caso a projeção no espaço de verossimilhanças seja ortogonal.
 	
 	\subsection{RBF com Otimização de Largura}
 	As redes RBF foram inicialmente introduzidas por~\cite{broomhead1988multivariablefi} e são caracterizadas por um aprendizado que envolve duas etapas: (i) aplicar uma transformação aos padrões através de um kernel Gaussiano (ii) encontrar os pesos usando o estimador mínimos quadrados usado no Perceptron simples. Portanto, a qualidade do modelo obtido será diretamente afetado pela escolha dos centróides e larguras das funções radias de cada neurônios. 
@@ -124,7 +132,7 @@
 	\section{Resultados}
 	Os classificadores avaliados serão identificados por: \textbf{GK-H}, \textbf{GK-P}, \textbf{MLPK-H}, \textbf{MLPK-P}, \textbf{GK-SVM} e \textbf{GK-RBF}. Os prefixos \textbf{GK} e \textbf{MLPK} representam a projeção utilizada no espaço de verossimilhanças: kernel Gaussiano e MLP, respectivamente. Os sufixos \textbf{H}, \textbf{P}, \textbf{SVM} e \textbf{RBF} representam o modelo utilizado: Perceptron Hebbiano, Perceptron Simples, SVM e RBF respectivamente.
 	
-	\subsection{Análise sobre problemas bi-dimensionais}
+	\subsection{Análise de problemas bi-dimensionais}
 	Considerando três conjuntos de dados gerados artificialmente para diferentes estruturas, a superfície de decisão para cada classificador pode ser vista nas Figuras \ref{fig:ds01_circles}, \ref{fig:ds02_quant} e \ref{fig:ds03_spirals}. Observe que à medida em que a complexidade do modelo é aumentada, maior é a dificuldade encontrada pelos modelos lineares. 
 	
 	Para o problema da Figura \ref{fig:ds01_circles}, é possível ver que todos os modelos estimaram com precisão a superfície de separação. Entretanto, note que para o problema da Figura \ref{fig:ds02_quant} os modelos lineares não tiveram um bom desempenho, provavelmente devido à qualidade da projeção obtida. Isso é evidenciado pelo problema da Figura \ref{fig:ds03_spirals}, para o qual os modelos lineares obtiveram desempenho superior quando utilizada a projeção MLP. Destaca-se também que o RBF se ajustam muito bem aos dados e e de foram bem similar ao SVM, indicando que a estratégia adotada é bastante promissora.
@@ -151,42 +159,64 @@
 
 	\subsection{Análise do experimento}
 
-	Para os problemas de classificação foram considerados os algoritmos Perceptron, RBF, ELM e ELM com apredizado Hebbiano. Foi estabelecido um número fixo de 20 neurônios na camada escondida e não foi aplicada regularização ao ELM Hebbiano. 50 valores para o coeficiente de regularização foram escolhidos no intervalo $[0,1]$. 
+	Considerando os mesmos algoritmos da seção anterior, é incluído também o algoritmo ELM com regularização na sua versão original, ou seja, sem o uso da técnica de projeção no espaço de verossimilhanças. O número de neurônios das redes ELM e GK-RBF foram mantidos fixos em 100. Os valores de coeficiente de regularização utilizados para o GK-SVM, RBF e ELM foram escolhidos no intervalo $[2^{-5},2^{-4}, \dots, 2^{11},2^{12}]$. A acurácia média e seu intervalo de confiança obtido via bootstraping para o experimento estão consolidados na Tabela \ref{tab:results}. Comparando com os resultados reportados em \cite{menezes2019width}, nota-se que todos estão coerentes, especialmente para a implementação do GK-SVM. Destaca-se o excelente desempenho do algoritmo ELM, o qual também está de acordo com o reportado na literatura \cite{huang2011extreme}.
 	
-	A partir destes resultados, podemos chegar às seguintes conclusões:
-	\begin{itemize}
-		\item Para um intervalo de confiança de 95\%, podemos afirmar que todos os algoritmos possuem desempenho médio superior ao modelo RBF nas bases de dados avaliadas.
-		\item Para a base de dados \textit{Breast Cancer}, os modelos ELM e Perceptron obtiveram desempenhos bastante similares. Além disso, podemos afirmar que eles obtiveram desempenho médio superior ao ELM Hebbiano para o intervalo de confiança de 95\%.
-		\item Para a base de dados \textit{Statlog (Heart)} não podemos rejeitar a hipótese de que os modelos ELM, ELM Hebbiano e Perceptron possuam desempenhos iguais para o intervalo de confiança de 95\%.
-		\item Para a base de dados \textit{Liver Disorder}, podemos afirmar que para um intervalo de confiança de 95\%, o ELM possui desempenho superior aos demais modelos.
-		\item Uma hipótese para o desempenho muito abaixo do esperado do RBF pode estar no número de neurônions escolhidos para a camada escondida. Este hiperparâmetro não foi ajustado para que a comparação com o ELM seja justa e também para limitar o tamanho do experimento a ser executado. 
-		\item A diferença de desempenho entre o ELM e sua versão com aprendizado Hebbiano está no fato deste última poder estar resultando em uma regularização excessiva. Isso sugere que uma implementação diferente do modelo Hebbiano é indicado para controlar melhor a sua generalização.
-		\item É interessante notar que para problemas lineares não houve uma perda muito grande na AUC média dos modelos ELM e ELM Hebbiano. Entretanto, nota-se uma maior variabilidade para este último modelo, o que sugere uma maior sensibilidade à base de dados em estudo. 
-	\end{itemize}
+	Observando os demais métodos avaliados, é importante destacar também que o modelo GK-RBF apresentou desempenho equivalente ao GK-SVM em grande parte das bases de dados, porém ainda com ma acurácia elevada e compatível com o esperado para a base de dados. Portanto, podemos afirmar que esta é uma abordagem que, embora simples de entender e implementar, tem potencial para novas aplicações. Embora a versão clássica do treinamento de redes RBF não foi incluída para comparação, uma outra vantagem que ficou evidente durante a execução do experimento foi a redução drástica no tempo de treinamento, uma vez que foi eliminada a necessidade do cálculo dos centros e raios via clustering.  
+	
+	A grande surpresa destes testes está na baixa qualidade dos resultados do modelo com aprendizado Hebbiano: para todas as bases de dados avaliadas, o modelo GK-H apresentou acurácia inferior em relação aos demais para um intervalo de confiança de 95\%. O mesmo não ocorreu quando foi utilizado o MLP-H, onde para algumas bases de dados a acurácia foi equivalente. Isso sugere que a projeção no espaço de verossimilhanças com o Kernel radial possa não ter atingido a ortogonalização esperada. 
+	
+	O cálculo do cross-talk sobre o conjunto de dados projetado permite obter uma ideia da qualidade desta ortogonalização, onde um valor próximo de zero indicará uma boa projeção. Os valores obtidos estão disponíveis na Tabela \ref{tab:crosstalk}, os quais foram calculados considerando a média do valor de cada amostra em relação à todas as outras. É relevante citar que durante o cálculo, se considerássemos somente as amostras de classes diferentes classe, o valor era aproximadamente zero e foram omitidos da tabela. Portanto, os valores apresentados correspondem ao cross-talk intra-classe, o qual é naturalmente mais alto. Dessa forma podemos concluir que a ortogonalização obtida é de fato ortogonal, e outro fator pode estar afetando o aprendizado Hebbiano.
+	
+	\begin{table}[h!]
+		\centering
+		\label{tab:crosstalk}
+		\caption{Cross-talk calculado para as projeções RBF e MLP sobre todo o conjunto de dados}
+		\begin{tabular}{|l|c|c|}
+			\hline
+			\multicolumn{1}{|c|}{\textbf{Dataset}} & \textbf{RBF} & \textbf{MLP} \\ \hline
+			ILPD                                   & 0.973675     & 1.299812     \\ \hline
+			appendicitis                           & 0.594261     & -1.086522    \\ \hline
+			australian                             & 0.069242     & 0.029584     \\ \hline
+			banknote                               & -0.212484    & -0.224532    \\ \hline
+			breastcancer                           & 0.318198     & 0.575652     \\ \hline
+			bupa                                   & -0.262322    & -1.124887    \\ \hline
+			climate                                & -1.525012    & -1.253363    \\ \hline
+			fertility                              & 1.445575     & 0.590236     \\ \hline
+			glass                                  & -0.216374    & -1.345287    \\ \hline
+			haberman                               & 0.756672     & 0.193615     \\ \hline
+			heart                                  & -0.070371    & -0.422381    \\ \hline
+			ionosphere                             & 0.048857     & -0.723001    \\ \hline
+			pima                                   & 0.408878     & -0.415799    \\ \hline
+			segmentation                           & 1.377789     & 0.043600     \\ \hline
+			sonar                                  & -0.560352    & 0.396350     \\ \hline
+		\end{tabular}
+	\end{table}
 
 	\begin{table*}[thpbh]
-		\caption{Acurácia dos classificadores}
+		\caption{Acurácia média dos classificadores para intervalo de confiança de 95\%}
 		\label{tab:results}
 		\begin{adjustbox}{width=1\textwidth}
 			
 		\begin{tabular}{@{}cccccccc@{}}
 			\toprule
 			\textbf{Base}                               & \textbf{ELM}                             & \textbf{GK-H}                            & \textbf{GK-P}                            & \textbf{GK-RBF}                           & \textbf{GK-SVM}                             & \textbf{MLPK-H}                             & \textbf{MLPK-P}                             \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{ILPD}}         & \multicolumn{1}{l|}{70.97 (69.82,72.20)} & \multicolumn{1}{l|}{52.95 (49.00,56.68)} & \multicolumn{1}{l|}{66.29 (63.18,69.65)} & \multicolumn{1}{l|}{71.45 (71.01,71.92)}  & \multicolumn{1}{l|}{71.43 (70.94,71.96)}    & \multicolumn{1}{l|}{60.77 (55.69,66.12)}    & \multicolumn{1}{l|}{71.43 (70.90,72.02)}    \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{appendicitis}} & \multicolumn{1}{l|}{85.82 (81.09,90.00)} & \multicolumn{1}{l|}{76.36 (66.45,86.37)} & \multicolumn{1}{l|}{87.64 (82.00,93.46)} & \multicolumn{1}{l|}{84.73 (78.00,90.91)}  & \multicolumn{1}{l|}{86.73 (80.36,92.55)}    & \multicolumn{1}{l|}{61.55 (49.99,74.28)}    & \multicolumn{1}{l|}{75.36 (70.91,80.64)}    \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{australian}}   & \multicolumn{1}{l|}{85.94 (83.04,89.13)} & \multicolumn{1}{l|}{86.09 (83.33,88.99)} & \multicolumn{1}{l|}{87.60 (85.35,89.70)} & \multicolumn{1}{l|}{86.09 (83.62,89.13)}  & \multicolumn{1}{l|}{85.80 (82.90,88.84)}    & \multicolumn{1}{l|}{85.19 (82.93,87.60)}    & \multicolumn{1}{l|}{83.91 (81.88,85.95)}    \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{banknote}}     & \multicolumn{1}{l|}{97.96 (97.45,98.54)} & \multicolumn{1}{l|}{91.76 (90.44,93.08)} & \multicolumn{1}{l|}{91.91 (90.38,93.30)} & \multicolumn{1}{l|}{99.78 (99.56,100.00)} & \multicolumn{1}{l|}{100.00 (100.00,100.00)} & \multicolumn{1}{l|}{100.00 (100.00,100.00)} & \multicolumn{1}{l|}{100.00 (100.00,100.00)} \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{breastcancer}} & \multicolumn{1}{l|}{96.48 (95.42,97.70)} & \multicolumn{1}{l|}{92.09 (89.99,94.02)} & \multicolumn{1}{l|}{94.53 (93.74,95.31)} & \multicolumn{1}{l|}{91.21 (90.33,92.09)}  & \multicolumn{1}{l|}{98.82 (98.04,99.62)}    & \multicolumn{1}{l|}{96.88 (96.30,97.26)}    & \multicolumn{1}{l|}{96.31 (94.91,97.54)}    \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{bupa}}         & \multicolumn{1}{l|}{70.45 (67.33,73.45)} & \multicolumn{1}{l|}{50.14 (45.03,55.31)} & \multicolumn{1}{l|}{60.65 (58.71,62.75)} & \multicolumn{1}{l|}{61.10 (57.97,63.86)}  & \multicolumn{1}{l|}{70.81 (65.53,76.24)}    & \multicolumn{1}{l|}{55.96 (51.24,60.89)}    & \multicolumn{1}{l|}{57.10 (53.28,60.34)}    \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{climate}}      & \multicolumn{1}{l|}{91.11 (90.37,91.67)} & \multicolumn{1}{l|}{57.59 (54.81,60.00)} & \multicolumn{1}{l|}{91.48 (90.93,92.04)} & \multicolumn{1}{l|}{91.11 (90.37,91.85)}  & \multicolumn{1}{l|}{91.30 (90.74,91.85)}    & \multicolumn{1}{l|}{78.15 (70.37,87.04)}    & \multicolumn{1}{l|}{89.81 (88.52,91.11)}    \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{fertility}}    & \multicolumn{1}{l|}{86.00 (83.00,89.00)} & \multicolumn{1}{l|}{52.22 (42.22,61.14)} & \multicolumn{1}{l|}{86.00 (83.00,89.00)} & \multicolumn{1}{l|}{87.78 (85.56,90.00)}  & \multicolumn{1}{l|}{87.00 (84.00,90.00)}    & \multicolumn{1}{l|}{60.00 (50.00,70.00)}    & \multicolumn{1}{l|}{87.78 (85.56,91.11)}    \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{glass}}        & \multicolumn{1}{l|}{96.26 (94.37,98.48)} & \multicolumn{1}{l|}{86.84 (79.99,94.32)} & \multicolumn{1}{l|}{97.08 (95.35,98.32)} & \multicolumn{1}{l|}{97.68 (95.84,99.94)}  & \multicolumn{1}{l|}{96.26 (93.90,99.05)}    & \multicolumn{1}{l|}{95.30 (92.49,98.61)}    & \multicolumn{1}{l|}{96.26 (93.94,98.55)}    \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{haberman}}     & \multicolumn{1}{l|}{76.24 (74.43,77.98)} & \multicolumn{1}{l|}{53.59 (50.04,57.03)} & \multicolumn{1}{l|}{74.69 (73.27,76.10)} & \multicolumn{1}{l|}{72.23 (70.04,74.55)}  & \multicolumn{1}{l|}{72.56 (71.01,74.11)}    & \multicolumn{1}{l|}{52.57 (44.63,60.08)}    & \multicolumn{1}{l|}{72.54 (71.30,74.05)}    \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{heart}}        & \multicolumn{1}{l|}{84.77 (83.54,86.01)} & \multicolumn{1}{l|}{78.19 (74.48,82.30)} & \multicolumn{1}{l|}{82.22 (78.52,85.56)} & \multicolumn{1}{l|}{85.19 (82.59,87.78)}  & \multicolumn{1}{l|}{79.63 (76.67,82.59)}    & \multicolumn{1}{l|}{82.22 (78.52,85.93)}    & \multicolumn{1}{l|}{87.50 (84.25,90.28)}    \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{ionosphere}}   & \multicolumn{1}{l|}{88.31 (85.98,91.17)} & \multicolumn{1}{l|}{70.08 (66.00,74.65)} & \multicolumn{1}{l|}{87.00 (84.11,90.20)} & \multicolumn{1}{l|}{89.47 (85.14,93.22)}  & \multicolumn{1}{l|}{93.73 (91.17,96.32)}    & \multicolumn{1}{l|}{92.89 (90.63,95.14)}    & \multicolumn{1}{l|}{93.17 (90.88,95.62)}    \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{pima}}         & \multicolumn{1}{l|}{76.42 (74.18,78.51)} & \multicolumn{1}{l|}{67.44 (65.56,69.13)} & \multicolumn{1}{l|}{72.52 (69.45,75.45)} & \multicolumn{1}{l|}{75.91 (73.45,78.52)}  & \multicolumn{1}{l|}{77.74 (75.83,79.59)}    & \multicolumn{1}{l|}{75.52 (72.63,78.08)}    & \multicolumn{1}{l|}{76.77 (75.32,78.02)}    \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{segmentation}} & \multicolumn{1}{l|}{99.65 (99.48,99.83)} & \multicolumn{1}{l|}{57.06 (54.93,59.18)} & \multicolumn{1}{l|}{88.79 (87.97,89.65)} & \multicolumn{1}{l|}{98.61 (98.14,99.09)}  & \multicolumn{1}{l|}{99.70 (99.48,99.91)}    & \multicolumn{1}{l|}{78.16 (75.71,80.42)}    & \multicolumn{1}{l|}{85.71 (85.71,85.71)}    \\ \midrule
-			\multicolumn{1}{|l|}{\textbf{sonar}}        & \multicolumn{1}{l|}{65.03 (61.01,69.58)} & \multicolumn{1}{l|}{46.88 (37.57,56.86)} & \multicolumn{1}{l|}{65.93 (56.19,75.98)} & \multicolumn{1}{l|}{60.38 (49.12,70.64)}  & \multicolumn{1}{l|}{53.90 (51.85,56.28)}    & \multicolumn{1}{l|}{69.36 (61.19,77.29)}    & \multicolumn{1}{l|}{66.48 (58.54,73.54)}    \\ \bottomrule
+			\multicolumn{1}{|l|}{ILPD}         & \multicolumn{1}{l|}{\textbf{70.97 (69.82,72.20})} & \multicolumn{1}{l|}{52.95 (49.00,56.68)} & \multicolumn{1}{l|}{66.29 (63.18,69.65)} & \multicolumn{1}{l|}{\textbf{71.45 (71.01,71.92)}}  & \multicolumn{1}{l|}{\textbf{71.43 (70.94,71.96)}}    & \multicolumn{1}{l|}{60.77 (55.69,66.12)}    & \multicolumn{1}{l|}{\textbf{71.43 (70.90,72.02)}}    \\ \midrule
+			\multicolumn{1}{|l|}{appendicitis} & \multicolumn{1}{l|}{\textbf{85.82 (81.09,90.00)}} & \multicolumn{1}{l|}{76.36 (66.45,86.37)} & \multicolumn{1}{l|}{\textbf{87.64 (82.00,93.46)}} & \multicolumn{1}{l|}{\textbf{84.73 (78.00,90.91)}}  & \multicolumn{1}{l|}{\textbf{86.73 (80.36,92.55)}}    & \multicolumn{1}{l|}{61.55 (49.99,74.28)}    & \multicolumn{1}{l|}{75.36 (70.91,80.64)}    \\ \midrule
+			\multicolumn{1}{|l|}{australian}   & \multicolumn{1}{l|}{85.94 (83.04,89.13)} & \multicolumn{1}{l|}{86.09 (83.33,88.99)} & \multicolumn{1}{l|}{87.60 (85.35,89.70)} & \multicolumn{1}{l|}{86.09 (83.62,89.13)}  & \multicolumn{1}{l|}{85.80 (82.90,88.84)}    & \multicolumn{1}{l|}{85.19 (82.93,87.60)}    & \multicolumn{1}{l|}{83.91 (81.88,85.95)}    \\ \midrule
+			\multicolumn{1}{|l|}{banknote}    & \multicolumn{1}{l|}{\textbf{97.96 (97.45,98.54)}} & \multicolumn{1}{l|}{91.76 (90.44,93.08)} & \multicolumn{1}{l|}{91.91 (90.38,93.30)} & \multicolumn{1}{l|}{\textbf{99.78 (99.56,100.00)}} & \multicolumn{1}{l|}{\textbf{100.00 (100.00,100.00)}} & \multicolumn{1}{l|}{\textbf{100.00 (100.00,100.00)}} & \multicolumn{1}{l|}{\textbf{100.00 (100.00,100.00)}} \\ \midrule
+			\multicolumn{1}{|l|}{breastcancer} & \multicolumn{1}{l|}{\textbf{96.48 (95.42,97.70)}} & \multicolumn{1}{l|}{92.09 (89.99,94.02)} & \multicolumn{1}{l|}{94.53 (93.74,95.31)} & \multicolumn{1}{l|}{91.21 (90.33,92.09)}  & \multicolumn{1}{l|}{\textbf{98.82 (98.04,99.62)}}    & \multicolumn{1}{l|}{\textbf{96.88 (96.30,97.26})}    & \multicolumn{1}{l|}{\textbf{96.31 (94.91,97.54)}}    \\ \midrule
+			\multicolumn{1}{|l|}{bupa}        & \multicolumn{1}{l|}{\textbf{70.45 (67.33,73.45)}} & \multicolumn{1}{l|}{50.14 (45.03,55.31)} & \multicolumn{1}{l|}{60.65 (58.71,62.75)} & \multicolumn{1}{l|}{61.10 (57.97,63.86)}  & \multicolumn{1}{l|}{\textbf{70.81 (65.53,76.24)}}    & \multicolumn{1}{l|}{55.96 (51.24,60.89)}    & \multicolumn{1}{l|}{57.10 (53.28,60.34)}    \\ \midrule
+			\multicolumn{1}{|l|}{climate}      & \multicolumn{1}{l|}{\textbf{91.11 (90.37,91.67)}} & \multicolumn{1}{l|}{57.59 (54.81,60.00)} & \multicolumn{1}{l|}{\textbf{91.48 (90.93,92.04)}} & \multicolumn{1}{l|}{\textbf{91.11 (90.37,91.85)}}  & \multicolumn{1}{l|}{\textbf{91.30 (90.74,91.85)}}    & \multicolumn{1}{l|}{78.15 (70.37,87.04)}    & \multicolumn{1}{l|}{\textbf{89.81 (88.52,91.11)}}    \\ \midrule
+			\multicolumn{1}{|l|}{fertility}    & \multicolumn{1}{l|}{\textbf{86.00 (83.00,89.00)}} & \multicolumn{1}{l|}{52.22 (42.22,61.14)} & \multicolumn{1}{l|}{\textbf{86.00 (83.00,89.00)}} & \multicolumn{1}{l|}{\textbf{87.78 (85.56,90.00)}}  & \multicolumn{1}{l|}{\textbf{87.00 (84.00,90.00)}}    & \multicolumn{1}{l|}{60.00 (50.00,70.00)}    & \multicolumn{1}{l|}{\textbf{87.78 (85.56,91.11)}}    \\ \midrule
+			\multicolumn{1}{|l|}{glass}        & \multicolumn{1}{l|}{\textbf{96.26 (94.37,98.48)}} & \multicolumn{1}{l|}{86.84 (79.99,94.32)} & \multicolumn{1}{l|}{\textbf{97.08 (95.35,98.32)}} & \multicolumn{1}{l|}{\textbf{97.68 (95.84,99.94)}}  & \multicolumn{1}{l|}{\textbf{96.26 (93.90,99.05)}}    & \multicolumn{1}{l|}{\textbf{95.30 (92.49,98.61)}}    & \multicolumn{1}{l|}{\textbf{96.26 (93.94,98.55)}}    \\ \midrule
+			\multicolumn{1}{|l|}{haberman}     & \multicolumn{1}{l|}{\textbf{76.24 (74.43,77.98)}} & \multicolumn{1}{l|}{53.59 (50.04,57.03)} & \multicolumn{1}{l|}{\textbf{74.69 (73.27,76.10)}} & \multicolumn{1}{l|}{\textbf{72.23 (70.04,74.55)}}  & \multicolumn{1}{l|}{\textbf{72.56 (71.01,74.11)}}    & \multicolumn{1}{l|}{52.57 (44.63,60.08)}    & \multicolumn{1}{l|}{\textbf{72.54 (71.30,74.05)}}    \\ \midrule
+			\multicolumn{1}{|l|}{heart}        & \multicolumn{1}{l|}{\textbf{84.77 (83.54,86.01)}} & \multicolumn{1}{l|}{78.19 (74.48,82.30)} & \multicolumn{1}{l|}{\textbf{82.22 (78.52,85.56)}} & \multicolumn{1}{l|}{\textbf{85.19 (82.59,87.78)}}  & \multicolumn{1}{l|}{79.63 (76.67,82.59)}    & \multicolumn{1}{l|}{\textbf{82.22 (78.52,85.93)}}    & \multicolumn{1}{l|}{\textbf{87.50 (84.25,90.28)}}    \\ \midrule
+			\multicolumn{1}{|l|}{ionosphere}   & \multicolumn{1}{l|}{\textbf{88.31 (85.98,91.17)}} & \multicolumn{1}{l|}{70.08 (66.00,74.65)} & \multicolumn{1}{l|}{\textbf{87.00 (84.11,90.20)}} & \multicolumn{1}{l|}{\textbf{89.47 (85.14,93.22)}}  & \multicolumn{1}{l|}{\textbf{93.73 (91.17,96.32)}}    & \multicolumn{1}{l|}{\textbf{92.89 (90.63,95.14)}}    & \multicolumn{1}{l|}{93.17 (90.88,95.62)}    \\ \midrule
+			\multicolumn{1}{|l|}{pima}         & \multicolumn{1}{l|}{\textbf{76.42 (74.18,78.51)}} & \multicolumn{1}{l|}{67.44 (65.56,69.13)} & \multicolumn{1}{l|}{\textbf{72.52 (69.45,75.45)}} & \multicolumn{1}{l|}{\textbf{75.91 (73.45,78.52)}}  & \multicolumn{1}{l|}{\textbf{77.74 (75.83,79.59)}}    & \multicolumn{1}{l|}{\textbf{75.52 (72.63,78.08)}}    & \multicolumn{1}{l|}{\textbf{76.77 (75.32,78.02)}}    \\ \midrule
+			\multicolumn{1}{|l|}{segmentation} & \multicolumn{1}{l|}{\textbf{99.65 (99.48,99.83)}} & \multicolumn{1}{l|}{57.06 (54.93,59.18)} & \multicolumn{1}{l|}{\textbf{88.79 (87.97,89.65)}} & \multicolumn{1}{l|}{\textbf{98.61 (98.14,99.09)}}  & \multicolumn{1}{l|}{\textbf{99.70 (99.48,99.91)}}    & \multicolumn{1}{l|}{78.16 (75.71,80.42)}    & \multicolumn{1}{l|}{85.71 (85.71,85.71)}    \\ \midrule
+			\multicolumn{1}{|l|}{sonar}        & \multicolumn{1}{l|}{77.14 (73.33,81.59)} & \multicolumn{1}{l|}{69.52 (65.55,73.81)} & \multicolumn{1}{l|}{75.06 (73.24,76.87)} & \multicolumn{1}{l|}{73.97 (70.63,77.62)}  & \multicolumn{1}{l|}{\textbf{86.19 (83.33,89.21)}}    & \multicolumn{1}{l|}{\textbf{81.27 (78.89,83.81)}}    & \multicolumn{1}{l|}{\textbf{80.48 (77.46,83.65)}}    \\
+			\midrule
+			\multicolumn{1}{|l|}{\textbf{Average}}        & \multicolumn{1}{l|}{\textbf{85.87 (84.26,87.61)}} & \multicolumn{1}{l|}{69.49 (67.11,72.01)} & \multicolumn{1}{l|}{\textbf{82.55 (81.04,84.29)}} & \multicolumn{1}{l|}{\textbf{84.94 (83.10,86.61)}}  & \multicolumn{1}{l|}{\textbf{86.66 (85.11,88.33)}}    & \multicolumn{1}{l|}{75.35 (72.56,78.27)}    & \multicolumn{1}{l|}{\textbf{83.76 (81.96,85.44)}} \\ \bottomrule
 		\end{tabular}
 		\end{adjustbox}
 	\end{table*}
@@ -231,11 +261,11 @@
 	
 	\section{Conclusões}
 	
-	Neste trabalho foi feita uma avaliação do desempenho dos modelos ELM, RBF, Adaline, Perceptron e ELM Hebbiano sobre bases de dados de benchmark presentes na literatura. A partir de um experimento desenhado para tal finalidade, os resultados foram comparados estatísticamente utilizando a técnica de \textit{bootstrapping} para a média das métricas AUC e erro quadrático médio, considerando um intervalo de confiança de 95\%. Destaca-se o excelente desempenho do ELM em todos os conjuntos de dados, tanto de regressão e classificação. É importante destacar também o desempenho muito abaixo do esperado para o RBF nos problemas de classificação, sugerindo a necessidade de um melhor ajuste do número de neurônios na camada escondida, por exemplo. Notou-se também que os modelos lineares avaliados obtiveram bons resultados dependendo da base de dados em questão, conseguindo atingir um desempenho estatisticamente equivalente aos demais.
+	Neste trabalho foi feita uma avaliação do desempenho do ELM e modelos usando a abordagem por projeção no espaço de verossimilhanças sobre bases de dados de benchmark presentes na literatura. A partir de um experimento desenhado para tal finalidade, os resultados foram comparados estatísticamente utilizando a técnica de \textit{bootstrapping} para a acurácia média, considerando um intervalo de confiança de 95\%. Destaca-se o excelente desempenho do ELM em todos os conjuntos de dados, conforme observado nos trabalhos anteriores. É importante destacar também que resultados compatíveis com a literatura foram obtidos para o SVM com otimização da largura. Além disso, a aplicação deste mesmo conceito para o treinamento de redes RBF se mostrou bastante eficaz. Notou-se também que os modelos lineares avaliados obtiveram bons resultados dependendo da base de dados em questão, conseguindo atingir um desempenho estatisticamente equivalente aos demais.
 	
-	Uma surpresa foi o ELM Hebbiano, onde embora tenha sido usada uma abordagem bem simples de aprendizado Hebbiano, não apresentou um resultado muito inferior em relação ao ELM original para classificação. Destaca-se o fato de que não foi possível utilizar a estratégia de aprendizado Hebbiano com sucesso em problemas de regressão. Isso sugere que uma abordagem diferente deve ser utilizada nesta situação. Durante a execução do experimento, pôde ser observado também que o modelo RBF possui um tempo de treinamento muito maior que os demais. Isso fez com que ele fosse o gargalo de todo o experimento neste quesito, o que limitou um pouco o potencial de executar um número maior de partições para a validação cruzada, bem como avaliar um intervalo maior para o fator de regularização. 
+	Assim como no trabalho anterior, o desempeho do aprendizado Hebbiano deixou a desejar, apresentando um resultado muito inferior em relação aos demais modelos. Uma avaliação do cross-talk das bases de dados mostrou que não houve uma correlação clara entre o seu aumento e a baixa acurácia do modelo, de forma a indicar que outro fator esteja causando este problema. Para algumas bases de dados ele consegue atingir uma acurácia alta, embora estatisticamente tenha ficado inferior aos demais métodos para um intervalo de confiança de 95\%.
 	
-	Como trabalhos futuros, é sugerido um ajuste fino de demais hiper-parâmetros do RBF como forma de tentar melhorar o seu desempenho. Além disso, também é interessante avaliar outras formas de aprendizado Hebbiano que poderiam ser utilizados com o ELM, bem como para melhorar seu poder de generalização e também ser aplicável a problemas de regressão com sucesso. Outra tarefa importante seria a realização de uma etapa de pré-processamento mais completa sobre bases de dados considerados, o qual não foi feita por restrições de tempo mas teria potencial para melhorar os resultados obtidos de todos os modelos.
+	Como trabalhos futuros, é sugerido uma investigação mais detalhada do que pode estar causando a baixa acurácia dos modelos com aprendizado Hebbiano. Além disso, seria interessante incluir o modelo RBF com aprendizdo via clustering e compará-lo com o novo método proposto. 
 		
 
 
