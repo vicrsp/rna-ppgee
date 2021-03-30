@@ -27,13 +27,12 @@ class KernelLinearModel(BaseEstimator, ClassifierMixin, ABC):
         # check X, y consistency
         X, y = check_X_y(X, y, accept_sparse=True)
         # augument x
-        # N = X.shape[0]
-        # x_aug = np.hstack((-np.ones((N, 1)), X))
-        # x_aug = self.pre_process(x_aug)
         # calculate the likelihood space
         self.kernel_projection_ = KernelProjection(kernel=self.kernel).fit(X, y)
         # calculate the projected X
         H = self.pre_process(self.kernel_projection_.H_)
+        # N = X.shape[0]
+        # H = np.hstack((np.ones((N, 1)), H))
         # fit the model 
         self.coef_ = self.calculate_weights(y, H)
 
@@ -43,9 +42,9 @@ class KernelLinearModel(BaseEstimator, ClassifierMixin, ABC):
     def decision_function(self, X):
         # check X, y consistency
         X = check_array(X, accept_sparse=True)
-        # N, _ = X.shape
-        # x_aug = np.hstack((-np.ones((N, 1)), X))
         H = self.transform(self.kernel_projection_.transform(X))
+        # N, _ = X.shape
+        # H = np.hstack((np.ones((N, 1)), H))
         return H @ self.coef_
 
     def predict(self, X):

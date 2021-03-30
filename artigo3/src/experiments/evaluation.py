@@ -71,7 +71,7 @@ class ModelEvaluationExperiment:
         for fold in range(n_splits):
             # create the T and k dataset
             X_t, X_k, y_t, y_k = train_test_split(X, y, shuffle=True, test_size=0.3, stratify=y)
-            for model_name, model, reg_factors in tqdm(models):
+            for model_name, model, reg_factors in models:
                 opt_factor = np.nan
                 if(reg_factors is not None):
                     opt_factor = self.tune_model(X_t, y_t, model, reg_factors)

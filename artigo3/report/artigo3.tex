@@ -39,7 +39,7 @@
 	\maketitle
 	
 	\begin{abstract}
-		A modelagem de dados não-lineares com redes neurais artificiais depende da qualidade projeção aplicada sobre as entradas, geralmente feita através de funções de kernel. A otimização de seus parâmetros é uma etapa importante e pode ser feita via técnicas de estimativa de densidade. Além de fornecer uma forma automática de seleção dos parâmetros ótimos, estas técnicas possuem a tendência de gerar projeções ortogonais das entradas no espaço de projetado. A partir desta observação, este trabalho tem como objetivo avaliar o desempenho de classificadores lineares sobre esta projeção, considerando problemas de benchmark presentes na literatura. 
+		A modelagem de dados não-lineares com redes neurais artificiais depende da qualidade projeção aplicada sobre as entradas, geralmente feita através de funções de kernel. A otimização de seus parâmetros é uma etapa importante e pode ser feita via técnicas de estimativa de densidade. Além de fornecer uma forma automática de seleção dos parâmetros ótimos, estas técnicas possuem a tendência de gerar projeções ortogonais das entradas no espaço de projetado. A partir desta observação, este trabalho tem como objetivo avaliar o desempenho de classificadores lineares sobre esta projeção, considerando problemas de benchmark presentes na literatura. Considerando 15 bases de dados de benchmark, os modelos ELM, Hebbiano e Perceptron sobre a projeção do espaço de verossimilhanças e SVM/RBF com otimização de largura foram comparados estatisticamente. Os resultados do experimento mostraram que, para um intervalo de confiança de 95\%, o uso de otimização de largura para os modelos SVM e RBF é bastante promisor, obtendo resultados estatisticamente equivalentes para a maioria das bases de dados. Além disso, o modelo Hebbiano apresentou resultados abaixo do esperado, repetindo o que foi observado no trabalho anterior. Uma breve análise é feita sobre as projeções e característica dos datasets, onde se observou uma maior tendência do Hebbiano ter piores resultados quando há um desbalanceamento entre as classes.
 	\end{abstract}
 
 	\section{Introdução}
@@ -55,22 +55,34 @@
 	\section{Revisão da literatura}
 
 	\subsection{Métodos baseados em Kernel}
+	Em geral, a solução de um problema de classificação consiste em encontrar um discriminador linear $g(\textbf{x})$, $\textbf{x} = x_1,x_2,\dots, x_d$, definido como:
+	\begin{equation}
+		g(\textbf{x}) = w_0 + \sum_{i=1}^{d}w_ix_i
+	\end{equation}
+	onde $\textbf{w}$ é um vetor de pesos deste hiper-plano. Entretanto, caso o problema não seja linearmente separável, não é possível encontrar um vetor $\textbf{w}$ que consegue separar adequadamente todas as amostras. Para lidar com este problema, foram desevolvidos métodos baseados em kernel, os quais realizam um mapeamento não-linear das entradas para um espaço onde seja possível encontrar este vetor. A partir da escolha de um kernel apropriado \cite{mercer1909xvi,courant89}, o problema poderá ser resolvido por um modelo linear.
 	
+	Essa transformação é justificada pelo teorema de Cover sobre a separabilidade de padrões \cite{cover1965geometrical}, o qual diz que um	problema de classificação complexo projetado não-linearmente para um espaço de alta dimensão é mais provável de ser	separável do que em um espaço de baixa dimensão, desde que o espaço não seja densamente povoado. Este princípio é explorado por diversos modelos como o SVM, redes ELM, RBF e MLP \cite{haykin2007neural}. 
 	
+	O KDE é um estimador de densidade não-paramétrico baseado na soma de funções de kernel em cada dimensão do espaço de entradas~\cite{wang2013gaussian}. Tais funções são tipicamente Gaussianas e possuem somente um parâmetro, a sua largura $\sigma$, dado que os centros serão as amostras em si. O problema de estimar esta densidade resulta no $\sigma$ que satisfaz um conjunto de restrições ou função objetivo \cite{menezes2019width}. Considerando um problema de classificação binário, podemos definir um classificador linear no espaço de verossimilhanças estimado pelo KDE como:
+	\begin{equation}
+		P(\textbf{x}|C_1) = kP(\textbf{x}|C_2)
+	\end{equation}
+	onde $P(\textbf{x}|C_i)$ é a probabilidade condicional de \textbf{x} dado uma classe $C_i$, e $k$ é a inclinação da reta que separa linearmente as verossimilhanças. Conforme observado por \cite{menezes2019width}, encontrar um $k$ que garante a melhor separação pode ser feito através do ajuste correto de $\sigma$.
 	
-%	\subsection{Redes RBF}
-%	As redes RBF foram inicialmente introduzidas por~\cite{broomhead1988multivariablefi} e são caracterizadas por um aprendizado que envolve duas etapas: (i) aplicar uma transformação aos padrões para um espaço onde a probabilidade de serem linearmente separáveis é alta (ii) encontrar os pesos usando o estimador mínimos quadrados usado no Perceptron simples. Essa estrutura pode ser representada por um rede de três camadas, onde sua camada escondida é reponsável pela transformação não-linear das entradas para o novo espaço, geralmente para uma dimensão muito alta. 
-%	
-%	Essa transformação é justificada pelo teorema de Cover sobre a separabilidade de padrões~\cite{cover1965geometrical}, o qual diz que um problema de classificação complexo projetado não-linearmente para um espaço de alta dimensão é mais provável de ser separável do que em um espaço de baixa dimensão, desde que o espaço não seja densamente povoado. Boa parte da teoria, que é relacionada ao campo de interpolação multivariável, considera um kernel baseado na função Gaussiana, que é uma classe importante de RBFs. Teoricamente, as redes RBF podem ser consideradas um aproximador universal de funções contínuas se a RBF é selecionada apropriadamente~\cite{poggio1990networks, park1991universal, liao2003relaxed}.
-%	
-%	\subsection{ELM}	
-%	Inicialmente proposto por~\cite{huang2004extreme}, as máquinas de aprendizado extremo (ELM) são redes neurais com uma única camada escondida, as quais possuem o atrativo de poucos parâmetros a serem ajustados, generalização maior ou similar e redução do tempo de treinamento das redes em relação aos métodos convencionais. Seu treinamento é baseado na teoria de minimização de risco empírico, necessitando de somente uma iteração para este processo, evitando múltiplas iterações e algoritmos de otimização local~\cite{ding2015extreme}. 
-%	
-%	ELMs são capazes de definir adaptivamente o número neurônios da rede e aleatoriamente escolher os pesos das entradas e viéses da camada escondida~\cite{huang2006extreme}. Isso faz com o que a rede possa ser considerada como um sistema linear, o qual pode ser calculado de forma analítica através de uma operação de inversão da matriz de pesos da camada de saídas~\cite{huang2006extreme}. Essa característica permite uma drástica redução do esforço computacional do treinamento, geralmente de 10 vezes ou mais~\cite{deng2010research}. 
+	A defininição de $\sigma$ é tipicamente realizada por técnicas de estimativa de erro como a validação cruzada. Entretanto, observando as características do mapeamento aplicado via funções de Kernel, \cite{menezes2019width} propôs uma forma simples de determinar a largura ótima como a maximização da uma função de similaridade sobre o espaço de verossimilhanças. Os autores mostram evidências que esta função possuirá somente um máximo para diferentes problemas reais. Além disso, a técnica foi aplicada com sucesso em conjunto com o algoritmo SVM, o qual obteve resultados equivalentes em relação aos obtidos com validação cruzada sobre a largura.
+	
+	\subsection{SVM}
+	Introduzido por Vapnik em 1992~\cite{boser1992training} as máquinas de vetores suporte (SVM) são considerados um dos algoritmos mais robustos e poderosos para aprendizado supervisionado até os dias atuais. No trabalho de Vapnik, o autor apresenta de forma bem completa os fundamentos teóricos deste modelo, apresentando justificativas para sua ótima capacidade de generalização, bem como os limites para a sua validade. Seu princípio de treinamento está na maximização da margem entre os padrões de treino e a superfície de decisão, que é uma representação convexa do compromisso entre viés e variância.
+	Estas propriedades são uma consequência do uso dos chamados vetores de suporte no seu treinamento, que são os sub-conjuntos de dados mais próximos da superfície de decisão, ou seja, os mais difícies de classificar e relevantes para sua otimalidade. O problema então consiste em encontrar o hiperplano que maximiza a margem de separação entre os padrões, que é equivalente a minimizar a norma Euclidiana do seu vetor de pesos~\cite{haykin2007neural}. 
+	
+	\subsection{ELM}	
+	Inicialmente proposto por~\cite{huang2004extreme}, as máquinas de aprendizado extremo (ELM) são redes neurais com uma única camada escondida, as quais possuem o atrativo de poucos parâmetros a serem ajustados, generalização maior ou similar e redução do tempo de treinamento das redes em relação aos métodos convencionais. Seu treinamento é baseado na teoria de minimização de risco empírico, necessitando de somente uma iteração para este processo, evitando múltiplas iterações e algoritmos de otimização local~\cite{ding2015extreme}. 
+	
+	ELMs são capazes de definir adaptivamente o número neurônios da rede e aleatoriamente escolher os pesos das entradas e viéses da camada escondida~\cite{huang2006extreme}. Isso faz com o que a rede possa ser considerada como um sistema linear, o qual pode ser calculado de forma analítica através de uma operação de inversão da matriz de pesos da camada de saídas~\cite{huang2006extreme}. Essa característica permite uma drástica redução do esforço computacional do treinamento, geralmente de 10 vezes ou mais~\cite{deng2010research}. 
 	
 	\section{Metodologia}
 	\subsection{Bases de Dados}
-	Neste trabalho serão consideradas quinze bases de dados referentes a problemas de classificação binários disponíveis no repositório da UCI~\cite{dua2019}. Antes do treinamento, os dados de entrada serão normalizados para o intervalo $[0,1]$ e filtrados para remoção de valores inválidos. Um sumário das bases de dados consideradas pode ser vista na Tabela \ref{tab:datasets}.
+	Neste trabalho serão consideradas quinze bases de dados referentes a problemas de classificação binários disponíveis no repositório da UCI~\cite{dua2019}. Antes do treinamento, os dados de entrada serão normalizados para o intervalo $[0,1]$ e filtrados para remoção de valores inválidos. Um sumário das bases de dados pode ser visto na Tabela \ref{tab:datasets}.
 
 	\begin{table}[h!]
 		\centering
@@ -100,13 +112,13 @@
 	A partir das recomendações para desenho de experimento para comparação de algoritmos proposta em~\cite{salzberg1997comparing}, a seguinte metodologia será adotada:
 	\begin{itemize}
 		\item Para cada base de dados:
-			\begin{enumerate}
+		\begin{enumerate}
 			\item Particionar os dados $D$ em $k$ partições para validação cruzada, mantendo a mesma proporção entre os rótulos
 			\begin{enumerate}
 				\item Criar o conjunto de treino $T = D - k$
 				\item Para cada modelo:
 				\begin{enumerate}
-					\item Executar busca exaustiva com validação cruzada de $z$ partições sobre $T$ para os coeficientes de regularização $\lambda$ \label{item:grid-search}
+					\item Executar busca exaustiva com validação cruzada de $z$ sobre $T$ para os coeficientes de regularização $\lambda$ \label{item:grid-search}
 					\item Escolher $\lambda$ que obtém o melhor ajuste médio 
 					\item Avaliar a métrica do modelo sobre $k$
 				\end{enumerate}
@@ -115,7 +127,7 @@
 		\end{enumerate}
 	\end{itemize}
 	
-	O número de partições consideradas será de $k=10$. Para o item \ref{item:grid-search}, serão considerados um número fixo de valores igualmente espaçados dentro de um intervalo pré-definido. Além disso, serão considerados $z=5$ partições, como forma de controlar um pouco o tamanho do experimento. Serão consideradas as acurácia como a métrica para comparação dos algoritmos. A implementação deste experimento, bem como dos modelos utilizados, será feita em Python e utilizando principalmente os pacotes \textit{numpy}~\cite{harris2020array} e \textit{scikit-learn}~\cite{scikit-learn}. O experimento será realizado em um Notebook Intel Core i7 Quad Core com 8Gb de memória RAM, sendo que o uso de paralelização será utilizado sempre que possível visto a enorme quantidade de vezes que os modelos serão treinados.
+	O número de partições consideradas será de $k=10$. Para o item \ref{item:grid-search}, serão considerados um número fixo de valores igualmente espaçados dentro de um intervalo pré-definido. Além disso, serão considerados $z=5$ partições, como forma de controlar um pouco o tamanho do experimento. A acurácia será utlizada como a métrica para comparação dos algoritmos. A implementação deste experimento, bem como dos modelos utilizados, será feita em Python e utilizando principalmente os pacotes \textit{numpy}~\cite{harris2020array} e \textit{scikit-learn}~\cite{scikit-learn}. O experimento será realizado em um Notebook Intel Core i7 Quad Core com 8Gb de memória RAM, sendo que o uso de paralelização será utilizado sempre que possível visto a enorme quantidade de vezes que os modelos serão treinados.
 	
 	\subsection{Aprendizado Hebbiano}
 	O uso de aprendizado Hebbiano após a camada escondida é uma abordagem simples e eficiente para se controlar a generalização do modelo. Conforme sugerido em~\cite{horta2015aplicaccao}, podemos substituir o cálculo da pseudo-inversa da matriz de projeção, o que caracteriza a regra de aprendizado do Percepton simples, por um Perceptron Hebbiano com pesos normalizados. Essa abordagem é melhor descrita em~\cite{fernandez2011direct}, da qual podemos retirar a seguinte regra para problemas de classificação binários:
@@ -135,7 +147,7 @@
 	\subsection{Análise de problemas bi-dimensionais}
 	Considerando três conjuntos de dados gerados artificialmente para diferentes estruturas, a superfície de decisão para cada classificador pode ser vista nas Figuras \ref{fig:ds01_circles}, \ref{fig:ds02_quant} e \ref{fig:ds03_spirals}. Observe que à medida em que a complexidade do modelo é aumentada, maior é a dificuldade encontrada pelos modelos lineares. 
 	
-	Para o problema da Figura \ref{fig:ds01_circles}, é possível ver que todos os modelos estimaram com precisão a superfície de separação. Entretanto, note que para o problema da Figura \ref{fig:ds02_quant} os modelos lineares não tiveram um bom desempenho, provavelmente devido à qualidade da projeção obtida. Isso é evidenciado pelo problema da Figura \ref{fig:ds03_spirals}, para o qual os modelos lineares obtiveram desempenho superior quando utilizada a projeção MLP. Destaca-se também que o RBF se ajustam muito bem aos dados e e de foram bem similar ao SVM, indicando que a estratégia adotada é bastante promissora.
+	Para o problema da Figura \ref{fig:ds01_circles}, é possível ver que todos os modelos estimaram com precisão a superfície de separação. Entretanto, note que para o problema da Figura \ref{fig:ds02_quant} os modelos lineares não tiveram um bom desempenho, provavelmente devido à qualidade da projeção obtida. Isso é evidenciado pelo problema da Figura \ref{fig:ds03_spirals}, para o qual os modelos lineares obtiveram desempenho superior quando utilizada a projeção MLP. Destaca-se também que o GK-RBF se ajustam muito bem aos dados e e de foram bem similar ao GK-SVM, indicando que a estratégia adotada é bastante promissora.
 	
 	
 	\begin{figure}[thpbh]
@@ -159,21 +171,21 @@
 
 	\subsection{Análise do experimento}
 
-	Considerando os mesmos algoritmos da seção anterior, é incluído também o algoritmo ELM com regularização na sua versão original, ou seja, sem o uso da técnica de projeção no espaço de verossimilhanças. O número de neurônios das redes ELM e GK-RBF foram mantidos fixos em 100. Os valores de coeficiente de regularização utilizados para o GK-SVM, RBF e ELM foram escolhidos no intervalo $[2^{-5},2^{-4}, \dots, 2^{11},2^{12}]$. A acurácia média e seu intervalo de confiança obtido via bootstraping para o experimento estão consolidados na Tabela \ref{tab:results}. Comparando com os resultados reportados em \cite{menezes2019width}, nota-se que todos estão coerentes, especialmente para a implementação do GK-SVM. Destaca-se o excelente desempenho do algoritmo ELM, o qual também está de acordo com o reportado na literatura \cite{huang2011extreme}.
+	Considerando os mesmos algoritmos da seção anterior, é incluído também o algoritmo ELM com regularização na sua versão original, ou seja, sem o uso da técnica de projeção no espaço de verossimilhanças. O número de neurônios das redes ELM e GK-RBF foram mantidos fixos em 100. Os valores de coeficiente de regularização utilizados para o GK-SVM, GK-RBF e ELM foram escolhidos no intervalo $[2^{-5},2^{-4}, \dots, 2^{11},2^{12}]$. A acurácia média e seu intervalo de confiança obtido via bootstraping para o experimento estão consolidados na Tabela \ref{tab:results}. Comparando com os resultados reportados em \cite{menezes2019width}, nota-se que todos estão coerentes, especialmente para a implementação do GK-SVM. Destaca-se o excelente desempenho do algoritmo ELM, o qual também está de acordo com o reportado na literatura \cite{huang2011extreme}.
 	
 	Observando os demais métodos avaliados, é importante destacar também que o modelo GK-RBF apresentou desempenho equivalente ao GK-SVM em grande parte das bases de dados, porém ainda com ma acurácia elevada e compatível com o esperado para a base de dados. Portanto, podemos afirmar que esta é uma abordagem que, embora simples de entender e implementar, tem potencial para novas aplicações. Embora a versão clássica do treinamento de redes RBF não foi incluída para comparação, uma outra vantagem que ficou evidente durante a execução do experimento foi a redução drástica no tempo de treinamento, uma vez que foi eliminada a necessidade do cálculo dos centros e raios via clustering.  
 	
 	A grande surpresa destes testes está na baixa qualidade dos resultados do modelo com aprendizado Hebbiano: para todas as bases de dados avaliadas, o modelo GK-H apresentou acurácia inferior em relação aos demais para um intervalo de confiança de 95\%. O mesmo não ocorreu quando foi utilizado o MLP-H, onde para algumas bases de dados a acurácia foi equivalente. Isso sugere que a projeção no espaço de verossimilhanças com o Kernel radial possa não ter atingido a ortogonalização esperada. 
-	
+		
 	O cálculo do cross-talk sobre o conjunto de dados projetado permite obter uma ideia da qualidade desta ortogonalização, onde um valor próximo de zero indicará uma boa projeção. Os valores obtidos estão disponíveis na Tabela \ref{tab:crosstalk}, os quais foram calculados considerando a média do valor de cada amostra em relação à todas as outras. É relevante citar que durante o cálculo, se considerássemos somente as amostras de classes diferentes classe, o valor era aproximadamente zero e foram omitidos da tabela. Portanto, os valores apresentados correspondem ao cross-talk intra-classe, o qual é naturalmente mais alto. Dessa forma podemos concluir que a ortogonalização obtida é de fato ortogonal, e outro fator pode estar afetando o aprendizado Hebbiano.
-	
-	\begin{table}[h!]
+		
+	\begin{table}[thpbh]
 		\centering
 		\label{tab:crosstalk}
-		\caption{Cross-talk calculado para as projeções RBF e MLP sobre todo o conjunto de dados}
+		\caption{Cross-talk médio calculado para as projeções Gaussiana e MLP sobre todo o conjunto de dados}
 		\begin{tabular}{|l|c|c|}
 			\hline
-			\multicolumn{1}{|c|}{\textbf{Dataset}} & \textbf{RBF} & \textbf{MLP} \\ \hline
+			\multicolumn{1}{|c|}{\textbf{Dataset}} & \textbf{Gaussiana} & \textbf{MLP} \\ \hline
 			ILPD                                   & 0.973675     & 1.299812     \\ \hline
 			appendicitis                           & 0.594261     & -1.086522    \\ \hline
 			australian                             & 0.069242     & 0.029584     \\ \hline
@@ -192,6 +204,25 @@
 		\end{tabular}
 	\end{table}
 
+
+	Se obervamos a proporção entre as classes de cada problema da Tabela \ref{tab:datasets}, podemos notar que há quando maior o desbalanceamento entre as classes, pior é o desempenho dos modelos com aprendizado Hebbiano. Isso é um resultado interessante, podendo significar que nestes casos a projeção calculada pode não ter sido ortogonal o suficiente para que o aprendizado Hebbiano fosse efetivo. Considerando a Tabela \ref{tab:crosstalk}, pode-se notar também que estes datasets em específico possuem um desvio maior do zero em relação aos demais, reforçando esta observação.
+
+	A superfície de decisão estimada via aprendizado Hebbiano para um base com alta e baixa acurácia pode ser vista nas Figuras \ref{fig:proj_banknote} e \ref{fig:proj_climate}, respectivamente. É interessante observar que o desbalanceamento fez com que as projeções em cada dimensão se tornassem desiguais. Além disso, o aprendizado Hebiano aparenta ter convergido para uma superfície que maximiza a separação dos dados, independente da classe. Isso sugere que uma classe dominou a outra durante o treinamento, e que o aprendizado Hebbiano possa não ser indica nestas situações.  
+	
+	\begin{figure}[thpbh]
+		\centering
+		\includegraphics[width=0.5\textwidth]{figures/proj_banknote_hebb.png}
+		\caption{Projeção para a base de dados \textit{banknote} e a superfície de decisão estimado pelo aprendizado Hebbiano}
+		\label{fig:proj_banknote}
+	\end{figure}
+	\begin{figure}[thpbh]
+		\centering
+		\includegraphics[width=0.5\textwidth]{figures/proj_climate_hebb.png}
+		\caption{Projeção para a base de dados \textit{climate} e a superfície de decisão estimado pelo aprendizado Hebbiano}
+		\label{fig:proj_climate}
+	\end{figure}
+	
+	
 	\begin{table*}[thpbh]
 		\caption{Acurácia média dos classificadores para intervalo de confiança de 95\%}
 		\label{tab:results}
@@ -220,43 +251,6 @@
 		\end{tabular}
 		\end{adjustbox}
 	\end{table*}
-
-
-%	\begin{table*}[thpbh]
-%		\caption{Intervalos de confiança de 95\% calculados para a AUC média}
-%		\label{tab:classification}
-%		\centering
-%		\begin{tabular}{r|r|r|r|r|}
-%			\cline{2-5}
-%			\multicolumn{1}{l|}{}                          & \multicolumn{1}{c|}{\textbf{ELM}} & \multicolumn{1}{c|}{\textbf{ELM Hebbiano}} & \multicolumn{1}{c|}{\textbf{Perceptron}} & \multicolumn{1}{c|}{\textbf{RBF}} \\ \hline
-%			\multicolumn{1}{|r|}{\textbf{Breast Cancer}}   & \textbf{0.948 (0.935,0.963)}         & 0.887 (0.853,0.920)                           & \textbf{0.950 (0.930,0.971)}                & 0.512 (0.505,0.519)                  \\ \hline
-%			\multicolumn{1}{|r|}{\textbf{Liver Disorder}}  & \textbf{0.677 (0.621,0.733)}         & 0.582 (0.536,0.628)                           & 0.532 (0.509,0.553)                         & 0.515 (0.498,0.537)                  \\ \hline
-%			\multicolumn{1}{|r|}{\textbf{Statlog (Heart)}} & \textbf{0.812 (0.769,0.851)}         & 0.762 (0.698,0.819)                           & 0.772 (0.700,0.846)                         & 0.547 (0.522,0.569)                  \\ \hline
-%		\end{tabular}
-%	\end{table*}
-
-
-%	\begin{figure}[thpbh]
-%		\centering
-%		\includegraphics[width=0.5\textwidth]{figures/Boston Housing_scores.png}
-%		\caption{Boxplots para a base de dados \textit{Boston Housing}. Intervalos de confiança de 95\% para a média são exibidos em preto.}
-%		\label{fig:box-Boston-Housing}
-%	\end{figure}
-%	
-%	\begin{figure}[thpbh]
-%		\centering
-%		\includegraphics[width=0.5\textwidth]{figures/Wine Quality (Red)_scores.png}
-%		\caption{Boxplots para a base de dados \textit{Wine Quality (Red)}. Intervalos de confiança de 95\% para a média são exibidos em preto.}
-%		\label{fig:box-Wine}
-%	\end{figure}
-%	
-%	\begin{figure}[thpbh]
-%		\centering
-%		\includegraphics[width=0.5\textwidth]{figures/Diabetes_scores.png}
-%		\caption{Boxplots para a base de dados \textit{Diabetes}. Intervalos de confiança de 95\% para a média são exibidos em preto.}
-%		\label{fig:box-Diabetes}
-%	\end{figure}
-
 
 	
 	\section{Conclusões}
